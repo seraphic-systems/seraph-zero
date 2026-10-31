@@ -103,3 +103,56 @@ test('title filters round-trip in URLs, match without case sensitivity, and supp
   assert.equal(empty.count, 0);
   assert.equal(empty.circles.find(circle => circle.role === 'empty').label, 'No matches');
 });
+
+test('player presentation is type-aware, URL-addressable, and falls back safely', async () => {
+  const { availablePresentations } = await import('../apps/internal/dashboard/orb/presentations.js');
+  const songContainer = indexTree(tree).get('songs').node;
+  assert.deepEqual(availablePresentations(songContainer), ['orb', 'player']);
+  assert.deepEqual(availablePresentations(tree), ['orb']);
+  const url = routeFor(initial.path, null, 'az', 'Song 2', 'player');
+  const route = readRoute(tree, new URL(url, 'http://localhost'));
+  assert.equal(route.presentation.songs, 'player');
+  assert.equal(route.filter, 'Song 2');
+  assert.equal(readRoute(tree, new URL('http://localhost/orb/?view=player')).presentation.home, 'orb');
+  assert.equal(readRoute(tree, new URL('http://localhost/orb/music/songs/?view=unknown')).presentation.songs, 'orb');
+  assert.equal(readRoute(tree, new URL('http://localhost/orb/music/songs/')).presentation.songs, 'orb');
+});
+
+test('player layouts preserve actions, ordering, filtering, and detail identity at every size', () => {
+  for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    const state = { ...initial, presentation: { songs: 'player' }, arrangement: { songs: 'az' } };
+    const result = layout(tree, state, viewport);
+    assert.deepEqual(result, layout(tree, state, viewport));
+    assert.equal(result.items.length, songs.length);
+    assert.equal(result.items[0].key, 'song-s0');
+    assert.equal(result.items[1].key, 'song-s1');
+    assert.equal(result.circles.some(circle => circle.role === 'child'), false);
+    for (const item of result.items) {
+      assert.ok(item.x >= 0 && item.x + item.width <= viewport.width);
+      assert.ok(item.y >= 180 && item.y + item.height <= result.height - 80);
+      assert.equal(item.action.id, item.key);
+      assert.equal(item.presentation, 'player');
+    }
+    const filtered = layout(tree, { ...state, filter: 'Song 24' }, viewport);
+    assert.deepEqual(filtered.items.map(item => item.key), ['song-s24']);
+    const empty = layout(tree, { ...state, filter: 'missing' }, viewport);
+    assert.equal(empty.items.length, 0);
+    assert.equal(empty.circles.at(-1).role, 'empty');
+    const detail = layout(tree, { ...state, detail: 'song-s0' }, viewport);
+    assert.equal(detail.items.length, 0);
+    assert.equal(detail.detail.id, 'song-s0');
+    assert.equal(detail.detail.next, 'song-s1');
+  }
+});
+
+test('mixed collections use a generic Orb fallback and album tracks support player cards', () => {
+  const mixed = { id: 'home', children: [{ id: 'song', kind: 'Song', label: 'Song' }, { id: 'folder', label: 'Folder', children: [] }] };
+  const result = layout(mixed, { path: ['home'], presentation: { home: 'player' } }, { width: 1000, height: 800 });
+  assert.deepEqual(result.items.map(item => item.presentation), ['player']);
+  const fallback = result.circles.find(circle => circle.key === 'folder');
+  assert.equal(fallback.isContainer, true);
+  assert.deepEqual(fallback.action, { type: 'navigate', path: ['home', 'folder'] });
+  const album = layout(tree, { path: ['home', 'music', 'albums', 'album-a'], presentation: { 'album-a': 'player' } }, { width: 390, height: 844 });
+  assert.equal(album.items[0].key, 'track-t');
+  assert.equal(album.items[0].presentation, 'player');
+});

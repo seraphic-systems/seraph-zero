@@ -1,6 +1,10 @@
 import '/shared/components/audio-player/audio-player.js';
 import { createContentSource, indexTree } from './content.js';
-import { layout } from './engine.js';
+import { layout, arrangements } from './engine.js';
+import { availablePresentations, presentations } from './presentations.js';
+import { createPlayback } from './playback.js';
+import { createPresentationTransition } from './transitions.js';
+import { playbackControls, presentationViews, songFor } from './presentation-views.js';
 import { readRoute, routeFor, base } from './routes.js';
 
 const $ = selector => document.querySelector(selector);
@@ -22,6 +26,59 @@ try {
   let current, detailId, focusTimer, wheelAt = 0, touchY = null;
   const mounted = new Map();
   const audio = el('seraph-audio-player');
+  $('#player-content').append(audio);
+  const playback = createPlayback(audio.audio, location.origin);
+  const cards = new Map();
+  let switchingPresentation = false;
+  const presentationTransition = createPresentationTransition({
+    root: document.documentElement,
+    layers: [$('#circles'), $('#cards')],
+    reduced,
+    items: () => [
+      ...[...mounted].filter(([, button]) => button.circle?.role === 'child'),
+      ...[...cards].map(([key, card]) => [key, card.element]),
+    ],
+  });
+  let disposeDetail = () => {};
+  const playerToggle = $('#player-toggle'), playerContent = $('#player-content');
+  let playerExpanded = false, playerContentAnimation;
+  function playerOpen(open) {
+    if (open === playerExpanded) return;
+    playerExpanded = open;
+    const opacity = getComputedStyle(playerContent).opacity;
+    playerContentAnimation?.cancel();
+    playerContent.hidden = false;
+    playerContent.inert = !open;
+    $('#player-lens').classList.toggle('open', open);
+    playerToggle.setAttribute('aria-expanded', String(open));
+    playerToggle.setAttribute('aria-label', `${open ? 'Close' : 'Open'} player${playback.selection ? ` · ${playback.selection.song.title}` : ''}`);
+    // Keep the mounted player alive while the shell morphs. Closing removes
+    // controls from keyboard navigation immediately, then hides them after fading.
+    const animation = animate(playerContent, [{ opacity }, { opacity: open ? 1 : 0 }], {
+      duration: reduced.matches ? 100 : open ? 260 : 140,
+      delay: open && !reduced.matches ? 240 : 0,
+    });
+    playerContentAnimation = animation;
+    animation.finished.then(() => {
+      if (playerContentAnimation !== animation) return;
+      playerContent.hidden = !playerExpanded;
+      animation.cancel();
+      playerContentAnimation = null;
+    }).catch(() => {});
+  }
+  playerToggle.addEventListener('click', () => playerOpen(!playerExpanded));
+  $('#player-close').addEventListener('click', () => { playerOpen(false); playerToggle.focus(); });
+  playback.subscribe(() => {
+    const selection = playback.selection;
+    $('#player-title').textContent = selection ? selection.song.title : 'Nothing playing yet';
+    $('#player-mix').textContent = selection ? `${selection.mix.date} · ${selection.mix.format}` : 'Choose Play on a song to start.';
+    playerToggle.textContent = playback.playing ? 'Ⅱ' : '♪';
+    playerToggle.setAttribute('aria-label', `${playerExpanded ? 'Close' : 'Open'} player${selection ? ` · ${selection.song.title}` : ''}`);
+    $('#player-lens').classList.toggle('playing', playback.playing);
+    $('#player-error').textContent = playback.error;
+    if (selection) audio.setAttribute('label', `${selection.song.title} audio player`);
+  });
+  const urlFor = (path, detail, arrangement, filter = '') => routeFor(path, detail, arrangement, filter, state.presentation?.[path.at(-1)] || 'orb');
   const lens = $('#lens'), toggle = $('#nav-toggle');
   const trailLinks = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   trailLinks.classList.add('trail-links');
@@ -48,7 +105,7 @@ try {
   function navigate(url, push = true) {
     if (push) history.pushState(null, '', url);
     const route = readRoute(tree, new URL(url, location.href));
-    state = { ...state, ...route, arrangement: { ...state.arrangement, ...route.arrangement } };
+    state = { ...state, ...route, presentation: { ...state.presentation, ...route.presentation }, arrangement: { ...state.arrangement, ...route.arrangement } };
     // The query is authoritative for the current container, including Back to its default.
     if (!new URL(url, location.href).searchParams.has('arrange')) delete state.arrangement[state.path.at(-1)];
     state.navOpen = false;
@@ -59,9 +116,9 @@ try {
   function dispatch(action) {
     if (!action) return;
     const path = action.type === 'navigate' ? action.path : state.path;
-    navigate(routeFor(path, action.type === 'openDetail' ? action.id : null, state.arrangement[path.at(-1)], path.join('/') === state.path.join('/') ? state.filter : ''));
+    navigate(urlFor(path, action.type === 'openDetail' ? action.id : null, state.arrangement[path.at(-1)], path.join('/') === state.path.join('/') ? state.filter : ''));
   }
-  function closeDetail() { navigate(routeFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter)); }
+  function closeDetail() { navigate(urlFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter)); }
   function step(direction) {
     const id = current.detail?.[direction];
     if (id) dispatch({ type: 'openDetail', id });
@@ -97,12 +154,14 @@ try {
     // Commit interrupted animation positions before replacing the animation.
     button.getAnimations().forEach(animation => animation.cancel());
     button.style.transform = transform(circle);
-    if (changed) animate(button, [{ transform: entering ? from || transform(circle) : from, opacity: entering ? 0 : 1 }, { transform: transform(circle), opacity: 1 }], { delay: entering && !reduced.matches ? 150 + Math.min(circle.order, 30) * 15 : 0 });
+    if (changed && !switchingPresentation) animate(button, [{ transform: entering ? from || transform(circle) : from, opacity: entering ? 0 : 1 }, { transform: transform(circle), opacity: 1 }], { delay: entering && !reduced.matches ? 150 + Math.min(circle.order, 30) * 15 : 0 });
     label.getAnimations().forEach(animation => animation.cancel());
-    if (changed && !reduced.matches) animate(label, [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .65 }, { opacity: 1, offset: 1 }]);
+    if (changed && !reduced.matches && !switchingPresentation) animate(label, [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .65 }, { opacity: 1, offset: 1 }]);
   }
   function detailContent(node) {
     const section = $('#detail');
+    disposeDetail();
+    disposeDetail = () => {};
     section.replaceChildren();
     const controls = el('div', null, 'detail-controls');
     for (const [label, action, disabled, name] of [['↑', () => step('prev'), !current.detail.prev, 'Previous item'], ['×', closeDetail, false, 'Close detail'], ['↓', () => step('next'), !current.detail.next, 'Next item']]) {
@@ -110,7 +169,7 @@ try {
     }
     const title = el('h1', node.label); title.tabIndex = -1;
     section.append(controls, el('p', node.kind, 'kind'), title);
-    const song = node.kind === 'Song' ? node.data : node.data?.song;
+    const song = songFor(node);
     if (node.kind === 'Album track') {
       section.append(el('p', `Track ${node.data.track_number}`, 'muted'));
       if (!song) section.append(el('p', 'No song association recorded yet.', 'muted'));
@@ -124,17 +183,21 @@ try {
         label.append(select);
         const metadata = el('p', '', 'muted'), link = el('a', 'Open audio file ↗', 'file-link'), notes = el('div', '', 'notes');
         link.target = '_blank'; link.rel = 'noopener';
+        if (playback.selection?.song.id === song.id) select.value = playback.selection.mix.url;
         const choose = () => {
           const mix = song.mixes.find(mix => mix.url === select.value);
-          audio.src = new URL('/' + mix.url, location.origin).href;
-          audio.setAttribute('label', `${song.title} audio player`);
+          disposeDetail();
+          const controls = playbackControls(song, mix, playback);
+          inline.replaceChildren(controls.element);
+          disposeDetail = controls.dispose;
           link.href = '/' + mix.url;
           const tempo = mix.bpm_changes?.join(' → ') || mix.bpm;
           metadata.textContent = [tempo ? `${tempo} BPM` : '', mix.key].filter(Boolean).join(' · ');
           notes.innerHTML = mix.notes || '';
         };
+        const inline = el('div');
         select.addEventListener('change', choose); choose();
-        section.append(label, metadata, audio, link, notes);
+        section.append(label, metadata, inline, link, notes);
       } else section.append(el('p', 'No mixes yet.', 'muted'));
       if (song.notes.trim()) { const notes = el('div', '', 'notes'); notes.innerHTML = song.notes; section.append(el('h2', 'Song notes'), notes); }
     }
@@ -155,11 +218,11 @@ try {
   }
   function renderView(preserveControls = false) {
     const view = $('#view-lens'), button = $('#view-toggle'), content = $('#view-content');
-    const available = !current.detail && current.container.children.length > 1;
+    const available = !current.detail && (current.container.children.length > 1 || availablePresentations(current.container).length > 1);
     view.hidden = !available;
     view.inert = state.navOpen;
     view.classList.toggle('open', state.viewOpen);
-    view.classList.toggle('active', current.active !== (current.container.arrangements?.[0] || 'free') || !!state.filter);
+    view.classList.toggle('active', current.active !== (current.container.arrangements?.[0] || 'free') || current.presentation !== 'orb' || !!state.filter);
     button.setAttribute('aria-expanded', String(state.viewOpen));
     button.setAttribute('aria-label', `${state.viewOpen ? 'Close' : 'Open'} view options for ${current.container.label}`);
     button.textContent = state.viewOpen ? '×' : 'View';
@@ -169,22 +232,40 @@ try {
       return;
     }
     content.replaceChildren(el('h2', `${current.container.label} · View`));
-    const choices = el('div', null, 'arrangements');
+    const presentationChoices = el('div', null, 'arrangements');
+    presentationChoices.setAttribute('role', 'group');
+    presentationChoices.setAttribute('aria-label', 'Item presentation');
+    availablePresentations(current.container).forEach(id => {
+      const button = el('button', presentations[id].label);
+      button.setAttribute('aria-pressed', String(current.presentation === id));
+      button.addEventListener('click', () => {
+        state.presentation = { ...state.presentation, [current.container.id]: id };
+        history.pushState(null, '', urlFor(state.path, state.detail, state.arrangement[current.container.id], state.filter));
+        render(false);
+
+      });
+      presentationChoices.append(button);
+    });
+    presentationChoices.id = 'presentation-choices';
+    if (availablePresentations(current.container).length > 1) content.append(presentationChoices);
+    const choices = el('div', null, 'arrangements arrangement-choices');
+    choices.setAttribute('role', 'group');
+    choices.setAttribute('aria-label', 'Arrangement');
     (current.container.arrangements || ['free']).forEach(id => {
-      const button = el('button', id === 'az' ? 'A–Z' : 'Scatter');
+      const button = el('button', presentations[current.presentation].arrangementLabels?.[id] || arrangements[id].label);
       button.setAttribute('aria-pressed', String(current.active === id));
       button.addEventListener('click', () => {
         state.arrangement[current.container.id] = id;
-        history.pushState(null, '', routeFor(state.path, state.detail, id, state.filter));
+        history.pushState(null, '', urlFor(state.path, state.detail, id, state.filter));
         render(false);
-        $('#view-content').querySelector(`[aria-pressed="true"]`)?.focus({ preventScroll: true });
+        $('#view-content .arrangement-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
       }); choices.append(button);
     }); content.append(choices);
     const label = el('label', 'Filter titles', 'filter-label');
     const input = el('input'); input.type = 'search'; input.value = state.filter || ''; input.placeholder = 'Type a title…';
     input.addEventListener('input', () => {
       state.filter = input.value; state.detail = null;
-      history.replaceState(null, '', routeFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter));
+      history.replaceState(null, '', urlFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter));
       render(false, true);
     });
     label.append(input); content.append(label);
@@ -194,14 +275,26 @@ try {
   }
   function render(focus, preserveNavControls = false) {
     const next = layout(tree, state, { width: innerWidth, height: innerHeight, scrollY: window.scrollY });
+    presentationTransition.cancel();
+    const switching = current && !current.detail && !next.detail && current.container.id === next.container.id && current.presentation !== next.presentation;
+    if (switching) {
+      presentationTransition.run(() => {
+        switchingPresentation = true;
+        try { renderScene(next, focus, preserveNavControls); }
+        finally { switchingPresentation = false; }
+      });
+    } else renderScene(next, focus, preserveNavControls);
+  }
+  function renderScene(next, focus, preserveNavControls) {
     $('#world').style.minHeight = `${next.height}px`;
     $('#world').classList.toggle('nav-open', state.navOpen);
     document.body.classList.toggle('nav-open', state.navOpen);
-    for (const node of document.querySelectorAll('.masthead, #circles, #detail, footer')) node.inert = state.navOpen;
+    for (const node of document.querySelectorAll('.masthead, #circles, #cards, #detail, #player-lens, footer')) node.inert = state.navOpen;
     const visible = next.circles.filter(circle => circle.visible !== false);
     renderTrailLinks(visible);
     for (const [key, button] of mounted) if (!visible.some(circle => circle.key === key)) {
       mounted.delete(key);
+      if (switchingPresentation) { button.remove(); continue; }
       const from = getComputedStyle(button).transform;
       button.getAnimations().forEach(animation => animation.cancel());
       const host = next.circles.find(circle => circle.key === button.circle.host);
@@ -214,6 +307,18 @@ try {
       (circle.role === 'trail' ? $('#trail') : $('#circles')).append(button);
       move(button, circle, entering);
     });
+    const wanted = new Set(next.items.map(item => item.key));
+    for (const [key, card] of cards) if (!wanted.has(key)) { card.dispose(); card.element.remove(); cards.delete(key); }
+    for (const item of next.items) {
+      let card = cards.get(item.key);
+      if (!card) {
+        const open = () => dispatch(item.action);
+        card = presentationViews[item.presentation](item.node, { playback, open });
+        cards.set(item.key, card);
+      }
+      Object.assign(card.element.style, { left: `${item.x}px`, top: `${item.y}px`, width: `${item.width}px`, height: `${item.height}px` });
+      $('#cards').append(card.element);
+    }
     current = next;
     const section = $('#detail');
     if (current.detail) {
@@ -225,28 +330,30 @@ try {
         animate(section, [{ opacity: 0 }, { opacity: 1 }], { delay: reduced.matches ? 0 : 650, duration: 300 });
       }
       detailId = id;
-    } else { section.hidden = true; if (detailId) { audio.pause(); audio.remove(); } detailId = null; }
+    } else { section.hidden = true; if (detailId) disposeDetail(); detailId = null; }
     const subject = index.get(state.detail || current.container.id).node;
-    $('#hint').textContent = current.detail ? 'Scroll to move through items' : `${current.count} ${current.count === 1 ? 'orb' : 'orbs'} · Open to explore`;
+    $('#hint').textContent = current.detail ? 'Scroll to move through items' : `${current.count} ${current.count === 1 ? 'item' : 'items'} · Open to explore`;
     document.title = `${subject.label} · Orb · Internal`;
     $('#announcement').textContent = `${subject.label}${state.detail ? '' : `, ${current.count} ${current.count === 1 ? 'item' : 'items'}`}`;
     const recents = [subject.id, ...saved('orb-recents').filter(id => id !== subject.id)].slice(0, 12); persist('orb-recents', recents);
     renderNav();
     renderView(preserveNavControls);
+    if (switchingPresentation && state.viewOpen) $('#presentation-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
     clearTimeout(focusTimer);
     if (focus) focusTimer = setTimeout(() => (state.detail ? $('#detail h1') : mounted.get(current.container.id))?.focus({ preventScroll: true }), duration() + 100);
   }
-  toggle.addEventListener('click', () => { state.navOpen = !state.navOpen; state.viewOpen = false; render(false); toggle.focus({ preventScroll: true }); });
+  toggle.addEventListener('click', () => { state.navOpen = !state.navOpen; playerOpen(false); state.viewOpen = false; render(false); toggle.focus({ preventScroll: true }); });
   $('#view-toggle').addEventListener('click', () => { state.viewOpen = !state.viewOpen; render(false); $('#view-toggle').focus({ preventScroll: true }); });
   $('#home-link').addEventListener('click', event => { event.preventDefault(); navigate(base); });
   $('#world').addEventListener('click', event => { if (state.detail && (event.target === $('#world') || event.target === $('#circles'))) closeDetail(); });
   $('#world').addEventListener('keydown', event => {
     if (event.key === 'Escape') {
+      if (playerExpanded) { playerOpen(false); playerToggle.focus(); return; }
       if (state.navOpen) { state.navOpen = false; render(false); toggle.focus(); }
       else if (state.viewOpen) { state.viewOpen = false; render(false); $('#view-toggle').focus({ preventScroll: true }); }
       else if (state.detail) closeDetail();
     }
-    if (event.target.closest('select,input,textarea,seraph-audio-player') || event.target.isContentEditable) return;
+    if (event.target.closest('#player-lens,select,input,textarea,seraph-audio-player') || event.target.isContentEditable) return;
     if (!state.navOpen && state.detail && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); step(event.key === 'ArrowDown' ? 'next' : 'prev'); }
   });
   const canScroll = (target, delta) => {
@@ -254,7 +361,7 @@ try {
     return section && (delta > 0 ? section.scrollTop + section.clientHeight < section.scrollHeight - 2 : section.scrollTop > 0);
   };
   $('#world').addEventListener('wheel', event => {
-    if (!state.detail || state.navOpen || event.target.closest('select,seraph-audio-player') || canScroll(event.target, event.deltaY)) return;
+    if (!state.detail || state.navOpen || event.target.closest('#player-lens,select,seraph-audio-player') || canScroll(event.target, event.deltaY)) return;
     event.preventDefault();
     if (Math.abs(event.deltaY) < 15 || Date.now() - wheelAt < duration()) return;
     wheelAt = Date.now(); step(event.deltaY > 0 ? 'next' : 'prev');
@@ -263,7 +370,7 @@ try {
   $('#world').addEventListener('touchend', event => {
     if (touchY == null || !state.detail || state.navOpen) return;
     const delta = touchY - event.changedTouches[0].clientY; touchY = null;
-    if (Math.abs(delta) > 60 && !event.target.closest('#detail,select,seraph-audio-player')) step(delta > 0 ? 'next' : 'prev');
+    if (Math.abs(delta) > 60 && !event.target.closest('#detail,#player-lens,select,seraph-audio-player')) step(delta > 0 ? 'next' : 'prev');
   }, { passive: true });
   window.addEventListener('popstate', () => navigate(location.href, false));
   let resizeFrame;

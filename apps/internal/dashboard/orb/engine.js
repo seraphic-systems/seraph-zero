@@ -1,4 +1,5 @@
 import { indexTree } from './content.js';
+import { presentations, resolvePresentation } from './presentations.js';
 
 export const isContainer = node => Array.isArray(node.children);
 export const orderedChildren = (node, arrangement) => arrangement === 'az'
@@ -63,12 +64,29 @@ export function layout(tree, state, viewport) {
   circles.push(...trail);
   // A–Z can extend vertically on small screens; the renderer exposes that scroll region.
   const region = { x: narrow ? 28 : Math.min(230, w * .21), y: 180, w: w - (narrow ? 56 : Math.min(230, w * .21) + 50), h: Math.max(190, h - 295) };
-  if (active === 'free' && children.length > 2) region.h = Math.max(region.h, Math.ceil(children.length / Math.max(1, Math.floor(region.w / 140))) * 150);
-  if (active === 'az' && narrow) region.h = Math.max(region.h, children.length * 64);
-  const positions = arrangements[active].layout(region, children);
-  children.forEach((child, i) => circles.push({ key: child.id, ...positions[i], label: child.label,
-    role: 'child', isContainer: isContainer(child), isCurrent: false, host: node.id, order: 20 + i,
-    action: isContainer(child) ? { type: 'navigate', path: [...path, child.id] } : { type: 'openDetail', id: child.id } }));
+  const presentation = resolvePresentation(node, state.presentation?.[node.id]);
+  const alternate = !detail && presentation !== 'orb', items = [];
+  let positions;
+  if (alternate) {
+    const result = presentations[presentation].layout(region, children);
+    region.h = Math.max(190, result.height);
+    positions = result.items;
+  } else {
+    if (active === 'free' && children.length > 2) region.h = Math.max(region.h, Math.ceil(children.length / Math.max(1, Math.floor(region.w / 140))) * 150);
+    if (active === 'az' && narrow) region.h = Math.max(region.h, children.length * 64);
+    positions = arrangements[active].layout(region, children);
+  }
+  children.forEach((child, i) => {
+    const action = isContainer(child) ? { type: 'navigate', path: [...path, child.id] } : { type: 'openDetail', id: child.id };
+    if (alternate && presentations[presentation].supports(child)) {
+      items.push({ key: child.id, ...positions[i], presentation, node: child, action });
+    } else {
+      const box = positions[i];
+      const position = alternate ? point(box.x + box.width / 2, box.y + box.height / 2, Math.min(65, box.width / 2, box.height / 2)) : box;
+      circles.push({ key: child.id, ...position, label: child.label, role: 'child',
+        isContainer: isContainer(child), isCurrent: false, host: node.id, order: 20 + i, action });
+    }
+  });
   if (!children.length) circles.push({ key: `empty-${node.id}`, ...point(region.x + region.w / 2, region.y + region.h / 2, 65),
     label: filter ? 'No matches' : 'Nothing here yet', role: 'empty', isContainer: false, isCurrent: false, host: node.id, order: 20 });
   let detailLayout;
@@ -95,5 +113,5 @@ export function layout(tree, state, viewport) {
       r: Math.max(1, Math.min(w - inset * 2, availableHeight) / 2),
     });
   }
-  return { circles, navOrb, detail: detailLayout, container: node, count: children.length, active, path, height: detail ? h : Math.max(h, region.y + region.h + 90) };
+  return { circles, items, presentation, navOrb, detail: detailLayout, container: node, count: children.length, active, path, height: detail ? h : Math.max(h, region.y + region.h + 90) };
 }

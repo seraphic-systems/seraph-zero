@@ -680,6 +680,21 @@ No title or song association is inferred from a filename.
 
 Orbs default to a repeatable scattered layout. The bottom-left orb offers
 Scatter and A–Z views, plus a title filter. Filters are included in the URL.
+Songs and album tracks also offer **Orbs / Players** in View. Player cards show
+latest-mix controls; tracks without a linked song or songs without mixes show
+an explicit empty state. Presentation and filters are included in the URL;
+unsupported presentations fall back to Orbs. Player cards use library order
+(or A–Z) in a responsive grid. Switching presentations morphs matching items
+where browser view transitions are supported, with a fade-out/fade-in fallback.
+Reduced-motion preferences use a brief fade without movement.
+
+The music-note Orb beside the navigation Orb opens the shared audio player.
+List and detail controls use that same player, so only one mix plays at a time.
+Playback continues while navigating within Orb, filtering, switching views,
+or closing the player. Audio loads only after choosing Play; leaving Orb or
+reloading the page ends the playback session. Selecting a mix in detail changes
+the controls shown there; choosing Play switches the shared player to that mix.
+
 Recent locations are stored in this browser only. Routes and arrangement
 queries support reload, sharing, and browser back/forward. Static builds emit
 an HTML entry point for every current content route. Use Escape to close the
@@ -689,5 +704,10 @@ Reduced-motion preferences replace morphs with short fades.
 
 The framework-free modules in `apps/internal/dashboard/orb/` separate the
 content adapter (`content.js`), pure arrangement/layout engine (`engine.js`),
-URL mapping (`routes.js`), and DOM renderer (`app.js`). Add or change records
+URL mapping (`routes.js`), and DOM renderer (`app.js`). Presentation capabilities
+and geometry live in `presentations.js`; type-specific DOM views and inline
+playback controls live in `presentation-views.js`. New presentations declare
+supported node types and layout geometry, then provide a DOM renderer with a
+`dispose` hook for subscriptions. Unsupported types retain the standard Orb.
+`playback.js` coordinates a single media element owned by the persistent player. Add or change records
 in the existing data directories and rebuild to update this view.
