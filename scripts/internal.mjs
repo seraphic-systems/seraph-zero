@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import { marked } from 'marked';
 import { readStems } from './stems.mjs';
 import { buildCatalog, modelSchema } from './model.mjs';
+import { createContentSource, indexTree } from '../apps/internal/dashboard/orb/content.js';
 
 function dateString(value, context) {
   const date = value instanceof Date ? value.toISOString().slice(0, 10) : value;
@@ -98,6 +99,19 @@ export async function buildInternal(source, output) {
   songs.sort((a, b) => a.title.localeCompare(b.title));
   await mkdir(output, { recursive: true });
   await cp(path.join(source, 'dashboard'), output, { recursive: true });
+  // Materialize route entry points so deep links also work on a plain static server.
+  const orbTemplate = await readFile(path.join(source, 'dashboard/orb/index.html'), 'utf8').catch(error => {
+    if (error.code === 'ENOENT') return null;
+    throw error;
+  });
+  if (orbTemplate) {
+    const tree = createContentSource(songs, catalog).getRoot();
+    for (const { path: nodePath } of indexTree(tree).values()) {
+      const directory = path.join(output, 'orb', ...nodePath.slice(1));
+      await mkdir(directory, { recursive: true });
+      await writeFile(path.join(directory, 'index.html'), orbTemplate);
+    }
+  }
   await writeFile(path.join(output, 'model-schema.json'), JSON.stringify(modelSchema));
   await writeFile(path.join(output, 'catalog.json'), JSON.stringify(catalog));
   await writeFile(path.join(output, 'songs.json'), JSON.stringify(songs));

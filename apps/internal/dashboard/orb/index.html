@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A spatial view of your internal music library.">
+  <title>Orb · Internal</title>
+  <link rel="icon" href="/shared/favicon.ico">
+  <link rel="stylesheet" href="/orb/orb.css">
+  <script type="module" src="/orb/app.js"></script>
+</head>
+<body>
+  <main id="world" aria-label="Orb music workspace" tabindex="-1">
+    <header class="masthead"><a href="/orb/" id="home-link">internal <span>/ orb</span></a><a href="/">Classic workspace ↗</a></header>
+    <nav id="trail" aria-label="Breadcrumb"></nav>
+    <div id="circles" aria-label="Library"></div>
+    <section id="detail" aria-label="Details" hidden></section>
+    <aside id="lens" aria-label="Sort and filter"><button id="nav-toggle" aria-label="Open sort and filter" aria-expanded="false"><span>✳</span></button><div id="nav-content" hidden></div></aside>
+    <footer><span id="location">Your music, in one space.</span><span id="hint">Open an orb to explore</span></footer>
+    <p id="announcement" class="sr-only" role="status" aria-live="polite">Loading your library…</p>
+    <p id="error" hidden></p>
+  </main>
+</body>
+</html>

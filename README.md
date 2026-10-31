@@ -662,3 +662,32 @@ an exact project folder under the Ableton root. This is a path-based ownership
 lookup, not a song-name guess. The canonical song link for a project remains on
 its Markdown record. An optional set-level `song` is used for independently
 registered sets and inherited by their newly created branches.
+
+### Orb music interface
+
+A separate spatial interface is available at
+[http://127.0.0.1:5175/orb/](http://127.0.0.1:5175/orb/) with the same
+`npm run dev:internal` command. The existing dashboard, Live Sets, and Model
+pages remain at their original URLs. The orb UI is also included in
+`npm run build:internal`; it is never included in public builds.
+
+Open Home → Music → Songs or Albums. The UI reads the existing `songs.json`
+and `catalog.json`; it does not modify source records. Songs retain mix
+selection, tempo/key metadata, playback, and notes. Albums show their ordered
+track records. Tracks without explicit titles display their track number;
+only recorded `primary_song` relationships provide associated song playback.
+No title or song association is inferred from a filename.
+
+Orbs default to a repeatable scattered layout. The bottom-left orb offers
+Scatter and A–Z views, plus a title filter. Filters are included in the URL.
+Recent locations are stored in this browser only. Routes and arrangement
+queries support reload, sharing, and browser back/forward. Static builds emit
+an HTML entry point for every current content route. Use Escape to close the
+nav orb or detail, and up/down arrows or scroll to step between detail items.
+Scrollable notes and playback controls retain their native interactions.
+Reduced-motion preferences replace morphs with short fades.
+
+The framework-free modules in `apps/internal/dashboard/orb/` separate the
+content adapter (`content.js`), pure arrangement/layout engine (`engine.js`),
+URL mapping (`routes.js`), and DOM renderer (`app.js`). Add or change records
+in the existing data directories and rebuild to update this view.
