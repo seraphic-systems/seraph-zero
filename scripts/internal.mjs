@@ -1,5 +1,6 @@
 import { cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import matter from 'gray-matter';
 import { marked } from 'marked';
 import { readStems } from './stems.mjs';
@@ -100,11 +101,19 @@ export async function buildInternal(source, output) {
   await mkdir(output, { recursive: true });
   await cp(path.join(source, 'dashboard'), output, { recursive: true });
   // Materialize route entry points so deep links also work on a plain static server.
-  const orbTemplate = await readFile(path.join(source, 'dashboard/orb/index.html'), 'utf8').catch(error => {
+  let orbTemplate = await readFile(path.join(source, 'dashboard/orb/index.html'), 'utf8').catch(error => {
     if (error.code === 'ENOENT') return null;
     throw error;
   });
   if (orbTemplate) {
+    // dist is ignored by Vite's watcher. A new filename prevents its CSS transform
+    // cache (and browser caches) from pairing a rebuilt page with an older style.
+    if (/\/orb\/orb\.css(?:\?[^"']*)?["']/.test(orbTemplate)) {
+      const css = await readFile(path.join(source, 'dashboard/orb/orb.css'));
+      const filename = `orb.${createHash('sha256').update(css).digest('hex').slice(0, 16)}.css`;
+      await writeFile(path.join(output, 'orb', filename), css);
+      orbTemplate = orbTemplate.replace(/\/orb\/orb\.css(?:\?[^"']*)?/g, `/orb/${filename}`);
+    }
     const tree = createContentSource(songs, catalog, modelSchema).getRoot();
     for (const { path: nodePath } of indexTree(tree).values()) {
       const directory = path.join(output, 'orb', ...nodePath.slice(1));

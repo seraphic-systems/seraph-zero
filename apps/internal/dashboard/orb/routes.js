@@ -1,6 +1,6 @@
 import { isContainer } from './engine.js';
 import { indexTree } from './content.js';
-import { resolveView, resolveFilter } from './views.js';
+import { resolveView, resolveFilter, availableViews } from './views.js';
 export const base = '/orb/';
 export function routeFor(path, detail, arrangement, filter = '', view, selection = null) {
   const segments = [...path.slice(1), ...(detail ? [detail] : [])];
@@ -24,7 +24,10 @@ export function readRoute(tree, url) {
   const selection = node.selection ? (detail || url.searchParams.get('select')) : null;
   if (node.selection) detail = null;
   const choice = url.searchParams.get('arrange');
-  const view = resolveView(node, url.searchParams.get('view'));
+  // Translate links from the former group control into a complete named preset.
+  const legacyGroup = url.searchParams.get('group');
+  const legacyView = legacyGroup && availableViews(node).find(view => view.filter?.group === legacyGroup);
+  const view = legacyView || resolveView(node, url.searchParams.get('view'));
   return { path, detail, selection: node.selection && node.children.some(child => child.id === selection) ? selection : null, view: { [node.id]: view.id }, filter: resolveFilter(view, url.searchParams.get('q')), arrangement: choice && view.controls?.arrangements?.includes(choice) ? { [node.id]: choice } : {} };
 }
 export function routeToNode(tree, id) {

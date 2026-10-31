@@ -1,6 +1,7 @@
 const spatialView = (label = 'Orbs', controls = {}) => ({ id: 'orb', label, presentation: 'orb', arrangement: 'free', controls });
 const playerView = (controls = {}) => ({ id: 'player', label: 'Players', presentation: 'player', arrangement: 'free', controls });
 const pageViews = (options, defaultId = options[0].id) => ({ default: defaultId, options });
+const sampleDescription = count => `Sample library · ${count} fragment${count === 1 ? '' : 's'}`;
 const libraryControls = { search: true, arrangements: ['free', 'az'] };
 
 // A small content boundary: the spatial UI never needs to know the catalog format.
@@ -14,8 +15,23 @@ export function createContentSource(songs, catalog, schema) {
       .map(({ data: track }) => ({ id: `track-${track.id}`, label: track.title || `Track ${track.track_number}`, kind: 'Album track',
         data: { ...track, song: songs.find(song => song.id === track.primary_song) } })),
   }));
+  const ideas = new Map(records.filter(record => record.type === 'Idea').map(record => [record.data.id, record.data.title]));
+  const fragments = records.filter(record => record.type === 'MusicFragment').map(({ data }) => {
+    const label = data.title || data.file.split('/').at(-1);
+    const group = data.idea || 'unassociated';
+    const groupLabel = group === 'unassociated' ? 'Unassociated / Orphan' : ideas.get(group) || group;
+    return { id: `fragment-${data.id}`, label, kind: 'Music fragment', group, groupLabel, data,
+      searchText: [data.file, groupLabel, data.key, data.bpm, ...(data.tags || []), data.notes, data.memories, data.character, data.role, data.melody_sound, data.sample_type].join(' '),
+      audio: { id: `fragment-${data.id}`, title: label, mixes: [{ url: `api/fragments/${encodeURIComponent(data.id)}/audio`, label: groupLabel, format: data.file.split('.').at(-1).toUpperCase() }] },
+    };
+  }).sort((a, b) => a.groupLabel.localeCompare(b.groupLabel) || a.label.localeCompare(b.label));
+  const groups = [...new Map(fragments.map(fragment => [fragment.group, { id: fragment.group, label: fragment.groupLabel }])).values()];
   const root = { id: 'home', label: 'Home', children: [{ id: 'music', label: 'Music', pos: { x: .54, y: .5, size: .25 }, children: [
     { id: 'songs', label: 'Songs', children: songNodes, views: pageViews([spatialView('Orbs', libraryControls), playerView(libraryControls)]), pos: { x: .36, y: .44, size: .22 } },
+    { id: 'fragments', label: 'Music Fragments', children: fragments,
+      views: pageViews([{ id: 'samples', label: 'All fragments', description: sampleDescription(fragments.length), presentation: 'samples', arrangement: 'free', controls: libraryControls },
+        ...groups.map(group => ({ id: `group-${group.id}`, label: group.label, description: sampleDescription(fragments.filter(fragment => fragment.group === group.id).length),
+          presentation: 'samples', arrangement: 'free', filter: { group: group.id }, controls: libraryControls }))]), pos: { x: .65, y: .3, size: .18 } },
     { id: 'albums', label: 'Albums', children: albums, views: pageViews([spatialView('Orbs', libraryControls)]), pos: { x: .72, y: .62, size: .16 } },
   ], views: pageViews([spatialView()]) }], views: pageViews([spatialView()]) };
   if (schema) {

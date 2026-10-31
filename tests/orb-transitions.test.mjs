@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createPresentationTransition } from '../apps/internal/dashboard/orb/transitions.js';
+import { createPresentationTransition, changesContentView } from '../apps/internal/dashboard/orb/transitions.js';
 
 function setup({ native = false, reduced = false } = {}) {
   const classes = new Set(), transitions = [], animations = [];
@@ -81,4 +81,15 @@ test('interrupting a pending transition cannot apply an obsolete view or clear n
     env.controller.cancel();
     assert.equal(env.classes.size, 0);
   }
+});
+
+test('same-renderer preset and sorting changes animate, while panel and live search updates retain their own motion', () => {
+  const current = { container: { id: 'fragments' }, view: { id: 'all' }, presentation: 'samples', active: 'free' };
+  assert.equal(changesContentView(current, { ...current, view: { id: 'group-a' } }), true);
+  assert.equal(changesContentView(current, { ...current, active: 'az' }), true);
+  assert.equal(changesContentView(current, { ...current, presentation: 'orb' }), true);
+  assert.equal(changesContentView(current, { ...current }), false);
+  assert.equal(changesContentView(current, { ...current, detail: { id: 'fragment' } }), false);
+  assert.equal(changesContentView(null, current), false);
+  assert.equal(changesContentView(current, { ...current, container: { id: 'songs' } }), false);
 });

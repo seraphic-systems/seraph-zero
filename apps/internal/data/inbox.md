@@ -22,5 +22,5 @@
 - Promote to Song flow
 
 - Next step is add blogs to internal and write first blog?!?
-- Finish Landing Page
+- Finish Landing Page copy
 - Deploy

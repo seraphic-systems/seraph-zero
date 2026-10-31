@@ -1,3 +1,8 @@
+// Presets and sorting change a view even when they share the same renderer.
+export const changesContentView = (current, next) => !!current && !current.detail && !next.detail &&
+  current.container.id === next.container.id &&
+  (current.view.id !== next.view.id || current.active !== next.active || current.presentation !== next.presentation);
+
 // Match presentation snapshots by content identity, without involving playback.
 export function createPresentationTransition({ root, layers, items, reduced, document = globalThis.document }) {
   let active, generation = 0;

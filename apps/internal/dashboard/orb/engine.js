@@ -1,7 +1,7 @@
 import { relationshipGeometry } from './relationships.js';
 import { indexTree } from './content.js';
 import { presentations } from './presentations.js';
-import { resolveView, resolveArrangement, resolveFilter } from './views.js';
+import { resolveView, resolveArrangement, resolveFilter, matchesView, viewPanelHeight } from './views.js';
 
 export const isContainer = node => Array.isArray(node.children);
 export const orderedChildren = (node, arrangement) => arrangement === 'az'
@@ -73,7 +73,8 @@ export function layout(tree, state, viewport) {
   const view = resolveView(node, state.view?.[node.id]);
   const active = resolveArrangement(view, state.arrangement?.[node.id]);
   const filter = resolveFilter(view, state.filter).trim().toLocaleLowerCase();
-  const children = orderedChildren(node, active).filter(child => !filter || child.id === detail || child.id === state.selection || child.label.toLocaleLowerCase().includes(filter)), circles = [];
+  const children = orderedChildren(node, active).filter(child => child.id === detail || child.id === state.selection ||
+    (matchesView(view, child) && (!filter || `${child.label} ${child.searchText || ''}`.toLocaleLowerCase().includes(filter)))), circles = [];
   const narrow = w < 600, margin = narrow ? 28 : 60, step = narrow ? 68 : 96, trailY = narrow ? 76 : 56;
   const trail = path.map((id, i) => ({ key: id, ...point(margin + i * step, trailY, i === 0 ? 15 : 19, 'top'),
     label: index.get(id).node.label, role: 'trail', isContainer: true, isCurrent: !detail && i === path.length - 1,
@@ -81,12 +82,11 @@ export function layout(tree, state, viewport) {
   circles.push(...trail);
   // A–Z can extend vertically on small screens; the renderer exposes that scroll region.
   const region = { x: narrow ? 28 : Math.min(230, w * .21), y: 180, w: w - (narrow ? 56 : Math.min(230, w * .21) + 50), h: Math.max(190, h - 295) };
-  const controls = view.controls || {};
-  const viewOpen = !!state.viewOpen && !detail && (node.views?.options?.length > 1 || controls.search || controls.arrangements?.length > 1);
+  const viewOpen = !!state.viewOpen && !detail && (node.views?.options?.length > 1);
   if (viewOpen) {
     if (narrow) {
       // The panel scrolls with the page, above the library on small screens.
-      region.y = 422;
+      region.y = 132 + viewPanelHeight(node) + 24;
     } else {
       const inset = Math.max(0, 284 - region.x);
       region.x += inset;
@@ -124,7 +124,7 @@ export function layout(tree, state, viewport) {
     }
   });
   if (!children.length) circles.push({ key: `empty-${node.id}`, ...point(region.x + region.w / 2, region.y + region.h / 2, 65),
-    label: filter ? 'No matches' : 'Nothing here yet', role: 'empty', isContainer: false, isCurrent: false, host: node.id, order: 20 });
+    label: filter || view.filter ? 'No matches' : 'Nothing here yet', role: 'empty', isContainer: false, isCurrent: false, host: node.id, order: 20 });
   let detailLayout;
   if (detail) {
     const things = children.filter(child => !isContainer(child)), current = things.findIndex(child => child.id === detail);

@@ -6,7 +6,7 @@
   <meta name="description" content="A spatial view of your internal music library.">
   <title>Orb · Internal</title>
   <link rel="icon" href="/shared/favicon.ico">
-  <link rel="stylesheet" href="/orb/orb.css?v=view-controls-2">
+  <link rel="stylesheet" href="/orb/orb.css">
   <script type="module" src="/orb/app.js"></script>
 </head>
 <body>
@@ -21,6 +21,10 @@
     <aside id="view-lens" aria-label="Current view" hidden>
       <button id="view-toggle" type="button" aria-label="Open view options" aria-expanded="false" aria-controls="view-content">View</button>
       <div id="view-content" hidden></div>
+    </aside>
+    <aside id="find-lens" aria-label="Find in current view" hidden>
+      <button id="find-toggle" type="button" aria-label="Open Find" aria-expanded="false" aria-controls="find-content">Find</button>
+      <div id="find-content" hidden></div>
     </aside>
     <aside id="lens" aria-label="Your space"><button id="nav-toggle" type="button" aria-label="Open your space" aria-expanded="false" aria-controls="nav-content"><span>✳</span></button><div id="nav-content" hidden><h2>Your space</h2><p class="muted">Profile and settings will live here.</p></div></aside>
     <aside id="player-lens" aria-label="Global audio player">

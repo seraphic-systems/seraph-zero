@@ -109,37 +109,79 @@ select:focus-visible {
   transition: stroke 0.2s;
 }
 /* Muted category colors stay consistent across the library and model map. */
-.orb[data-category="music"] { --orb-color: #879a80; }
-.orb[data-category="model"] { --orb-color: #8897a8; }
-.orb[data-category="Policy"] { --orb-color: #a88c78; }
-.orb[data-category="Horizon"] { --orb-color: #b29d65; }
+.orb[data-category="music"] {
+  --orb-color: #879a80;
+}
+.orb[data-category="model"] {
+  --orb-color: #8897a8;
+}
+.orb[data-category="Policy"] {
+  --orb-color: #a88c78;
+}
+.orb[data-category="Horizon"] {
+  --orb-color: #b29d65;
+}
 .orb[data-category="albums"],
-.orb[data-category="Album"] { --orb-color: #a1849b; }
+.orb[data-category="Album"] {
+  --orb-color: #a1849b;
+}
 .orb[data-category="Album track"],
-.orb[data-category="AlbumTrack"] { --orb-color: #b28c8a; }
+.orb[data-category="AlbumTrack"] {
+  --orb-color: #b28c8a;
+}
 .orb[data-category="songs"],
-.orb[data-category="Song"] { --orb-color: #7d9a87; }
-.orb[data-category="Mix"] { --orb-color: #759ca6; }
-.orb[data-category="MixFile"] { --orb-color: #8699b5; }
-.orb[data-category="StemExport"] { --orb-color: #9690b4; }
-.orb[data-category="Project"] { --orb-color: #b48c70; }
-.orb[data-category="LiveSet"] { --orb-color: #b8a16e; }
-.orb[data-category="Snapshot"] { --orb-color: #909c70; }
-.orb[data-category="Member"] { --orb-color: #b58192; }
-.orb[data-category="MusicFragment"] { --orb-color: #73a39b; }
-.orb[data-category="Idea"] { --orb-color: #ab96b4; }
+.orb[data-category="Song"] {
+  --orb-color: #7d9a87;
+}
+.orb[data-category="Mix"] {
+  --orb-color: #759ca6;
+}
+.orb[data-category="MixFile"] {
+  --orb-color: #8699b5;
+}
+.orb[data-category="StemExport"] {
+  --orb-color: #9690b4;
+}
+.orb[data-category="Project"] {
+  --orb-color: #b48c70;
+}
+.orb[data-category="LiveSet"] {
+  --orb-color: #b8a16e;
+}
+.orb[data-category="Snapshot"] {
+  --orb-color: #909c70;
+}
+.orb[data-category="Member"] {
+  --orb-color: #b58192;
+}
+.orb[data-category="MusicFragment"] {
+  --orb-color: #73a39b;
+}
+.orb[data-category="Idea"] {
+  --orb-color: #ab96b4;
+}
 /* Navigation roles take precedence over the content category in the trail. */
-.orb[data-role="trail"] { --orb-color: var(--breadcrumb-color); }
+.orb[data-role="trail"] {
+  --orb-color: var(--breadcrumb-color);
+}
 .orb .inner {
   fill: none;
   stroke: var(--orb-color, var(--hairline));
   opacity: 0.35;
 }
 .orb:hover circle:first-child {
-  stroke: color-mix(in srgb, var(--orb-color, var(--accent)) 65%, var(--accent));
+  stroke: color-mix(
+    in srgb,
+    var(--orb-color, var(--accent)) 65%,
+    var(--accent)
+  );
 }
 .orb.current circle:first-child {
-  stroke: color-mix(in srgb, var(--orb-color, var(--accent)) 65%, var(--accent));
+  stroke: color-mix(
+    in srgb,
+    var(--orb-color, var(--accent)) 65%,
+    var(--accent)
+  );
 }
 .orb.current .mark {
   opacity: 1;
@@ -476,7 +518,7 @@ body.nav-open {
 }
 
 /* The expanded view panel reserves space in the content layout. */
-#view-lens {
+:is(#view-lens, #find-lens) {
   position: absolute;
   top: 112px;
   left: 28px;
@@ -488,12 +530,14 @@ body.nav-open {
   background: color-mix(in srgb, var(--view-color) 7%, var(--paper));
   overflow: hidden;
   transition:
+    left 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
+    top 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
     width 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
     height 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
     border-radius 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
     opacity 350ms ease;
 }
-#view-toggle {
+:is(#view-toggle, #find-toggle) {
   position: absolute;
   z-index: 1;
   inset: 0;
@@ -505,58 +549,54 @@ body.nav-open {
   font-size: 10px;
   color: var(--accent);
 }
-#view-lens.active {
+:is(#view-lens, #find-lens).active {
   border-color: color-mix(in srgb, var(--view-color) 65%, var(--accent));
 }
-#view-lens.open {
+:is(#view-lens, #find-lens).open {
   width: 232px;
-  height: 280px;
+  height: var(--view-panel-height, 340px);
   border-radius: 24px;
 }
-#view-lens.open #view-toggle {
+:is(#view-lens, #find-lens).open :is(#view-toggle, #find-toggle) {
   font-size: 20px;
 }
-#view-content {
+:is(#view-content, #find-content) {
   padding: 48px 18px 20px;
   text-align: center;
 }
-#view-lens.open #view-content {
-  animation: view-content-in 650ms ease both;
+:is(#view-lens, #find-lens).open :is(#view-content, #find-content) {
+  /* Content fades are interruptible and shared by View and Find. */
 }
-@keyframes view-content-in {
-  0%, 35% { opacity: 0; }
-  100% { opacity: 1; }
-}
-#view-content h2 {
+:is(#view-content, #find-content) h2 {
   margin: 0 0 14px;
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.08em;
   color: var(--accent);
 }
-#view-content .filter-label {
+#find-content .filter-label {
   margin-top: 12px;
 }
-#view-count {
+#find-count {
   margin: 12px 0 0;
   font-size: 10px;
 }
-#world.nav-open #view-lens {
+#world.nav-open :is(#view-lens, #find-lens) {
   opacity: 0;
   pointer-events: none;
 }
 @media (max-width: 599px) {
-  #view-lens {
+  :is(#view-lens, #find-lens) {
     top: 132px;
     left: 23px;
   }
-  #view-lens.open {
+  :is(#view-lens, #find-lens).open {
     width: calc(100% - 46px);
-    height: 266px;
+    height: var(--view-panel-height, 340px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  #view-lens {
+  :is(#view-lens, #find-lens) {
     transition: none;
   }
 }
@@ -570,7 +610,8 @@ body.nav-open {
 .player-card {
   padding: 18px 22px;
   border-radius: 24px;
-  transition: left 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
+  transition:
+    left 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
     top 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
     width 650ms cubic-bezier(0.22, 0.72, 0.18, 1);
 }
@@ -809,7 +850,7 @@ html.presentation-transition {
   .player-card {
     transition: none;
   }
-  #view-lens.open #view-content {
+  :is(#view-lens, #find-lens).open :is(#view-content, #find-content) {
     animation: none;
   }
 }
@@ -935,4 +976,221 @@ html.presentation-transition {
   display: block;
   margin: 24px auto 16px;
   scroll-margin-block: 100px;
+}
+
+/* Sample library rows keep controls in one readable, full-width list. */
+.sample-row {
+  padding: 12px 18px;
+  border-radius: 12px;
+}
+.sample-row .card-title {
+  font-size: 16px;
+}
+.sample-meta {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.sample-row .inline-player {
+  margin: 6px 0 0;
+}
+.sample-row .inline-play {
+  width: 36px;
+  height: 36px;
+}
+.sample-row .inline-player span {
+  width: auto;
+  margin-left: 0;
+  min-width: 90px;
+}
+.fragment-detail-text {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+@media (max-width: 599px) {
+  .sample-row .sample-meta {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  .sample-row .inline-player span {
+    width: 100%;
+    margin-left: 44px;
+  }
+}
+
+.view-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+  text-align: left;
+  scrollbar-width: thin;
+}
+.view-presets button {
+  flex-shrink: 0;
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.view-presets button:hover {
+  background: color-mix(in srgb, var(--view-color) 10%, var(--paper));
+}
+.view-presets button[aria-pressed="true"] {
+  border-color: var(--hairline);
+  color: var(--accent);
+  background: var(--paper);
+}
+.preset-label {
+  display: block;
+  font-size: 12px;
+}
+.preset-description {
+  display: block;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  margin-top: 3px;
+}
+
+/* Find expands into a compact toolbar above the library without reserving space. */
+#find-lens {
+  position: fixed;
+  z-index: 10;
+}
+#find-lens.beside-view {
+  left: 84px;
+}
+#find-lens.view-open {
+  left: 272px;
+}
+#find-lens.open {
+  width: min(900px, calc(100% - 112px));
+  height: 54px;
+  border-radius: 27px;
+  box-shadow: 0 8px 28px #0002;
+}
+#find-lens.open #find-toggle {
+  top: 4px;
+}
+#find-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 100%;
+  padding: 6px 18px 6px 52px;
+  text-align: left;
+}
+#find-content[hidden] {
+  display: none;
+}
+#find-content label {
+  display: block;
+  margin: 0;
+  min-width: 0;
+}
+#find-content .find-search {
+  flex: 1;
+}
+#find-content .find-sort {
+  flex: 0 1 170px;
+}
+#find-content input,
+#find-content select {
+  display: block;
+  width: 100%;
+  height: 38px;
+  margin: 0;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 19px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
+#find-content .find-search + .find-sort {
+  border-left: 1px solid var(--hairline);
+  padding-left: 8px;
+}
+#find-content input:focus-visible,
+#find-content select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+}
+#find-count {
+  flex-shrink: 0;
+  margin: 0;
+  font-size: 10px;
+  white-space: nowrap;
+}
+#find-lens.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--paper));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+#find-lens.open.active {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 8px 28px #0002;
+}
+@media (max-width: 699px) {
+  #find-lens.open {
+    height: 104px;
+    border-radius: 27px;
+  }
+  #find-content {
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    padding: 6px 16px 6px 52px;
+  }
+  #find-content .find-search {
+    flex: 1 0 100%;
+  }
+  #find-content .find-sort {
+    flex: 1 1 110px;
+  }
+  #find-content .find-search + .find-sort {
+    border-left: 0;
+    padding-left: 0;
+  }
+  #find-count {
+    margin-left: auto;
+  }
+}
+@media (max-width: 599px) {
+  #find-lens.beside-view {
+    left: 79px;
+  }
+  #find-lens.view-open {
+    left: 79px;
+    top: calc(132px + var(--view-panel-height) + 12px);
+  }
+  #find-lens.open {
+    left: 23px;
+    width: calc(100% - 46px);
+  }
+}
+
+.presentation-transition #find-lens {
+  view-transition-name: orb-find-controls;
+}
+::view-transition-group(orb-find-controls) {
+  z-index: 10;
+}
+
+::view-transition-old(orb-find-controls) {
+  display: none;
+}
+::view-transition-new(orb-find-controls) {
+  animation: none;
 }

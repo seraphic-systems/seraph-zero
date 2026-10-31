@@ -3,9 +3,9 @@ import '/shared/components/audio-player/audio-player.js';
 import { createContentSource, indexTree } from './content.js';
 import { layout, arrangements } from './engine.js';
 import { presentations } from './presentations.js';
-import { availableViews, defaultView, resolveFilter } from './views.js';
+import { availableViews, defaultView, resolveFilter, viewPanelHeight, hasFindControls, isFindActive } from './views.js';
 import { createPlayback } from './playback.js';
-import { createPresentationTransition } from './transitions.js';
+import { createPresentationTransition, changesContentView } from './transitions.js';
 import { playbackControls, presentationViews, songFor } from './presentation-views.js';
 import { readRoute, routeFor, base } from './routes.js';
 
@@ -15,6 +15,26 @@ const duration = () => reduced.matches ? 100 : 1100;
 const el = (tag, text, className) => { const node = document.createElement(tag); if (text != null) node.textContent = text; if (className) node.className = className; return node; };
 const date = value => new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(value));
 const animate = (node, frames, options = {}) => node.animate(frames, { duration: duration(), easing: 'cubic-bezier(.22,.72,.18,1)', fill: 'both', ...options });
+// Keep closing content mounted until its fade completes, including interrupted toggles.
+const panelAnimations = new Map();
+function panelOpen(content, open) {
+  if (content.dataset.open === String(open)) return;
+  content.dataset.open = String(open);
+  const opacity = content.hidden ? '0' : getComputedStyle(content).opacity;
+  panelAnimations.get(content)?.cancel();
+  content.hidden = false;
+  content.inert = !open;
+  const animation = animate(content, [{ opacity }, { opacity: open ? 1 : 0 }], {
+    duration: reduced.matches ? 70 : open ? 260 : 140,
+    delay: open && !reduced.matches ? 140 : 0,
+  });
+  panelAnimations.set(content, animation);
+  animation.finished.then(() => {
+    if (panelAnimations.get(content) !== animation) return;
+    content.hidden = !open;
+    animation.cancel(); panelAnimations.delete(content);
+  }).catch(() => {});
+}
 const transform = circle => `translate(${circle.x - circle.r}px, ${circle.y - circle.r}px) scale(${circle.r / 50})`;
 const saved = key => { try { const value = JSON.parse(localStorage.getItem(key)); return Array.isArray(value) ? value.filter(id => typeof id === 'string') : []; } catch { return []; } };
 const persist = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* Storage can be disabled; the session remains usable. */ } };
@@ -24,7 +44,7 @@ try {
   if (responses.some(response => !response.ok)) throw new Error('Library unavailable');
   const [songs, catalog, schema] = await Promise.all(responses.map(response => response.json()));
   const source = createContentSource(songs, catalog, schema), tree = source.getRoot(), index = indexTree(tree);
-  let state = { ...readRoute(tree, new URL(location.href)), navOpen: false, viewOpen: false };
+  let state = { ...readRoute(tree, new URL(location.href)), navOpen: false, viewOpen: false, findOpen: false };
   let current, detailId, focusTimer, wheelAt = 0, touchY = null;
   const mounted = new Map();
   const audio = el('seraph-audio-player');
@@ -73,7 +93,7 @@ try {
   playback.subscribe(() => {
     const selection = playback.selection;
     $('#player-title').textContent = selection ? selection.song.title : 'Nothing playing yet';
-    $('#player-mix').textContent = selection ? `${selection.mix.date} · ${selection.mix.format}` : 'Choose Play on a song to start.';
+    $('#player-mix').textContent = selection ? [selection.mix.label || selection.mix.date, selection.mix.format].filter(Boolean).join(' · ') : 'Choose Play on a song or fragment to start.';
     playerToggle.textContent = playback.playing ? 'Ⅱ' : '♪';
     playerToggle.setAttribute('aria-label', `${playerExpanded ? 'Close' : 'Open'} player${selection ? ` · ${selection.song.title}` : ''}`);
     $('#player-lens').classList.toggle('playing', playback.playing);
@@ -139,6 +159,7 @@ try {
     if (!route.arrangement[state.path.at(-1)]) delete state.arrangement[state.path.at(-1)];
     state.navOpen = false;
     state.viewOpen = false;
+    state.findOpen = false;
     if (current?.container.id !== route.path.at(-1)) window.scrollTo(0, 0);
     render(true);
   }
@@ -146,7 +167,7 @@ try {
     if (!action) return;
     if (action.type === 'select') { selectNode(action.id); return; }
     const path = action.type === 'navigate' ? action.path : state.path;
-    navigate(routeFor(path, action.type === 'openDetail' ? action.id : null, state.arrangement[path.at(-1)], path.join('/') === state.path.join('/') ? state.filter : '', state.view?.[path.at(-1)]));
+    navigate(routeFor(path, action.type === 'openDetail' ? action.id : null, state.arrangement[path.at(-1)], path.join('/') === state.path.join('/') ? state.filter : '', state.view?.[path.at(-1)], null));
   }
   function selectNode(id) {
     const url = routeFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter, current.view.id, id);
@@ -221,7 +242,17 @@ try {
       if (!song) section.append(el('p', 'No song association recorded yet.', 'muted'));
       else section.append(el('p', song.title));
     }
-    if (song) {
+    if (node.kind === 'Music fragment') {
+      section.append(el('p', node.groupLabel, 'muted'));
+      for (const [label, value] of [['Key', node.data.key], ['Tempo', node.data.bpm ? `${node.data.bpm} BPM` : ''], ['Type', node.data.sample_type], ['Role', node.data.role], ['Tags', node.data.tags?.join(', ')], ['Notes', node.data.notes], ['Memories', node.data.memories], ['Character', node.data.character], ['Material', node.data.melody_sound], ['File', node.data.file]]) {
+        if (value) section.append(el('p', `${label}: ${value}`, 'fragment-detail-text'));
+      }
+      const controls = playbackControls(song, song.mixes[0], playback);
+      section.append(controls.element);
+      disposeDetail = controls.dispose;
+      const link = el('a', 'Open audio file ↗', 'file-link');
+      link.href = '/' + song.mixes[0].url; link.target = '_blank'; link.rel = 'noopener'; section.append(link);
+    } else if (song) {
       section.append(el('p', song.created ? `Created ${date(song.created)}` : 'Creation date unknown', 'muted'));
       if (song.mixes.length) {
         const label = el('label', 'Mix version'), select = el('select');
@@ -264,26 +295,26 @@ try {
   }
   function renderView(preserveControls = false) {
     const view = $('#view-lens'), button = $('#view-toggle'), content = $('#view-content');
-    const options = availableViews(current.container), controls = current.view.controls || {};
-    const available = !current.detail && (options.length > 1 || controls.search || controls.arrangements?.length > 1);
+    const options = availableViews(current.container);
+    const available = !current.detail && options.length > 1;
+    view.style.setProperty('--view-panel-height', `${viewPanelHeight(current.container)}px`);
     view.hidden = !available;
     view.inert = state.navOpen;
     view.classList.toggle('open', state.viewOpen);
-    view.classList.toggle('active', current.view.id !== defaultView(current.container).id || current.active !== current.view.arrangement || !!resolveFilter(current.view, state.filter));
+    view.classList.toggle('active', current.view.id !== defaultView(current.container).id);
     button.setAttribute('aria-expanded', String(state.viewOpen));
     button.setAttribute('aria-label', `${state.viewOpen ? 'Close' : 'Open'} view options for ${current.container.label}`);
     button.textContent = state.viewOpen ? '×' : 'View';
-    content.hidden = !state.viewOpen;
-    if (preserveControls) {
-      if ($('#view-count')) $('#view-count').textContent = `${current.count} of ${current.container.children.length} items`;
-      return;
-    }
+    panelOpen(content, state.viewOpen && available);
+    if (preserveControls) return;
     content.replaceChildren(el('h2', `${current.container.label} · View`));
-    const presentationChoices = el('div', null, 'arrangements');
+    const presentationChoices = el('div', null, 'view-presets');
     presentationChoices.setAttribute('role', 'group');
-    presentationChoices.setAttribute('aria-label', 'Page view');
+    presentationChoices.setAttribute('aria-label', 'View presets');
     options.forEach(option => {
-      const button = el('button', option.label);
+      const button = el('button'); button.type = 'button';
+      button.append(el('span', option.label, 'preset-label'));
+      if (option.description) button.append(el('small', option.description, 'preset-description'));
       button.setAttribute('aria-pressed', String(current.view.id === option.id));
       button.addEventListener('click', () => {
         state.view = { ...state.view, [current.container.id]: option.id };
@@ -297,37 +328,63 @@ try {
     });
     presentationChoices.id = 'presentation-choices';
     if (options.length > 1) content.append(presentationChoices);
-    const choices = el('div', null, 'arrangements arrangement-choices');
-    choices.setAttribute('role', 'group');
-    choices.setAttribute('aria-label', 'Arrangement');
-    (controls.arrangements || []).forEach(id => {
-      const button = el('button', presentations[current.presentation].arrangementLabels?.[id] || arrangements[id].label);
-      button.setAttribute('aria-pressed', String(current.active === id));
-      button.addEventListener('click', () => {
-        state.arrangement[current.container.id] = id;
-        history.pushState(null, '', urlFor(state.path, state.detail, id, state.filter));
-        render(false);
-        $('#view-content .arrangement-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
-      }); choices.append(button);
-    }); if (controls.arrangements?.length > 1) content.append(choices);
+  }
+  function renderFind(preserveControls = false) {
+    const find = $('#find-lens'), button = $('#find-toggle'), content = $('#find-content');
+    const controls = current.view.controls || {};
+    const available = !current.detail && hasFindControls(current.view);
+    find.hidden = !available;
+    find.inert = state.navOpen;
+    find.classList.toggle('beside-view', !$('#view-lens').hidden);
+    find.classList.toggle('view-open', state.viewOpen && !$('#view-lens').hidden);
+    find.style.setProperty('--view-panel-height', `${viewPanelHeight(current.container)}px`);
+    find.classList.toggle('open', state.findOpen && available);
+    const active = isFindActive(current.view, state, current.container.id);
+    find.classList.toggle('active', active);
+    button.setAttribute('aria-expanded', String(state.findOpen && available));
+    button.setAttribute('aria-label', `${state.findOpen ? 'Close' : 'Open'} Find for ${current.container.label}${active ? ' · Search or custom sort active' : ''}`);
+    button.textContent = state.findOpen ? '×' : 'Find';
+    panelOpen(content, state.findOpen && available);
+    if (preserveControls) {
+      if ($('#find-count')) $('#find-count').textContent = `${current.count} of ${current.container.children.length} items`;
+      return;
+    }
+    content.replaceChildren(el('h2', `${current.container.label} · Find`, 'sr-only'));
+    if (controls.arrangements?.length > 1) {
+      const label = el('label', null, 'find-sort');
+      label.append(el('span', 'Sort', 'sr-only'));
+      const select = el('select'); select.id = 'find-sort';
+      for (const id of controls.arrangements) {
+        const option = el('option', presentations[current.presentation].arrangementLabels?.[id] || arrangements[id].label);
+        option.value = id; select.append(option);
+      }
+      select.value = current.active;
+      select.addEventListener('change', () => {
+        state.arrangement[current.container.id] = select.value;
+        history.pushState(null, '', urlFor(state.path, state.detail, select.value, state.filter));
+        render(false); $('#find-sort')?.focus({ preventScroll: true });
+      });
+      label.append(select); content.append(label);
+    }
     if (controls.search) {
-      const label = el('label', 'Search titles', 'filter-label');
-      const input = el('input'); input.type = 'search'; input.value = state.filter || ''; input.placeholder = 'Type a title…';
+      const label = el('label', null, 'find-search');
+      label.append(el('span', current.presentation === 'samples' ? 'Search fragments' : 'Search titles', 'sr-only'));
+      const input = el('input'); input.type = 'search'; input.value = state.filter || ''; input.placeholder = current.presentation === 'samples' ? 'Title, key, tags, notes…' : 'Type a title…';
       input.addEventListener('input', () => {
         state.filter = input.value; state.detail = null;
         history.replaceState(null, '', urlFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter));
         render(false, true);
       });
-      label.append(input); content.append(label);
-      const count = el('p', `${current.count} of ${current.container.children.length} items`, 'muted');
-      count.id = 'view-count'; count.setAttribute('role', 'status'); content.append(count);
+      label.append(input); content.insertBefore(label, content.querySelector('.find-sort'));
     }
+    const count = el('p', `${current.count} of ${current.container.children.length} items`, 'muted');
+    count.id = 'find-count'; count.setAttribute('role', 'status'); content.append(count);
 
   }
   function render(focus, preserveNavControls = false) {
     const next = layout(tree, state, { width: innerWidth, height: innerHeight, scrollY: window.scrollY });
     presentationTransition.cancel();
-    const switching = current && !current.detail && !next.detail && current.container.id === next.container.id && current.presentation !== next.presentation;
+    const switching = changesContentView(current, next);
     if (switching) {
       presentationTransition.run(() => {
         switchingPresentation = true;
@@ -360,16 +417,25 @@ try {
       move(button, circle, entering);
     });
     const wanted = new Set(next.items.map(item => item.key));
-    for (const [key, card] of cards) if (!wanted.has(key)) { card.dispose(); card.element.remove(); cards.delete(key); }
+    for (const [key, card] of cards) if (!wanted.has(key)) {
+      card.dispose(); cards.delete(key);
+      if (switchingPresentation) { card.element.remove(); continue; }
+      card.element.inert = true;
+      const animation = animate(card.element, [{ opacity: getComputedStyle(card.element).opacity }, { opacity: 0 }], { duration: reduced.matches ? 70 : 180 });
+      animation.finished.then(() => card.element.remove()).catch(() => card.element.remove());
+    }
     for (const item of next.items) {
       let card = cards.get(item.key);
+      const entering = !card;
       if (!card) {
         const open = () => dispatch(item.action);
         card = presentationViews[item.presentation](item.node, { playback, open });
         cards.set(item.key, card);
       }
       Object.assign(card.element.style, { left: `${item.x}px`, top: `${item.y}px`, width: `${item.width}px`, height: `${item.height}px` });
-      $('#cards').append(card.element);
+      // Reinserting a mounted element interrupts its CSS geometry transition.
+      if (switchingPresentation || card.element.parentElement !== $('#cards')) $('#cards').append(card.element);
+      if (entering && !switchingPresentation) animate(card.element, [{ opacity: 0 }, { opacity: 1 }], { duration: reduced.matches ? 70 : 300 });
     }
     current = next;
     renderConnections(next);
@@ -402,16 +468,27 @@ try {
     const recents = [subject.id, ...saved('orb-recents').filter(id => id !== subject.id)].slice(0, 12); persist('orb-recents', recents);
     renderNav();
     renderView(preserveNavControls);
+    renderFind(preserveNavControls);
     if (switchingPresentation && state.viewOpen) $('#presentation-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
     clearTimeout(focusTimer);
     if (focus && !current.selection) focusTimer = setTimeout(() => (state.detail ? $('#detail h1') : mounted.get(current.container.id))?.focus({ preventScroll: true }), duration() + 100);
   }
-  toggle.addEventListener('click', () => { state.navOpen = !state.navOpen; playerOpen(false); state.viewOpen = false; render(false); toggle.focus({ preventScroll: true }); });
-  $('#view-toggle').addEventListener('click', () => { state.viewOpen = !state.viewOpen; render(false); $('#view-toggle').focus({ preventScroll: true }); });
+  toggle.addEventListener('click', () => { state.navOpen = !state.navOpen; playerOpen(false); state.viewOpen = false; state.findOpen = false; render(false); toggle.focus({ preventScroll: true }); });
+  $('#view-toggle').addEventListener('click', () => { state.viewOpen = !state.viewOpen; state.findOpen = false; render(false); $('#view-toggle').focus({ preventScroll: true }); });
+  $('#find-toggle').addEventListener('click', () => {
+    state.findOpen = !state.findOpen; state.viewOpen = false;
+    render(false);
+    (state.findOpen ? ($('#find-content input') || $('#find-content select')) : $('#find-toggle'))?.focus({ preventScroll: true });
+  });
+  document.addEventListener('pointerdown', event => {
+    if (!state.findOpen || event.target.closest('#find-lens')) return;
+    state.findOpen = false; renderFind();
+  });
   $('#home-link').addEventListener('click', event => { event.preventDefault(); navigate(base); });
   $('#world').addEventListener('click', event => { if (state.detail && (event.target === $('#world') || event.target === $('#circles'))) closeDetail(); });
   $('#world').addEventListener('keydown', event => {
     if (event.key === 'Escape') {
+      if (state.findOpen) { state.findOpen = false; renderFind(); $('#find-toggle').focus({ preventScroll: true }); event.preventDefault(); return; }
       if (playerExpanded) { playerOpen(false); playerToggle.focus(); return; }
       if (state.navOpen) { state.navOpen = false; render(false); toggle.focus(); }
       else if (state.viewOpen) { state.viewOpen = false; render(false); $('#view-toggle').focus({ preventScroll: true }); }

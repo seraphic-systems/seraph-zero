@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createContentSource, indexTree } from '../apps/internal/dashboard/orb/content.js';
 import { layout } from '../apps/internal/dashboard/orb/engine.js';
-import { availableViews, resolveView } from '../apps/internal/dashboard/orb/views.js';
+import { availableViews, resolveView, hasFindControls, isFindActive, viewPanelHeight } from '../apps/internal/dashboard/orb/views.js';
 import { readRoute, routeFor, routeToNode } from '../apps/internal/dashboard/orb/routes.js';
 
 const songs = Array.from({ length: 25 }, (_, i) => ({ id: `s${i}`, title: `Song ${i}`, mixes: [], notes: '' }));
@@ -212,7 +212,7 @@ test('open view controls reserve space for orbs and players without moving bread
     for (const item of [...open.items, ...open.circles.filter(circle => circle.role === 'child')]) {
       const left = item.r ? item.x - item.r : item.x;
       const top = item.r ? item.y - item.r : item.y;
-      assert.ok(width < 600 ? top >= 422 : left >= 284);
+      assert.ok(width < 600 ? top >= 132 + viewPanelHeight(indexTree(tree).get('songs').node) + 24 : left >= 284);
       assert.ok(item.r ? item.x + item.r <= width : item.x + item.width <= width);
     }
     assert.deepEqual(layout(tree, state, viewport), closed);
@@ -220,4 +220,97 @@ test('open view controls reserve space for orbs and players without moving bread
     const detail = { ...state, detail: 'song-s0' };
     assert.deepEqual(layout(tree, { ...detail, viewOpen: true }, viewport), layout(tree, detail, viewport));
   }
+});
+
+const fragmentTree = createContentSource([], { records: [
+  { type: 'Idea', data: { id: 'dream', title: 'Dream' } },
+  { type: 'MusicFragment', data: { id: 'loop', file: 'Dream/loop.aif', idea: 'dream', key: 'Am', bpm: 98, tags: ['warm'] } },
+  { type: 'MusicFragment', data: { id: 'hit', title: 'Hit', file: 'hit.wav', notes: 'Metallic' } },
+] }).getRoot();
+const fragmentPath = ['home', 'music', 'fragments'];
+test('fragments default to a playable sample list with real Idea groups and safe URL presets', () => {
+  const index = indexTree(fragmentTree), container = index.get('fragments').node;
+  assert.equal(resolveView(container).id, 'samples');
+  assert.deepEqual(availableViews(container).map(view => view.label), ['All fragments', 'Dream', 'Unassociated / Orphan']);
+  assert.ok(availableViews(container).every(view => view.presentation === 'samples'));
+  assert.ok(availableViews(container).every(view => view.controls.search && view.controls.arrangements.length === 2));
+  assert.equal(index.get('fragment-loop').node.audio.mixes[0].url, 'api/fragments/loop/audio');
+  for (const width of [320, 390, 600, 1440]) {
+    const result = layout(fragmentTree, { path: fragmentPath, viewOpen: true }, { width, height: 844 });
+    assert.equal(result.items.length, 2);
+    assert.equal(result.circles.some(circle => circle.role === 'child'), false);
+    for (const item of result.items) {
+      assert.ok(item.x >= 0 && item.x + item.width <= width);
+      assert.ok(item.y >= (width < 600 ? 132 + viewPanelHeight(container) + 24 : 180));
+      assert.ok(item.y + item.height < result.height);
+    }
+  }
+  const url = routeFor(fragmentPath, null, 'az', 'warm', 'group-dream');
+  const route = readRoute(fragmentTree, new URL(url, 'http://localhost'));
+  assert.equal(route.view.fragments, 'group-dream');
+  assert.ok(!url.includes('group='));
+  const result = layout(fragmentTree, route, { width: 390, height: 844 });
+  assert.deepEqual(result.items.map(item => item.key), ['fragment-loop']);
+  const detailRoute = readRoute(fragmentTree, new URL(routeToNode(fragmentTree, 'fragment-loop'), 'http://localhost'));
+  const detail = layout(fragmentTree, detailRoute, { width: 390, height: 844 });
+  assert.equal(detail.detail.id, 'fragment-loop');
+  assert.equal(detail.items.length, 0);
+  const orphan = layout(fragmentTree, { path: fragmentPath, view: { fragments: 'group-unassociated' } }, { width: 1000, height: 800 });
+  assert.deepEqual(orphan.items.map(item => item.key), ['fragment-hit']);
+  assert.equal(layout(fragmentTree, { ...route, filter: 'Metallic' }, { width: 390, height: 844 }).count, 0);
+  const invalid = readRoute(fragmentTree, new URL('http://localhost/orb/music/fragments/?group=bad&view=bad'));
+  assert.equal(invalid.view.fragments, 'samples');
+  const legacy = readRoute(fragmentTree, new URL('http://localhost/orb/music/fragments/?view=samples&group=dream'));
+  assert.equal(legacy.view.fragments, 'group-dream');
+  const unsupportedView = layout(fragmentTree, { path: fragmentPath, view: { fragments: 'orb' } }, { width: 1000, height: 800 });
+  assert.equal(unsupportedView.view.id, 'samples');
+  assert.equal(unsupportedView.items.length, 2);
+  const unsupported = readRoute(fragmentTree, new URL('http://localhost/orb/music/?group=dream'));
+  assert.equal(unsupported.view.music, 'orb');
+});
+
+test('a preset combines its renderer, filters, ordering and explicit controls', () => {
+  const custom = { id: 'home', label: 'Home', views: { default: 'selected', options: [
+    { id: 'all', label: 'All', presentation: 'orb', arrangement: 'free', controls: { search: true, arrangements: ['free', 'az'] } },
+    { id: 'selected', label: 'Selected group', presentation: 'player', arrangement: 'az', filter: { group: 'a' } },
+  ] }, children: [
+    { id: 'z', label: 'Zebra', kind: 'Song', group: 'a' },
+    { id: 'b', label: 'Banana', kind: 'Song', group: 'b' },
+    { id: 'a', label: 'Apple', kind: 'Song', group: 'a' },
+  ] };
+  const route = readRoute(custom, new URL('http://localhost/orb/?q=missing&arrange=free'));
+  const result = layout(custom, route, { width: 1000, height: 800 });
+  assert.equal(result.view.id, 'selected');
+  assert.equal(route.filter, '');
+  assert.deepEqual(route.arrangement, {});
+  assert.equal(result.presentation, 'player');
+  assert.deepEqual(result.items.map(item => item.key), ['a', 'z']);
+  const all = readRoute(custom, new URL('http://localhost/orb/?view=all&arrange=az&q=Banana'));
+  assert.deepEqual(layout(custom, all, { width: 1000, height: 800 }).circles.filter(circle => circle.role === 'child').map(circle => circle.key), ['b']);
+});
+
+test('Find is opt-in, highlights only effective queries, and overlays without changing layout', () => {
+  const songsNode = indexTree(tree).get('songs').node;
+  const view = resolveView(songsNode);
+  assert.equal(hasFindControls(view), true);
+  assert.equal(hasFindControls(resolveView(tree)), false);
+  assert.equal(hasFindControls({ controls: { arrangements: ['free', 'az'] } }), true);
+  assert.equal(hasFindControls({ controls: { arrangements: ['free'] } }), false);
+  assert.equal(isFindActive(view, initial, 'songs'), false);
+  assert.equal(isFindActive(view, { filter: '   ' }, 'songs'), false);
+  assert.equal(isFindActive(view, { filter: 'Song' }, 'songs'), true);
+  assert.equal(isFindActive(view, { arrangement: { songs: 'az' } }, 'songs'), true);
+  assert.equal(isFindActive(view, { arrangement: { songs: 'bad' } }, 'songs'), false);
+  const fixed = { presentation: 'orb', arrangement: 'az' };
+  assert.equal(isFindActive(fixed, { filter: 'ignored', arrangement: { songs: 'free' } }, 'songs'), false);
+  for (const width of [320, 390, 900, 1440]) for (const presentation of ['orb', 'player']) {
+    const state = { ...initial, view: { songs: presentation }, filter: 'Song 2', arrangement: { songs: 'az' } };
+    const closed = layout(tree, state, { width, height: 844 });
+    assert.deepEqual(layout(tree, { ...state, findOpen: true }, { width, height: 844 }), closed);
+  }
+  const onlyFind = { id: 'home', children: [{ id: 'a', label: 'A' }], views: { options: [
+    { id: 'only', presentation: 'orb', arrangement: 'free', controls: { search: true } },
+  ] } };
+  const state = { path: ['home'] }, viewport = { width: 390, height: 844 };
+  assert.deepEqual(layout(onlyFind, { ...state, viewOpen: true }, viewport), layout(onlyFind, state, viewport));
 });

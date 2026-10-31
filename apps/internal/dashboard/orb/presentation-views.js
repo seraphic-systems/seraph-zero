@@ -4,7 +4,7 @@ const el = (tag, text, className) => {
   if (className) node.className = className;
   return node;
 };
-export const songFor = node => node.kind === 'Song' ? node.data : node.kind === 'Album track' ? node.data?.song : null;
+export const songFor = node => node.kind === 'Music fragment' ? node.audio : node.kind === 'Song' ? node.data : node.kind === 'Album track' ? node.data?.song : null;
 const time = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 
 export function playbackControls(song, mix, playback) {
@@ -31,6 +31,15 @@ export function playbackControls(song, mix, playback) {
 }
 
 export const presentationViews = {
+  samples(node, { playback, open }) {
+    const root = el('article', null, 'player-card sample-row');
+    const title = el('button', node.label, 'card-title'); title.type = 'button'; title.addEventListener('click', open);
+    const data = node.data;
+    root.append(title, el('p', [node.groupLabel, data.key, data.bpm ? `${data.bpm} BPM` : '', data.sample_type, data.role, ...(data.tags || [])].filter(Boolean).join(' · '), 'sample-meta muted'));
+    const controls = playbackControls(node.audio, node.audio.mixes[0], playback);
+    root.append(controls.element);
+    return { element: root, dispose: controls.dispose };
+  },
   player(node, { playback, open }) {
     const root = el('article', null, 'player-card');
     const title = el('button', node.label, 'card-title'); title.type = 'button'; title.addEventListener('click', open);

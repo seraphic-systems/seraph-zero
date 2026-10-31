@@ -1,6 +1,16 @@
 // Presentation capabilities and geometry stay independent of DOM and catalog data.
 export const presentations = {
   orb: { label: 'Orbs', supports: () => true },
+  samples: {
+    label: 'Sample library',
+    arrangementLabels: { free: 'Group order' },
+    supports: node => node.kind === 'Music fragment',
+    layout(region, children) {
+      const height = region.w < 500 ? 194 : 134, gap = 10;
+      return { height: children.length * (height + gap),
+        items: children.map((node, i) => ({ x: region.x, y: region.y + i * (height + gap), width: region.w, height })) };
+    },
+  },
   player: {
     label: 'Players',
     arrangementLabels: { free: 'Library order' },
