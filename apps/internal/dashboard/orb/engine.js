@@ -1,6 +1,7 @@
 import { relationshipGeometry } from './relationships.js';
 import { indexTree } from './content.js';
-import { presentations, resolvePresentation } from './presentations.js';
+import { presentations } from './presentations.js';
+import { resolveView, resolveArrangement, resolveFilter } from './views.js';
 
 export const isContainer = node => Array.isArray(node.children);
 export const orderedChildren = (node, arrangement) => arrangement === 'az'
@@ -69,8 +70,9 @@ export function resolveState(tree, state) {
 export function layout(tree, state, viewport) {
   const { width: w, height: h } = viewport;
   const index = indexTree(tree), resolved = resolveState(tree, state), { node, path, detail } = resolved;
-  const active = node.arrangements?.includes(state.arrangement?.[node.id]) ? state.arrangement[node.id] : node.arrangements?.[0] || 'free';
-  const filter = (state.filter || '').trim().toLocaleLowerCase();
+  const view = resolveView(node, state.view?.[node.id]);
+  const active = resolveArrangement(view, state.arrangement?.[node.id]);
+  const filter = resolveFilter(view, state.filter).trim().toLocaleLowerCase();
   const children = orderedChildren(node, active).filter(child => !filter || child.id === detail || child.id === state.selection || child.label.toLocaleLowerCase().includes(filter)), circles = [];
   const narrow = w < 600, margin = narrow ? 28 : 60, step = narrow ? 68 : 96, trailY = narrow ? 76 : 56;
   const trail = path.map((id, i) => ({ key: id, ...point(margin + i * step, trailY, i === 0 ? 15 : 19, 'top'),
@@ -82,7 +84,7 @@ export function layout(tree, state, viewport) {
   if (node.selection && w >= 900) region.w = Math.max(180, region.w - 360);
   const selection = node.selection && node.children.some(child => child.id === state.selection) ? state.selection : null;
   const related = new Set((node.relationships || []).filter(edge => edge.source === selection || edge.target === selection).flatMap(edge => [edge.source, edge.target]));
-  const presentation = resolvePresentation(node, state.presentation?.[node.id]);
+  const presentation = view.presentation;
   const alternate = !detail && presentation !== 'orb', items = [];
   let positions;
   if (alternate) {
@@ -135,5 +137,5 @@ export function layout(tree, state, viewport) {
       r: Math.max(1, Math.min(w - inset * 2, availableHeight) / 2),
     });
   }
-  return { selection, connections: relationshipGeometry(node.relationships || [], circles.filter(circle => circle.role === 'child'), selection), circles, items, presentation, navOrb, detail: detailLayout, container: node, count: children.length, active, path, height: detail ? h : Math.max(h, region.y + region.h + 90) };
+  return { view, selection, connections: relationshipGeometry(node.relationships || [], circles.filter(circle => circle.role === 'child'), selection), circles, items, presentation, navOrb, detail: detailLayout, container: node, count: children.length, active, path, height: detail ? h : Math.max(h, region.y + region.h + 90) };
 }

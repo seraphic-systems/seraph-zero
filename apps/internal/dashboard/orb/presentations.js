@@ -14,6 +14,3 @@ export const presentations = {
     },
   },
 };
-export const availablePresentations = node => Object.keys(presentations).filter(id =>
-  id === 'orb' || node.children?.some(child => presentations[id].supports(child)));
-export const resolvePresentation = (node, choice) => availablePresentations(node).includes(choice) ? choice : 'orb';

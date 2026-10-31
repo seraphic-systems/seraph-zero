@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createContentSource, indexTree } from '../apps/internal/dashboard/orb/content.js';
 import { layout } from '../apps/internal/dashboard/orb/engine.js';
+import { availableViews, resolveView } from '../apps/internal/dashboard/orb/views.js';
 import { readRoute, routeFor, routeToNode } from '../apps/internal/dashboard/orb/routes.js';
 
 const songs = Array.from({ length: 25 }, (_, i) => ({ id: `s${i}`, title: `Song ${i}`, mixes: [], notes: '' }));
@@ -83,7 +84,7 @@ test('scatter is the default, repeatable, and keeps circles apart', () => {
   for (const width of [357, 390, 900, 1440]) {
     const result = layout(tree, initial, { width, height: 844 });
     assert.equal(result.active, 'free');
-    assert.ok(!result.container.arrangements.includes('ring'));
+    assert.ok(!result.view.controls.arrangements.includes('ring'));
     const children = result.circles.filter(circle => circle.role === 'child');
     for (let i = 0; i < children.length; i++) for (let j = i + 1; j < children.length; j++) {
       assert.ok(Math.hypot(children[i].x - children[j].x, children[i].y - children[j].y) > children[i].r + children[j].r + 10);
@@ -104,23 +105,22 @@ test('title filters round-trip in URLs, match without case sensitivity, and supp
   assert.equal(empty.circles.find(circle => circle.role === 'empty').label, 'No matches');
 });
 
-test('player presentation is type-aware, URL-addressable, and falls back safely', async () => {
-  const { availablePresentations } = await import('../apps/internal/dashboard/orb/presentations.js');
+test('page views are explicitly declared, URL-addressable, and fall back safely', () => {
   const songContainer = indexTree(tree).get('songs').node;
-  assert.deepEqual(availablePresentations(songContainer), ['orb', 'player']);
-  assert.deepEqual(availablePresentations(tree), ['orb']);
+  assert.deepEqual(availableViews(songContainer).map(view => view.id), ['orb', 'player']);
+  assert.deepEqual(availableViews(tree).map(view => view.id), ['orb']);
   const url = routeFor(initial.path, null, 'az', 'Song 2', 'player');
   const route = readRoute(tree, new URL(url, 'http://localhost'));
-  assert.equal(route.presentation.songs, 'player');
+  assert.equal(route.view.songs, 'player');
   assert.equal(route.filter, 'Song 2');
-  assert.equal(readRoute(tree, new URL('http://localhost/orb/?view=player')).presentation.home, 'orb');
-  assert.equal(readRoute(tree, new URL('http://localhost/orb/music/songs/?view=unknown')).presentation.songs, 'orb');
-  assert.equal(readRoute(tree, new URL('http://localhost/orb/music/songs/')).presentation.songs, 'orb');
+  assert.equal(readRoute(tree, new URL('http://localhost/orb/?view=player')).view.home, 'orb');
+  assert.equal(readRoute(tree, new URL('http://localhost/orb/music/songs/?view=unknown')).view.songs, 'orb');
+  assert.equal(readRoute(tree, new URL('http://localhost/orb/music/songs/')).view.songs, 'orb');
 });
 
 test('player layouts preserve actions, ordering, filtering, and detail identity at every size', () => {
   for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1440, height: 900 }]) {
-    const state = { ...initial, presentation: { songs: 'player' }, arrangement: { songs: 'az' } };
+    const state = { ...initial, view: { songs: 'player' }, arrangement: { songs: 'az' } };
     const result = layout(tree, state, viewport);
     assert.deepEqual(result, layout(tree, state, viewport));
     assert.equal(result.items.length, songs.length);
@@ -146,13 +146,58 @@ test('player layouts preserve actions, ordering, filtering, and detail identity 
 });
 
 test('mixed collections use a generic Orb fallback and album tracks support player cards', () => {
-  const mixed = { id: 'home', children: [{ id: 'song', kind: 'Song', label: 'Song' }, { id: 'folder', label: 'Folder', children: [] }] };
-  const result = layout(mixed, { path: ['home'], presentation: { home: 'player' } }, { width: 1000, height: 800 });
+  const mixed = { id: 'home', views: { default: 'player', options: [{ id: 'player', label: 'Players', presentation: 'player', arrangement: 'free' }] }, children: [{ id: 'song', kind: 'Song', label: 'Song' }, { id: 'folder', label: 'Folder', children: [] }] };
+  const result = layout(mixed, { path: ['home'], view: { home: 'player' } }, { width: 1000, height: 800 });
   assert.deepEqual(result.items.map(item => item.presentation), ['player']);
   const fallback = result.circles.find(circle => circle.key === 'folder');
   assert.equal(fallback.isContainer, true);
   assert.deepEqual(fallback.action, { type: 'navigate', path: ['home', 'folder'] });
-  const album = layout(tree, { path: ['home', 'music', 'albums', 'album-a'], presentation: { 'album-a': 'player' } }, { width: 390, height: 844 });
+  const album = layout(tree, { path: ['home', 'music', 'albums', 'album-a'], view: { 'album-a': 'player' } }, { width: 390, height: 844 });
   assert.equal(album.items[0].key, 'track-t');
   assert.equal(album.items[0].presentation, 'player');
+});
+
+test('pages enforce their declared controls in routes and layout, including album track order', () => {
+  const albumTree = createContentSource([], { records: [
+    { type: 'Album', data: { id: 'ordered', title: 'Ordered' } },
+    { type: 'AlbumTrack', data: { id: 'first', album: 'ordered', title: 'Zebra', track_number: 1 } },
+    { type: 'AlbumTrack', data: { id: 'second', album: 'ordered', title: 'Apple', track_number: 2 } },
+  ] }).getRoot();
+  const path = ['home', 'music', 'albums', 'album-ordered'];
+  const route = readRoute(albumTree, new URL('http://localhost/orb/music/albums/album-ordered/?view=player&arrange=az&q=missing'));
+  assert.equal(route.filter, '');
+  assert.deepEqual(route.arrangement, {});
+  const result = layout(albumTree, { ...route, filter: 'missing', arrangement: { 'album-ordered': 'az' } }, { width: 1000, height: 800 });
+  assert.equal(result.active, 'free');
+  assert.deepEqual(result.items.map(item => item.key), ['track-first', 'track-second']);
+  const detail = layout(albumTree, { path, detail: 'track-first', arrangement: { 'album-ordered': 'az' } }, { width: 1000, height: 800 });
+  assert.equal(detail.detail.next, 'track-second');
+  for (const page of ['home', 'music']) {
+    const node = indexTree(tree).get(page).node;
+    assert.equal(availableViews(node).length, 1);
+    assert.deepEqual(resolveView(node).controls, {});
+  }
+  // Supported item types alone must never expose additional views or controls.
+  const undeclared = { id: 'home', children: [{ id: 'song', kind: 'Song', label: 'Song' }] };
+  const implicit = layout(undeclared, { path: ['home'], view: { home: 'player' }, filter: 'missing', arrangement: { home: 'az' } }, { width: 1000, height: 800 });
+  assert.equal(implicit.presentation, 'orb');
+  assert.equal(implicit.active, 'free');
+  assert.equal(implicit.count, 1);
+});
+
+test('a declared default can use any renderer and view-specific controls', () => {
+  const custom = { id: 'home', label: 'Home', views: { default: 'listen', options: [
+    { id: 'browse', label: 'Browse', presentation: 'orb', arrangement: 'az', controls: { search: true } },
+    { id: 'listen', label: 'Listen', presentation: 'player', arrangement: 'free', controls: {} },
+  ] }, children: [{ id: 'song', kind: 'Song', label: 'Song' }] };
+  for (const query of ['', '?view=unknown', '?view=listen&arrange=az&q=missing']) {
+    const route = readRoute(custom, new URL(`http://localhost/orb/${query}`));
+    const result = layout(custom, route, { width: 1000, height: 800 });
+    assert.equal(result.view.id, 'listen');
+    assert.equal(result.presentation, 'player');
+    assert.equal(result.count, 1);
+  }
+  const route = readRoute(custom, new URL(routeFor(['home'], null, null, 'missing', 'browse'), 'http://localhost'));
+  assert.equal(route.view.home, 'browse');
+  assert.equal(layout(custom, route, { width: 1000, height: 800 }).count, 0);
 });

@@ -1,14 +1,14 @@
 import { isContainer } from './engine.js';
 import { indexTree } from './content.js';
-import { resolvePresentation } from './presentations.js';
+import { resolveView, resolveFilter } from './views.js';
 export const base = '/orb/';
-export function routeFor(path, detail, arrangement, filter = '', presentation = 'orb', selection = null) {
+export function routeFor(path, detail, arrangement, filter = '', view, selection = null) {
   const segments = [...path.slice(1), ...(detail ? [detail] : [])];
   const query = new URLSearchParams();
   if (selection) query.set('select', selection);
   if (arrangement) query.set('arrange', arrangement);
   if (filter) query.set('q', filter);
-  if (presentation !== 'orb') query.set('view', presentation);
+  if (view) query.set('view', view);
   return base + segments.map(encodeURIComponent).join('/') + (segments.length ? '/' : '') + (query.size ? `?${query}` : '');
 }
 export function readRoute(tree, url) {
@@ -24,7 +24,8 @@ export function readRoute(tree, url) {
   const selection = node.selection ? (detail || url.searchParams.get('select')) : null;
   if (node.selection) detail = null;
   const choice = url.searchParams.get('arrange');
-  return { path, detail, selection: node.selection && node.children.some(child => child.id === selection) ? selection : null, presentation: { [node.id]: resolvePresentation(node, url.searchParams.get('view')) }, filter: url.searchParams.get('q') || '', arrangement: choice && node.arrangements?.includes(choice) ? { [node.id]: choice } : {} };
+  const view = resolveView(node, url.searchParams.get('view'));
+  return { path, detail, selection: node.selection && node.children.some(child => child.id === selection) ? selection : null, view: { [node.id]: view.id }, filter: resolveFilter(view, url.searchParams.get('q')), arrangement: choice && view.controls?.arrangements?.includes(choice) ? { [node.id]: choice } : {} };
 }
 export function routeToNode(tree, id) {
   const entry = indexTree(tree).get(id);

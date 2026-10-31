@@ -2,7 +2,8 @@ import { renderModelInspector } from './model-view.js';
 import '/shared/components/audio-player/audio-player.js';
 import { createContentSource, indexTree } from './content.js';
 import { layout, arrangements } from './engine.js';
-import { availablePresentations, presentations } from './presentations.js';
+import { presentations } from './presentations.js';
+import { availableViews, defaultView, resolveFilter } from './views.js';
 import { createPlayback } from './playback.js';
 import { createPresentationTransition } from './transitions.js';
 import { playbackControls, presentationViews, songFor } from './presentation-views.js';
@@ -79,7 +80,7 @@ try {
     $('#player-error').textContent = playback.error;
     if (selection) audio.setAttribute('label', `${selection.song.title} audio player`);
   });
-  const urlFor = (path, detail, arrangement, filter = '') => routeFor(path, detail, arrangement, filter, state.presentation?.[path.at(-1)] || 'orb', path.join('/') === state.path.join('/') ? state.selection : null);
+  const urlFor = (path, detail, arrangement, filter = '') => routeFor(path, detail, arrangement, filter, state.view?.[path.at(-1)], path.join('/') === state.path.join('/') ? state.selection : null);
   const lens = $('#lens'), toggle = $('#nav-toggle');
   const trailLinks = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   trailLinks.classList.add('trail-links');
@@ -133,9 +134,9 @@ try {
   function navigate(url, push = true) {
     if (push) history.pushState(null, '', url);
     const route = readRoute(tree, new URL(url, location.href));
-    state = { ...state, ...route, presentation: { ...state.presentation, ...route.presentation }, arrangement: { ...state.arrangement, ...route.arrangement } };
+    state = { ...state, ...route, view: { ...state.view, ...route.view }, arrangement: { ...state.arrangement, ...route.arrangement } };
     // The query is authoritative for the current container, including Back to its default.
-    if (!new URL(url, location.href).searchParams.has('arrange')) delete state.arrangement[state.path.at(-1)];
+    if (!route.arrangement[state.path.at(-1)]) delete state.arrangement[state.path.at(-1)];
     state.navOpen = false;
     state.viewOpen = false;
     if (current?.container.id !== route.path.at(-1)) window.scrollTo(0, 0);
@@ -145,10 +146,10 @@ try {
     if (!action) return;
     if (action.type === 'select') { selectNode(action.id); return; }
     const path = action.type === 'navigate' ? action.path : state.path;
-    navigate(routeFor(path, action.type === 'openDetail' ? action.id : null, state.arrangement[path.at(-1)], path.join('/') === state.path.join('/') ? state.filter : '', state.presentation?.[path.at(-1)] || 'orb'));
+    navigate(routeFor(path, action.type === 'openDetail' ? action.id : null, state.arrangement[path.at(-1)], path.join('/') === state.path.join('/') ? state.filter : '', state.view?.[path.at(-1)]));
   }
   function selectNode(id) {
-    const url = routeFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter, current.presentation, id);
+    const url = routeFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter, current.view.id, id);
     navigate(url);
     if (id) {
       $('#selection h1')?.focus({ preventScroll: true });
@@ -260,40 +261,43 @@ try {
   }
   function renderView(preserveControls = false) {
     const view = $('#view-lens'), button = $('#view-toggle'), content = $('#view-content');
-    const available = !current.detail && (current.container.children.length > 1 || availablePresentations(current.container).length > 1);
+    const options = availableViews(current.container), controls = current.view.controls || {};
+    const available = !current.detail && (options.length > 1 || controls.search || controls.arrangements?.length > 1);
     view.hidden = !available;
     view.inert = state.navOpen;
     view.classList.toggle('open', state.viewOpen);
-    view.classList.toggle('active', current.active !== (current.container.arrangements?.[0] || 'free') || current.presentation !== 'orb' || !!state.filter);
+    view.classList.toggle('active', current.view.id !== defaultView(current.container).id || current.active !== current.view.arrangement || !!resolveFilter(current.view, state.filter));
     button.setAttribute('aria-expanded', String(state.viewOpen));
     button.setAttribute('aria-label', `${state.viewOpen ? 'Close' : 'Open'} view options for ${current.container.label}`);
     button.textContent = state.viewOpen ? '×' : 'View';
     content.hidden = !state.viewOpen;
     if (preserveControls) {
-      $('#view-count').textContent = `${current.count} of ${current.container.children.length} items`;
+      if ($('#view-count')) $('#view-count').textContent = `${current.count} of ${current.container.children.length} items`;
       return;
     }
     content.replaceChildren(el('h2', `${current.container.label} · View`));
     const presentationChoices = el('div', null, 'arrangements');
     presentationChoices.setAttribute('role', 'group');
-    presentationChoices.setAttribute('aria-label', 'Item presentation');
-    availablePresentations(current.container).forEach(id => {
-      const button = el('button', presentations[id].label);
-      button.setAttribute('aria-pressed', String(current.presentation === id));
+    presentationChoices.setAttribute('aria-label', 'Page view');
+    options.forEach(option => {
+      const button = el('button', option.label);
+      button.setAttribute('aria-pressed', String(current.view.id === option.id));
       button.addEventListener('click', () => {
-        state.presentation = { ...state.presentation, [current.container.id]: id };
+        state.view = { ...state.view, [current.container.id]: option.id };
+        delete state.arrangement[current.container.id];
+        state.filter = resolveFilter(option, state.filter);
         history.pushState(null, '', urlFor(state.path, state.detail, state.arrangement[current.container.id], state.filter));
         render(false);
-
+        $('#presentation-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
       });
       presentationChoices.append(button);
     });
     presentationChoices.id = 'presentation-choices';
-    if (availablePresentations(current.container).length > 1) content.append(presentationChoices);
+    if (options.length > 1) content.append(presentationChoices);
     const choices = el('div', null, 'arrangements arrangement-choices');
     choices.setAttribute('role', 'group');
     choices.setAttribute('aria-label', 'Arrangement');
-    (current.container.arrangements || ['free']).forEach(id => {
+    (controls.arrangements || []).forEach(id => {
       const button = el('button', presentations[current.presentation].arrangementLabels?.[id] || arrangements[id].label);
       button.setAttribute('aria-pressed', String(current.active === id));
       button.addEventListener('click', () => {
@@ -302,17 +306,19 @@ try {
         render(false);
         $('#view-content .arrangement-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
       }); choices.append(button);
-    }); content.append(choices);
-    const label = el('label', 'Filter titles', 'filter-label');
-    const input = el('input'); input.type = 'search'; input.value = state.filter || ''; input.placeholder = 'Type a title…';
-    input.addEventListener('input', () => {
-      state.filter = input.value; state.detail = null;
-      history.replaceState(null, '', urlFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter));
-      render(false, true);
-    });
-    label.append(input); content.append(label);
-    const count = el('p', `${current.count} of ${current.container.children.length} items`, 'muted');
-    count.id = 'view-count'; count.setAttribute('role', 'status'); content.append(count);
+    }); if (controls.arrangements?.length > 1) content.append(choices);
+    if (controls.search) {
+      const label = el('label', 'Search titles', 'filter-label');
+      const input = el('input'); input.type = 'search'; input.value = state.filter || ''; input.placeholder = 'Type a title…';
+      input.addEventListener('input', () => {
+        state.filter = input.value; state.detail = null;
+        history.replaceState(null, '', urlFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter));
+        render(false, true);
+      });
+      label.append(input); content.append(label);
+      const count = el('p', `${current.count} of ${current.container.children.length} items`, 'muted');
+      count.id = 'view-count'; count.setAttribute('role', 'status'); content.append(count);
+    }
 
   }
   function render(focus, preserveNavControls = false) {

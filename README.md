@@ -775,14 +775,19 @@ track records. Tracks without explicit titles display their track number;
 only recorded `primary_song` relationships provide associated song playback.
 No title or song association is inferred from a filename.
 
-Orbs default to a repeatable scattered layout. The bottom-left orb offers
-Scatter and A–Z views, plus a title filter. Filters are included in the URL.
-Songs and album tracks also offer **Orbs / Players** in View. Player cards show
-latest-mix controls; tracks without a linked song or songs without mixes show
-an explicit empty state. Presentation and filters are included in the URL;
-unsupported presentations fall back to Orbs. Player cards use library order
-(or A–Z) in a responsive grid. Switching presentations morphs matching items
-where browser view transitions are supported, with a fade-out/fade-in fallback.
+Each page declares its default view, optional named alternatives, and the
+controls available within each view. Home and Music use a spatial view without
+view controls. Songs offers Orbs and Players with title search and Scatter / A–Z
+ordering; Albums offers Orbs with search and ordering. Individual albums offer
+Track orbs and Players with fixed track order and no search or ordering controls.
+The View orb appears only when a page has alternatives or exposed controls.
+
+Views, ordering, and search are included in the URL. Unknown views fall back to
+the page default; undeclared controls are ignored by both routing and layout.
+Player cards show latest-mix controls; tracks without a linked song or songs
+without mixes show an explicit empty state. Switching presentations morphs
+matching items where browser view transitions are supported, with a
+fade-out/fade-in fallback.
 Reduced-motion preferences use a brief fade without movement.
 
 The music-note Orb beside the navigation Orb opens the shared audio player.
@@ -805,13 +810,18 @@ outgoing relationships without moving the map. The inspector shows inherited
 fields, embedded values, cardinalities, real records, and model gaps. Relationship
 buttons follow related types; Escape or the Model breadcrumb clears selection.
 Selection is addressable with `/orb/model/?select=type-Song` and participates in
-browser history. The Relationships arrangement uses stable schema groupings;
-Scatter and A–Z remain available. On smaller screens the inspector follows the
+browser history. The default Relationships view uses stable schema groupings;
+Scatter and A–Z are named alternatives, each with title search. On smaller screens the inspector follows the
 map; selecting a type scrolls to it, and clearing selection returns to the map.
 
 The framework-free modules in `apps/internal/dashboard/orb/` separate the
 content adapter (`content.js`), pure arrangement/layout engine (`engine.js`),
-URL mapping (`routes.js`), and DOM renderer (`app.js`). Presentation capabilities
+URL mapping (`routes.js`), and DOM renderer (`app.js`). Container declarations in
+`content.js` specify `views.default` and `views.options`; each option defines an
+`id`, `label`, `presentation`, `arrangement`, and optional `controls` (`search`
+and/or an `arrangements` allowlist). `views.js` resolves those policies for both
+routing and layout. Renderer support alone never exposes views or controls.
+Presentation capabilities
 and geometry live in `presentations.js`; type-specific DOM views and inline
 playback controls live in `presentation-views.js`. New presentations declare
 supported node types and layout geometry, then provide a DOM renderer with a

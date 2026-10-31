@@ -58,3 +58,13 @@ test('relationship selection preserves map geometry, supports self and parallel 
     assert.equal(empty.connections.length, 0);
   }
 });
+
+test('Model declares named layouts with a relationship default and no arrangement overrides', () => {
+  for (const [choice, active] of [['relationships', 'relationships'], ['orb', 'free'], ['az', 'az'], ['unknown', 'relationships']]) {
+    const route = readRoute(tree, new URL(routeFor(initial.path, null, 'az', '', choice), 'http://localhost'));
+    assert.deepEqual(route.arrangement, {});
+    const result = layout(tree, route, { width: 1024, height: 844 });
+    assert.equal(result.active, active);
+    assert.equal(result.presentation, 'orb');
+  }
+});

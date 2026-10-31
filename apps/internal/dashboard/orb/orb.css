@@ -454,7 +454,7 @@ body.nav-open {
 #view-lens {
   position: fixed;
   top: 112px;
-  right: 28px;
+  left: 28px;
   z-index: 9;
   width: 46px;
   height: 46px;
@@ -514,8 +514,8 @@ body.nav-open {
 @media (max-width: 600px) {
   #view-lens {
     top: auto;
-    bottom: 22px;
-    right: 18px;
+    bottom: 88px;
+    left: 23px;
   }
   #view-lens.open {
     left: 16px;
@@ -533,9 +533,6 @@ body.nav-open {
     top: 8px;
     left: auto;
     right: 8px;
-  }
-  footer {
-    right: 82px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
