@@ -30,9 +30,38 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../../shared/styles.css" />
+    <link rel="stylesheet" href="./seraphic.css" />
+    <script type="module" src="./geometry.js"></script>
   </head>
   <body>
-    <nav>
+    <a class="skip-link" href="#why">Skip to content</a>
+    <div class="celestial-field" aria-hidden="true">
+      <svg id="celestial-geometry" viewBox="-500 -500 1000 1000" fill="none" focusable="false">
+        <defs>
+          <radialGradient id="halo-light">
+            <stop offset="0" stop-color="#e8dcba" stop-opacity=".25" />
+            <stop offset="1" stop-color="#e8dcba" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        <circle r="440" fill="url(#halo-light)" stroke="none" />
+        <g class="geometry-lines">
+          <circle r="300" />
+          <circle r="185.41" />
+          <circle r="114.59" />
+          <g id="wings"></g>
+          <path id="golden-thread" />
+        </g>
+        <g class="geometry-axis">
+          <path d="M-370 0H370 M0-370V370" />
+          <circle r="352" stroke-dasharray="1 13" />
+        </g>
+        <circle class="geometry-center" r="3" />
+      </svg>
+    </div>
+    <nav aria-label="Main navigation">
+      <a class="brand-mark" href="#top" aria-label="Seraphic Systems home">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15"/><ellipse cx="20" cy="20" rx="8" ry="15" transform="rotate(60 20 20)"/><ellipse cx="20" cy="20" rx="8" ry="15" transform="rotate(-60 20 20)"/><circle cx="20" cy="20" r="2"/></svg>
+      </a>
       <ul>
         <li><a href="#why">Why</a></li>
         <li><a href="#seraph">What a seraph is</a></li>
@@ -42,11 +71,12 @@
       </ul>
     </nav>
 
-    <header>
+    <header id="top">
       <h1>Seraphic Systems Co.</h1>
       <p>
         A creative technology studio designing organizations as works of art.
       </p>
+      <a class="scroll-cue" href="#why"><span aria-hidden="true">↓</span> A different center of gravity</a>
     </header>
 
     <main>
