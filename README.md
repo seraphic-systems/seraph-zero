@@ -702,6 +702,16 @@ nav orb or detail, and up/down arrows or scroll to step between detail items.
 Scrollable notes and playback controls retain their native interactions.
 Reduced-motion preferences replace morphs with short fades.
 
+Home also includes a Model container generated from the schema’s `x-model`
+definitions and `x-relations`. Select a type to highlight its incoming and
+outgoing relationships without moving the map. The inspector shows inherited
+fields, embedded values, cardinalities, real records, and model gaps. Relationship
+buttons follow related types; Escape or the Model breadcrumb clears selection.
+Selection is addressable with `/orb/model/?select=type-Song` and participates in
+browser history. The Relationships arrangement uses stable schema groupings;
+Scatter and A–Z remain available. On smaller screens the inspector follows the
+map; selecting a type scrolls to it, and clearing selection returns to the map.
+
 The framework-free modules in `apps/internal/dashboard/orb/` separate the
 content adapter (`content.js`), pure arrangement/layout engine (`engine.js`),
 URL mapping (`routes.js`), and DOM renderer (`app.js`). Presentation capabilities

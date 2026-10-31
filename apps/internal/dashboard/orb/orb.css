@@ -178,3 +178,32 @@ html.presentation-transition { view-transition-name: none; }
 @media (prefers-reduced-motion: reduce) {
   #player-lens, #player-toggle { transition: none; }
 }
+
+/* Associations sit behind the ordinary orbs; selection never changes their positions. */
+#relationships { position: absolute; inset: 0; width: 100%; pointer-events: none; overflow: visible; z-index: -1; }
+.relationship > path { fill: none; stroke: var(--hairline); stroke-width: 1; }
+.relationship.derived > path { stroke-dasharray: 5 5; }
+#relationships.selected .relationship { opacity: .2; }
+#relationships .relationship.active { opacity: 1; }
+.relationship.active > path { stroke: var(--accent); stroke-width: 1.5; }
+.relationship text { fill: var(--accent); font-size: 10px; paint-order: stroke; stroke: var(--paper); stroke-width: 5px; stroke-linejoin: round; }
+.orb.unrelated > svg, .orb.unrelated > .orb-label { opacity: .3; }
+#selection { position: absolute; right: 28px; width: 320px; max-height: calc(100svh - 250px); overflow: auto; padding: 22px; border: 1px solid var(--hairline); border-radius: 24px; background: var(--paper); z-index: 4; scrollbar-width: thin; overflow-wrap: anywhere; }
+#selection > .text-button { float: right; margin: -12px -12px 0 0; }
+#selection h1 { font-size: 24px; }
+#selection details { margin-top: 18px; }
+#selection summary { cursor: pointer; color: var(--accent); }
+.schema-fields { font-size: 11px; }
+.schema-fields dt { font-family: monospace; margin-top: 12px; }
+.schema-fields dd { margin: 4px 0 12px; }
+.schema-fields dd p { margin: 4px 0 0; }
+.schema-relation { border-bottom: 1px solid var(--hairline); padding: 10px 0; }
+.schema-relation p { margin: 6px 0 0; }
+.schema-link { padding: 0; border: 0; background: transparent; color: var(--accent); text-decoration: underline; text-align: left; }
+.schema-json { font-size: 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
+#world.nav-open #relationships, #world.nav-open #selection { opacity: 0; pointer-events: none; }
+@media (max-width: 899px) {
+  #selection { right: 16px; left: 16px; width: auto; max-height: none; margin-bottom: 100px; }
+  #selection h1 { font-size: 22px; }
+}
+#selection > .schema-link { display: block; margin: 24px auto 16px; scroll-margin-block: 100px; }

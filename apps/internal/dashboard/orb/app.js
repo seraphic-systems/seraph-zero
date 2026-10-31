@@ -1,3 +1,4 @@
+import { renderModelInspector } from './model-view.js';
 import '/shared/components/audio-player/audio-player.js';
 import { createContentSource, indexTree } from './content.js';
 import { layout, arrangements } from './engine.js';
@@ -18,10 +19,10 @@ const saved = key => { try { const value = JSON.parse(localStorage.getItem(key))
 const persist = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* Storage can be disabled; the session remains usable. */ } };
 
 try {
-  const responses = await Promise.all([fetch('/songs.json'), fetch('/catalog.json')]);
+  const responses = await Promise.all([fetch('/songs.json'), fetch('/catalog.json'), fetch('/model-schema.json')]);
   if (responses.some(response => !response.ok)) throw new Error('Library unavailable');
-  const [songs, catalog] = await Promise.all(responses.map(response => response.json()));
-  const source = createContentSource(songs, catalog), tree = source.getRoot(), index = indexTree(tree);
+  const [songs, catalog, schema] = await Promise.all(responses.map(response => response.json()));
+  const source = createContentSource(songs, catalog, schema), tree = source.getRoot(), index = indexTree(tree);
   let state = { ...readRoute(tree, new URL(location.href)), navOpen: false, viewOpen: false };
   let current, detailId, focusTimer, wheelAt = 0, touchY = null;
   const mounted = new Map();
@@ -78,13 +79,40 @@ try {
     $('#player-error').textContent = playback.error;
     if (selection) audio.setAttribute('label', `${selection.song.title} audio player`);
   });
-  const urlFor = (path, detail, arrangement, filter = '') => routeFor(path, detail, arrangement, filter, state.presentation?.[path.at(-1)] || 'orb');
+  const urlFor = (path, detail, arrangement, filter = '') => routeFor(path, detail, arrangement, filter, state.presentation?.[path.at(-1)] || 'orb', path.join('/') === state.path.join('/') ? state.selection : null);
   const lens = $('#lens'), toggle = $('#nav-toggle');
   const trailLinks = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   trailLinks.classList.add('trail-links');
   trailLinks.setAttribute('aria-hidden', 'true');
   trailLinks.setAttribute('focusable', 'false');
   $('#trail').prepend(trailLinks);
+
+  function renderConnections(scene) {
+    const svg = $('#relationships'), ns = 'http://www.w3.org/2000/svg';
+    const make = (tag, attributes) => {
+      const node = document.createElementNS(ns, tag);
+      for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+      return node;
+    };
+    svg.replaceChildren();
+    svg.style.height = `${scene.height}px`;
+    svg.classList.toggle('selected', !!scene.selection);
+    const defs = make('defs', {});
+    for (const [id, color] of [['relationship-arrow', 'var(--hairline)'], ['relationship-active', 'var(--accent)']]) {
+      const marker = make('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto' });
+      marker.append(make('path', { d: 'M 0 0 L 10 5 L 0 10 z', fill: color })); defs.append(marker);
+    }
+    svg.append(defs);
+    for (const edge of [...scene.connections].sort((a, b) => Number(a.active) - Number(b.active))) {
+      const group = make('g', { class: `relationship${edge.active ? ' active' : ''}${edge.kind === 'path-join' ? ' derived' : ''}` });
+      group.append(make('path', { d: edge.path, 'marker-end': `url(#${edge.active ? 'relationship-active' : 'relationship-arrow'})` }));
+      if (edge.active) {
+        const text = make('text', { x: edge.labelPosition.x, y: edge.labelPosition.y, 'text-anchor': 'middle' });
+        text.textContent = edge.label; group.append(text);
+      }
+      svg.append(group);
+    }
+  }
 
   function renderTrailLinks(circles) {
     const trail = circles.filter(circle => circle.role === 'trail').sort((a, b) => a.order - b.order);
@@ -110,13 +138,25 @@ try {
     if (!new URL(url, location.href).searchParams.has('arrange')) delete state.arrangement[state.path.at(-1)];
     state.navOpen = false;
     state.viewOpen = false;
-    window.scrollTo(0, 0);
+    if (current?.container.id !== route.path.at(-1)) window.scrollTo(0, 0);
     render(true);
   }
   function dispatch(action) {
     if (!action) return;
+    if (action.type === 'select') { selectNode(action.id); return; }
     const path = action.type === 'navigate' ? action.path : state.path;
-    navigate(urlFor(path, action.type === 'openDetail' ? action.id : null, state.arrangement[path.at(-1)], path.join('/') === state.path.join('/') ? state.filter : ''));
+    navigate(routeFor(path, action.type === 'openDetail' ? action.id : null, state.arrangement[path.at(-1)], path.join('/') === state.path.join('/') ? state.filter : '', state.presentation?.[path.at(-1)] || 'orb'));
+  }
+  function selectNode(id) {
+    const url = routeFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter, current.presentation, id);
+    navigate(url);
+    if (id) {
+      $('#selection h1')?.focus({ preventScroll: true });
+      if (innerWidth < 900) $('#selection').scrollIntoView({ block: 'start' });
+    } else {
+      window.scrollTo(0, 0);
+      mounted.get(current.container.id)?.focus({ preventScroll: true });
+    }
   }
   function closeDetail() { navigate(urlFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter)); }
   function step(direction) {
@@ -137,6 +177,8 @@ try {
     button.classList.toggle('current', circle.isCurrent);
     button.classList.toggle('small', circle.role === 'child' && circle.r < 30 && circle.labelPlacement === 'inside');
     button.classList.toggle('compact', circle.role === 'child' && circle.r >= 30 && circle.r < 42);
+    button.classList.toggle('unrelated', !!circle.unrelated);
+    if (circle.selectable) button.setAttribute('aria-pressed', String(circle.isCurrent)); else button.removeAttribute('aria-pressed');
     button.dataset.role = circle.role;
     button.dataset.placement = circle.labelPlacement;
     button.style.setProperty('--inverse', 50 / circle.r);
@@ -286,10 +328,11 @@ try {
     } else renderScene(next, focus, preserveNavControls);
   }
   function renderScene(next, focus, preserveNavControls) {
+    $('#world').classList.toggle('has-selection-map', !!next.container.selection);
     $('#world').style.minHeight = `${next.height}px`;
     $('#world').classList.toggle('nav-open', state.navOpen);
     document.body.classList.toggle('nav-open', state.navOpen);
-    for (const node of document.querySelectorAll('.masthead, #circles, #cards, #detail, #player-lens, footer')) node.inert = state.navOpen;
+    for (const node of document.querySelectorAll('.masthead, #circles, #cards, #detail, #selection, #player-lens, footer')) node.inert = state.navOpen;
     const visible = next.circles.filter(circle => circle.visible !== false);
     renderTrailLinks(visible);
     for (const [key, button] of mounted) if (!visible.some(circle => circle.key === key)) {
@@ -320,6 +363,18 @@ try {
       $('#cards').append(card.element);
     }
     current = next;
+    renderConnections(next);
+    const inspector = $('#selection');
+    inspector.hidden = !next.container.selection;
+    if (!inspector.hidden) {
+      if (inspector.dataset.subject !== (next.selection || next.container.id)) {
+        renderModelInspector(inspector, next.container, index.get(next.selection)?.node, { select: selectNode, close: () => selectNode(null) });
+        inspector.dataset.subject = next.selection || next.container.id;
+        inspector.scrollTop = 0;
+      }
+      inspector.style.top = `${innerWidth < 900 ? next.height - 70 : 160}px`;
+      if (innerWidth < 900) $('#world').style.minHeight = `${next.height + inspector.offsetHeight}px`;
+    }
     const section = $('#detail');
     if (current.detail) {
       const { x, y, r, id } = current.detail;
@@ -331,8 +386,8 @@ try {
       }
       detailId = id;
     } else { section.hidden = true; if (detailId) disposeDetail(); detailId = null; }
-    const subject = index.get(state.detail || current.container.id).node;
-    $('#hint').textContent = current.detail ? 'Scroll to move through items' : `${current.count} ${current.count === 1 ? 'item' : 'items'} · Open to explore`;
+    const subject = index.get(current.selection || state.detail || current.container.id).node;
+    $('#hint').textContent = current.container.selection ? `${current.count} types · Select to explore relationships` : current.detail ? 'Scroll to move through items' : `${current.count} ${current.count === 1 ? 'item' : 'items'} · Open to explore`;
     document.title = `${subject.label} · Orb · Internal`;
     $('#announcement').textContent = `${subject.label}${state.detail ? '' : `, ${current.count} ${current.count === 1 ? 'item' : 'items'}`}`;
     const recents = [subject.id, ...saved('orb-recents').filter(id => id !== subject.id)].slice(0, 12); persist('orb-recents', recents);
@@ -340,7 +395,7 @@ try {
     renderView(preserveNavControls);
     if (switchingPresentation && state.viewOpen) $('#presentation-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
     clearTimeout(focusTimer);
-    if (focus) focusTimer = setTimeout(() => (state.detail ? $('#detail h1') : mounted.get(current.container.id))?.focus({ preventScroll: true }), duration() + 100);
+    if (focus && !current.selection) focusTimer = setTimeout(() => (state.detail ? $('#detail h1') : mounted.get(current.container.id))?.focus({ preventScroll: true }), duration() + 100);
   }
   toggle.addEventListener('click', () => { state.navOpen = !state.navOpen; playerOpen(false); state.viewOpen = false; render(false); toggle.focus({ preventScroll: true }); });
   $('#view-toggle').addEventListener('click', () => { state.viewOpen = !state.viewOpen; render(false); $('#view-toggle').focus({ preventScroll: true }); });
@@ -352,6 +407,7 @@ try {
       if (state.navOpen) { state.navOpen = false; render(false); toggle.focus(); }
       else if (state.viewOpen) { state.viewOpen = false; render(false); $('#view-toggle').focus({ preventScroll: true }); }
       else if (state.detail) closeDetail();
+      else if (current.selection) selectNode(null);
     }
     if (event.target.closest('#player-lens,select,input,textarea,seraph-audio-player') || event.target.isContentEditable) return;
     if (!state.navOpen && state.detail && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); step(event.key === 'ArrowDown' ? 'next' : 'prev'); }
@@ -372,6 +428,9 @@ try {
     const delta = touchY - event.changedTouches[0].clientY; touchY = null;
     if (Math.abs(delta) > 60 && !event.target.closest('#detail,#player-lens,select,seraph-audio-player')) step(delta > 0 ? 'next' : 'prev');
   }, { passive: true });
+  new ResizeObserver(() => {
+    if (current?.container.selection && innerWidth < 900) $('#world').style.minHeight = `${current.height + $('#selection').offsetHeight + 100}px`;
+  }).observe($('#selection'));
   window.addEventListener('popstate', () => navigate(location.href, false));
   let resizeFrame;
   window.addEventListener('resize', () => { cancelAnimationFrame(resizeFrame); resizeFrame = requestAnimationFrame(() => render(false)); });

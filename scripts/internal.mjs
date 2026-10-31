@@ -105,7 +105,7 @@ export async function buildInternal(source, output) {
     throw error;
   });
   if (orbTemplate) {
-    const tree = createContentSource(songs, catalog).getRoot();
+    const tree = createContentSource(songs, catalog, modelSchema).getRoot();
     for (const { path: nodePath } of indexTree(tree).values()) {
       const directory = path.join(output, 'orb', ...nodePath.slice(1));
       await mkdir(directory, { recursive: true });

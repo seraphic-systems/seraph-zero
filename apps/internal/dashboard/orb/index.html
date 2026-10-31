@@ -10,12 +10,14 @@
   <script type="module" src="/orb/app.js"></script>
 </head>
 <body>
-  <main id="world" aria-label="Orb music workspace" tabindex="-1">
+  <main id="world" aria-label="Orb workspace" tabindex="-1">
     <header class="masthead"><a href="/orb/" id="home-link">internal <span>/ orb</span></a><a href="/">Classic workspace ↗</a></header>
     <nav id="trail" aria-label="Breadcrumb"></nav>
+    <svg id="relationships" aria-hidden="true" focusable="false"></svg>
     <div id="circles" aria-label="Library"></div>
     <div id="cards" aria-label="Library cards"></div>
     <section id="detail" aria-label="Details" hidden></section>
+    <aside id="selection" aria-label="Model inspector" hidden></aside>
     <aside id="view-lens" aria-label="Current view" hidden>
       <button id="view-toggle" type="button" aria-label="Open view options" aria-expanded="false" aria-controls="view-content">View</button>
       <div id="view-content" hidden></div>

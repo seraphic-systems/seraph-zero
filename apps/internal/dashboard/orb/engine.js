@@ -1,3 +1,4 @@
+import { relationshipGeometry } from './relationships.js';
 import { indexTree } from './content.js';
 import { presentations, resolvePresentation } from './presentations.js';
 
@@ -7,6 +8,20 @@ export const orderedChildren = (node, arrangement) => arrangement === 'az'
 const point = (x, y, r, labelPlacement = 'inside') => ({ x, y, r, labelPlacement });
 
 export const arrangements = {
+  relationships: { label: 'Relationships', layout(region, children) {
+    const columns = region.w < 500 ? 2 : 3;
+    const ordered = [...children].sort((a, b) => (a.modelPosition?.[1] || 0) - (b.modelPosition?.[1] || 0) || (a.modelPosition?.[0] || 0) - (b.modelPosition?.[0] || 0));
+    const cellWidth = region.w / columns, rowHeight = 170;
+    const occupied = new Set();
+    const positions = new Map(ordered.map((node, i) => {
+      // Honour schema grouping on wide maps; resolve shared annotation slots.
+      let slot = columns === 3 && node.modelPosition ? node.modelPosition[1] * columns + node.modelPosition[0] : i;
+      while (occupied.has(slot)) slot++;
+      occupied.add(slot);
+      return [node.id, point(region.x + (slot % columns + .5) * cellWidth, region.y + (Math.floor(slot / columns) + .5) * rowHeight, Math.min(57, cellWidth * .33))];
+    }));
+    return children.map(child => positions.get(child.id));
+  } },
   free: { label: 'Scatter', layout(region, children) {
     // Seeded best-candidate placement keeps the space organic and repeatable.
     const placed = new Map();
@@ -56,7 +71,7 @@ export function layout(tree, state, viewport) {
   const index = indexTree(tree), resolved = resolveState(tree, state), { node, path, detail } = resolved;
   const active = node.arrangements?.includes(state.arrangement?.[node.id]) ? state.arrangement[node.id] : node.arrangements?.[0] || 'free';
   const filter = (state.filter || '').trim().toLocaleLowerCase();
-  const children = orderedChildren(node, active).filter(child => !filter || child.id === detail || child.label.toLocaleLowerCase().includes(filter)), circles = [];
+  const children = orderedChildren(node, active).filter(child => !filter || child.id === detail || child.id === state.selection || child.label.toLocaleLowerCase().includes(filter)), circles = [];
   const narrow = w < 600, margin = narrow ? 28 : 60, step = narrow ? 68 : 96, trailY = narrow ? 76 : 56;
   const trail = path.map((id, i) => ({ key: id, ...point(margin + i * step, trailY, i === 0 ? 15 : 19, 'top'),
     label: index.get(id).node.label, role: 'trail', isContainer: true, isCurrent: !detail && i === path.length - 1,
@@ -64,6 +79,9 @@ export function layout(tree, state, viewport) {
   circles.push(...trail);
   // A–Z can extend vertically on small screens; the renderer exposes that scroll region.
   const region = { x: narrow ? 28 : Math.min(230, w * .21), y: 180, w: w - (narrow ? 56 : Math.min(230, w * .21) + 50), h: Math.max(190, h - 295) };
+  if (node.selection && w >= 900) region.w = Math.max(180, region.w - 360);
+  const selection = node.selection && node.children.some(child => child.id === state.selection) ? state.selection : null;
+  const related = new Set((node.relationships || []).filter(edge => edge.source === selection || edge.target === selection).flatMap(edge => [edge.source, edge.target]));
   const presentation = resolvePresentation(node, state.presentation?.[node.id]);
   const alternate = !detail && presentation !== 'orb', items = [];
   let positions;
@@ -74,17 +92,21 @@ export function layout(tree, state, viewport) {
   } else {
     if (active === 'free' && children.length > 2) region.h = Math.max(region.h, Math.ceil(children.length / Math.max(1, Math.floor(region.w / 140))) * 150);
     if (active === 'az' && narrow) region.h = Math.max(region.h, children.length * 64);
-    positions = arrangements[active].layout(region, children);
+    if (active === 'relationships') region.h = Math.max(region.h, Math.ceil(node.children.length / (region.w < 500 ? 2 : 3)) * 170);
+    const layoutChildren = active === 'relationships' ? node.children : children;
+    const allPositions = arrangements[active].layout(region, layoutChildren);
+    positions = children.map(child => allPositions[layoutChildren.indexOf(child)]);
+    if (active === 'relationships') region.h = Math.max(region.h, ...allPositions.map(position => position.y + position.r - region.y + 30));
   }
   children.forEach((child, i) => {
-    const action = isContainer(child) ? { type: 'navigate', path: [...path, child.id] } : { type: 'openDetail', id: child.id };
+    const action = isContainer(child) ? { type: 'navigate', path: [...path, child.id] } : { type: node.selection ? 'select' : 'openDetail', id: child.id };
     if (alternate && presentations[presentation].supports(child)) {
       items.push({ key: child.id, ...positions[i], presentation, node: child, action });
     } else {
       const box = positions[i];
       const position = alternate ? point(box.x + box.width / 2, box.y + box.height / 2, Math.min(65, box.width / 2, box.height / 2)) : box;
       circles.push({ key: child.id, ...position, label: child.label, role: 'child',
-        isContainer: isContainer(child), isCurrent: false, host: node.id, order: 20 + i, action });
+        isContainer: isContainer(child), isCurrent: selection === child.id, selectable: !!node.selection, unrelated: !!selection && selection !== child.id && !related.has(child.id), host: node.id, order: 20 + i, action });
     }
   });
   if (!children.length) circles.push({ key: `empty-${node.id}`, ...point(region.x + region.w / 2, region.y + region.h / 2, 65),
@@ -113,5 +135,5 @@ export function layout(tree, state, viewport) {
       r: Math.max(1, Math.min(w - inset * 2, availableHeight) / 2),
     });
   }
-  return { circles, items, presentation, navOrb, detail: detailLayout, container: node, count: children.length, active, path, height: detail ? h : Math.max(h, region.y + region.h + 90) };
+  return { selection, connections: relationshipGeometry(node.relationships || [], circles.filter(circle => circle.role === 'child'), selection), circles, items, presentation, navOrb, detail: detailLayout, container: node, count: children.length, active, path, height: detail ? h : Math.max(h, region.y + region.h + 90) };
 }

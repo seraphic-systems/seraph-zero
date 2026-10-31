@@ -212,7 +212,7 @@ test('orb UI gets static deep links alongside the unchanged classic dashboard', 
   await writeFile(path.join(source, 'dashboard/orb/index.html'), '<script type="module" src="/orb/app.js"></script>');
   await buildInternal(source, output);
   assert.equal(await readFile(path.join(output, 'index.html'), 'utf8'), '<h1>Library</h1>');
-  for (const route of ['orb', 'orb/music', 'orb/music/songs', 'orb/music/songs/song-higher', 'orb/music/albums']) {
+  for (const route of ['orb', 'orb/music', 'orb/music/songs', 'orb/music/songs/song-higher', 'orb/music/albums', 'orb/model', 'orb/model/type-Song']) {
     assert.match(await readFile(path.join(output, route, 'index.html'), 'utf8'), /src="\/orb\/app.js"/);
   }
 });
