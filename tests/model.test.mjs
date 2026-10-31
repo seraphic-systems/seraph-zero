@@ -281,7 +281,13 @@ test('Idea records need no title and preserve explicit Song and set references',
   await record('ideas/idea.md', { id: 'idea-20261030-abc', set_id: parent, song: 'work' });
   catalog = await buildCatalog(source);
   assert.ok(catalog.edges.some((edge) => edge.relation === 'idea-song' && edge.target === 'Song:work'));
-  assert.throws(() => validateRecord('Idea', { id: 'idea' }, 'idea.md'), /idea.md/);
+  validateRecord('Idea', { id: 'idea' }, 'idea.md');
+  validateRecord('Idea', { id: 'idea', project_id: 'work-project' }, 'idea.md');
+  assert.throws(() => validateRecord('Idea', { id: 'idea', project_id: 'work-project', set_id: parent }, 'idea.md'), /idea.md/);
+  await record('ideas/historical.md', { id: 'historical-idea' });
+  catalog = await buildCatalog(source);
+  assert.ok(catalog.records.some((record) => record.key === 'Idea:historical-idea'));
+  assert.ok(!catalog.edges.some((edge) => edge.source === 'Idea:historical-idea'));
   await record('ideas/idea.md', { id: 'idea-20261030-abc', set_id: parent, song: 'missing' });
   await assert.rejects(buildCatalog(source), /unknown Song missing/);
 });

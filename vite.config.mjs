@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { setsApi } from './scripts/sets-api.mjs';
+import { fragmentsApi } from './scripts/fragments-api.mjs';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 
@@ -21,7 +22,12 @@ export default defineConfig(async ({ mode }) => {
     plugins: [{
       name: 'rebuild-static-sites',
       configureServer(server) {
-        if (site === 'internal') server.middlewares.use(setsApi(root));
+        if (site === 'internal') {
+          server.middlewares.use(setsApi(root));
+          const fragments = fragmentsApi(root);
+          server.middlewares.use(fragments);
+          server.httpServer?.once('close', () => { void fragments.close(); });
+        }
         const sources = [`apps/${site}`, 'shared', 'scripts'].map((name) => path.join(root, name));
         server.watcher.add(sources);
         let timer;

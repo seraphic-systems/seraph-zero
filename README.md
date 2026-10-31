@@ -529,8 +529,9 @@ Unresolved associations and relationships not yet modeled are labeled explicitly
 
 [`apps/internal/model/schema.json`](apps/internal/model/schema.json) is the
 canonical JSON Schema (draft 7) collection for source records. Validate a record
-against `#/definitions/<Type>`. The ten catalog entities are Member, Album, AlbumTrack,
-Song, Mix, MixFile, StemExport, Project, LiveSet, and Snapshot. SetAnalysis and
+against `#/definitions/<Type>`. Catalog entities include Member, Horizon, Policy,
+Album, AlbumTrack, Song, Idea, MusicFragment, Mix, MixFile, StemExport, Project,
+LiveSet, and Snapshot. SetAnalysis and
 PluginUsage are embedded values; SetRegistry describes the registry envelope.
 Markdown contracts cover front matter, not Markdown bodies. Unknown fields are
 allowed for additive evolution. YAML dates are normalized to JSON date strings;
@@ -548,6 +549,99 @@ tracks combining several works. Secondary IDs must be unique and exclude the
 primary song. For example, `primary_song: work` with `secondary_songs: [other-work]`
 links one track to both songs. Leave associations absent until known; names alone
 do not establish a link.
+
+### Music fragments and historical Ideas
+
+`MusicFragment` records live in `apps/internal/data/music-fragments/*.md`. Each
+has a permanent generated `id`, `root: music-keepers`, and an audio `file` path
+relative to `/Volumes/MusicArchive/_keepers`. Audio remains on the external drive;
+the catalog can build while that drive is disconnected. Key and positive numeric
+BPM are optional in the general model. Tags, loop/one-shot classification,
+melody/sound, character, role, notes, memories, and review flags are preserved
+when recorded.
+
+The optional `idea` reference identifies the musical Idea the fragment came from.
+One Idea can have many fragments; reuse elsewhere does not change this origin.
+Ideas can have an optional working `title` without changing their permanent ID.
+Historical Ideas need neither a project nor a Live Set. Song associations remain
+explicit; a matching group name alone does not establish one.
+
+The initial import uses [Samples Part II](https://docs.google.com/spreadsheets/d/16NC9GygRWgXcIFXm7h-0d49B1cp2n9J8Ss9GD-XtC60/edit).
+It includes 102 distinct files with Key, BPM, and Group filled in across the dated
+tabs, creating 21 Ideas from the named groups. Eight fragments labeled `Orphan`
+have no Idea association. The untagged `Sheet1` inventory contributes no records.
+Each fragment retains its source spreadsheet ID, tab ID/name, row, Group, and
+date label. Imported record timestamps describe this import, not musical creation.
+
+For later imports, read the live workbook and save a JSON snapshot containing
+`spreadsheet_id` and `rows`. Each row contains `sheet`, `sheet_id`, `row` (the
+1-based worksheet row), and `values` (columns A–P in their original order).
+Run `node scripts/import-music-fragments.mjs <snapshot.json>`. The importer selects
+rows with Key, BPM, and Group, excludes rows marked Delete, validates metadata,
+and checks all selected audio paths before writing. It never deletes or edits
+audio. IDs derive from source identity rather than mutable working titles;
+reimporting the same file creates no duplicates and preserves existing metadata
+and creation timestamps. This is an additive import, not a live spreadsheet sync.
+The Model page exposes fragments and their Idea links; the Sets workspace still
+lists Ideas through associated Live Sets.
+
+Choose **Fragments** in the dashboard navigation, or open
+`http://127.0.0.1:5175/fragments.html` with `npm run dev:internal` running.
+Browse all fragments grouped by Idea, select one Idea, or choose
+**Unassociated / Orphan**. Search covers filenames, Idea names, keys, BPM, tags,
+notes, and memories. Each row includes musical metadata and expandable notes with
+a link to the original spreadsheet row. The shared player supports pause and seeking
+and plays one fragment at a time.
+
+Playback uses the local `/api/fragments/<id>/audio` endpoint. Uploaded R2 previews
+play without the sample drive. If R2 is not configured or the remote object is
+unavailable, the endpoint tries the original file. Set `SERAPH_FRAGMENT_LIBRARY`
+before starting the server to override the library root. Only cataloged files
+inside that root can stream. For local playback, WAV and other browser audio
+formats stream directly; AIF/AIFF files get a temporary PCM WAV preview on first
+listen, using macOS `afconvert` or `ffmpeg` on other platforms. These local previews
+are cached for the server session and cleaned up on shutdown. The static build
+includes the browser and metadata, but listening requires the local dev server;
+sample audio and credentials are never bundled into the build.
+
+#### Private Cloudflare R2 previews
+
+The intended bucket is `seraph-music-fragments`. Keep public access disabled.
+The local server authenticates to R2 and proxies audio, including byte-range
+requests for seeking; the browser receives neither R2 credentials nor signed URLs.
+No bucket CORS rule is needed for this server-to-server path.
+
+1. Create the private bucket in your Cloudflare account. For upload and playback,
+   create an R2 S3 access key with **Object Read & Write** permissions scoped to
+   this bucket. These are R2 Access Key ID / Secret Access Key credentials, not
+   a general Cloudflare bearer API token.
+2. Copy `.env.r2.local.example` to `.env.r2.local` and fill in the Cloudflare
+   account ID and R2 credentials locally. The file is ignored by Git. Never put
+   these values into fragment records, frontend code, or `VITE_*` variables.
+3. With MusicArchive connected and `ffmpeg` installed, run
+   `npm run fragments:prepare` to generate 192 kbps AAC/M4A listening copies in
+   the ignored `tmp/music-fragment-previews/` directory. Original files stay intact.
+4. Run `npm run fragments:upload`. It reuses prepared files, uploads new objects,
+   verifies their size/content type/checksum metadata via R2, then records the
+   object reference under each fragment's optional `preview` field. Existing
+   creation timestamps and notes are preserved. Repeating the command reuses
+   matching remote objects. Interruptions can be resumed by rerunning it.
+5. Restart `npm run dev:internal`, which automatically reads `.env.r2.local`.
+   Uploaded previews now play without the archive drive. Internet access is still
+   required for R2; offline downloads are not implemented.
+
+If using credentials that already have bucket-creation permission, the upload
+command also accepts `-- --create-bucket` to create the private bucket through
+the S3 API. Bucket-scoped object credentials cannot create buckets; creating the
+bucket in the Cloudflare dashboard first avoids needing broader credentials.
+An optional `R2_ENDPOINT` supports EU/FedRAMP jurisdiction endpoints.
+
+Remote object names include the permanent fragment ID and preview SHA-256, so
+changed audio gets a new object rather than replacing the previous version. A
+record receives `preview` metadata only after a verified upload. Preparation alone
+does not change records. Old remote versions are retained; there is no automatic
+deletion. After uploading, playback can use separate bucket-scoped read-only R2
+credentials. Configuration follows the [Cloudflare R2 S3 SDK documentation](https://developers.cloudflare.com/r2/examples/aws/aws-sdk-js-v3/).
 
 The documented schema extensions are:
 
@@ -647,8 +741,11 @@ for a static catalog rebuild.
 New ideas live at `~/Ableton/<idea-id> Project/<idea-id>.als`, with
 Idea metadata under `apps/internal/data/ideas/<idea-id>.md` and a separate project
 record under `apps/internal/data/projects/`. The generated ID uses the UTC date
-and a random suffix; no working title is required. Backfilled Ideas use stable
-project/set IDs and leave unknown creation dates as null. Existing project names are
+and a random suffix; no working title is required. Historical Ideas may omit both
+`project_id` and `set_id` when the association is unknown or not applicable, or
+reference one when known; an Idea cannot reference both. Unknown creation dates
+remain null. The Sets workspace lists Ideas through their associated sets.
+Existing project names are
 never reused or overwritten. The default blank template is detected from an
 installed Ableton application. Set `SERAPH_LIVE_TEMPLATE` to a blank `.als` file
 before starting the server to override it. The macOS `open` command uses the

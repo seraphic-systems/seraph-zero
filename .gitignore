@@ -6,3 +6,4 @@ __pycache__/
 /apps/internal/data/set-registry.json.lock
 
 /tmp
+.env.r2.local

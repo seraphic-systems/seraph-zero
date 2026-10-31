@@ -4,7 +4,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import matter from 'gray-matter';
 import { validateRecord } from './model.mjs';
 
-const directories = { Member: 'members', Horizon: 'horizons', Policy: 'policies', Album: 'albums', AlbumTrack: 'album-tracks', Song: 'songs', Idea: 'ideas', Mix: 'mixes', StemExport: 'stems', Project: 'projects' };
+const directories = { Member: 'members', Horizon: 'horizons', Policy: 'policies', Album: 'albums', AlbumTrack: 'album-tracks', Song: 'songs', Idea: 'ideas', MusicFragment: 'music-fragments', Mix: 'mixes', StemExport: 'stems', Project: 'projects' };
 const defaultSource = fileURLToPath(new URL('../apps/internal/', import.meta.url));
 
 // The creation boundary stamps once. Loading, editing and rebuilding never stamp.

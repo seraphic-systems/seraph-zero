@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Seraph internal model",
   "description": "Source record contracts. x-model and x-relations are documentation annotations used by the local Model viewer.",
-  "x-version": 11,
+  "x-version": 14,
   "definitions": {
     "Policy": {
       "title": "Policy",
@@ -932,11 +932,202 @@
         }
       ]
     },
-    "Idea": {
-      "title": "Idea",
-      "description": "A musical idea with a permanent generated ID, independent of a working title. Retained when it develops into a Song. Anchored to a project or a standalone set; branches share the idea.",
+    "MusicFragment": {
+      "title": "Music fragment",
+      "description": "A reusable piece of recorded musical material, such as a loop or one shot. Original audio stays in the external sample library, with an optional private R2 listening copy. An optional Idea records where the material originated, independently of where it may be reused.",
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Optional display name; the filename is used when absent."
+        },
+        "root": {
+          "const": "music-keepers",
+          "description": "External sample-library root, currently /Volumes/MusicArchive/_keepers. Audio is not copied by the build."
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+\\.(?:wav|aif|aiff|flac|mp3|ogg|m4a)$",
+          "description": "Audio path relative to root. File availability is separate from metadata validity."
+        },
+        "idea": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Originating Idea ID. Omit when unknown; the source Group label Orphan does not identify an Idea."
+        },
+        "key": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Musical key as recorded, including ambiguous or relative major/minor labels."
+        },
+        "bpm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Positive tempo as recorded; retain fractional values."
+        },
+        "preview": {
+          "type": "object",
+          "description": "Verified browser-friendly listening copy in a private R2 bucket. Populated only after a successful upload and remote readback. Original archive paths remain separate.",
+          "properties": {
+            "provider": {
+              "const": "r2"
+            },
+            "bucket": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+            },
+            "key": {
+              "type": "string",
+              "pattern": "^music-fragments/[a-z0-9-]+/[a-f0-9]{64}\\.m4a$"
+            },
+            "content_type": {
+              "const": "audio/mp4"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "uploaded_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "provider",
+            "bucket",
+            "key",
+            "content_type",
+            "sha256",
+            "source_sha256",
+            "bytes",
+            "uploaded_at"
+          ],
+          "additionalProperties": false
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "uniqueItems": true
+        },
+        "sample_type": {
+          "type": "string",
+          "enum": [
+            "loop",
+            "one shot"
+          ]
+        },
+        "melody_sound": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "character": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "role": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "memories": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "notes": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "needs_review": {
+          "type": "boolean"
+        },
+        "review_reason": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "source": {
+          "type": "object",
+          "description": "Original spreadsheet location and labels, preserved for traceability. These dates are source labels, not record creation timestamps.",
+          "properties": {
+            "spreadsheet_id": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "sheet_id": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sheet": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "row": {
+              "type": "integer",
+              "minimum": 2
+            },
+            "group": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "date": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "spreadsheet_id",
+            "sheet_id",
+            "sheet",
+            "row",
+            "group"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "id",
+        "root",
+        "file"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/music-fragments/*.md",
+        "identity": "Permanent generated id",
+        "position": [
+          0,
+          4
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "Idea": {
+      "title": "Idea",
+      "description": "A musical idea with a permanent generated ID, independent of a working title. Retained when it develops into a Song. May reference a project or a standalone set; omit both when the association is unknown or not applicable. New-idea creation records a project association, and branches share the idea.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Optional working name, independent of the permanent ID."
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
@@ -965,28 +1156,12 @@
       "required": [
         "id"
       ],
-      "oneOf": [
-        {
-          "required": [
-            "project_id"
-          ],
-          "not": {
-            "required": [
-              "set_id"
-            ]
-          }
-        },
-        {
-          "required": [
-            "set_id"
-          ],
-          "not": {
-            "required": [
-              "project_id"
-            ]
-          }
-        }
-      ],
+      "not": {
+        "required": [
+          "project_id",
+          "set_id"
+        ]
+      },
       "additionalProperties": true,
       "x-model": {
         "source": "data/ideas/*.md",
@@ -1004,6 +1179,16 @@
     }
   },
   "x-relations": [
+    {
+      "id": "fragment-idea",
+      "source": "MusicFragment",
+      "target": "Idea",
+      "field": "idea",
+      "label": "originated in",
+      "cardinality": "Fragment → 0…1 Idea; Idea → 0…many fragments",
+      "description": "Recorded origin from the sample-library Group label. Omitted when unknown; reuse in another work does not change this origin.",
+      "kind": "reference"
+    },
     {
       "id": "policy-album",
       "source": "Policy",

@@ -6,7 +6,9 @@
     "analyze:sets": "python3 scripts/ableton.py",
     "dev": "vite",
     "dev:seraphic": "vite --mode seraphic-systems",
-    "dev:internal": "vite --mode internal",
+    "dev:internal": "node --env-file-if-exists=.env.r2.local node_modules/vite/bin/vite.js --mode internal",
+    "fragments:prepare": "node scripts/upload-fragment-previews.mjs --prepare",
+    "fragments:upload": "node --env-file-if-exists=.env.r2.local scripts/upload-fragment-previews.mjs",
     "build:internal": "node scripts/build.mjs internal",
     "build": "node scripts/build.mjs",
     "test": "node --test",
@@ -16,6 +18,7 @@
     "node": ">=22.12"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1161.0",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "gray-matter": "^4.0.3",

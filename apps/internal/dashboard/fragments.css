@@ -1,0 +1,46 @@
+.fragments-main { max-width: 1240px; padding-bottom: 180px; }
+.fragments-main nav { flex-wrap: wrap; gap: 16px 24px; }
+.fragment-tools { display: flex; align-items: end; gap: 24px; margin: 30px 0; }
+.fragment-tools label { flex: 1; max-width: 620px; }
+.fragment-tools input { display: block; width: 100%; margin-top: 7px; padding: 12px 14px; background: var(--color-surface-inset); border: 1px solid var(--color-border); border-radius: 5px; color: inherit; font: inherit; }
+#fragment-summary { margin: 0 0 12px; color: var(--color-text-muted); font-size: 12px; }
+.fragment-workspace { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 36px; }
+.idea-sidebar { position: sticky; top: 20px; align-self: start; max-height: 75vh; overflow: auto; }
+.idea-sidebar h2 { font-size: 13px; margin-bottom: 12px; }
+.group-button { display: flex; justify-content: space-between; gap: 12px; width: 100%; background: transparent; border: 0; color: inherit; text-align: left; padding: 10px 12px; border-radius: 4px; cursor: pointer; font: inherit; }
+.group-button:hover, .group-button[aria-pressed="true"] { background: var(--color-surface-inset); }
+.group-button[aria-pressed="true"] { box-shadow: inset 2px 0 var(--color-accent); }
+.group-button span:last-child { color: var(--color-text-muted); font-size: 12px; }
+.fragment-group { margin-bottom: 36px; }
+.fragment-group-heading { display: flex; align-items: baseline; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--color-border); }
+.fragment-group-heading h2 { font-size: 19px; }
+.fragment-group-heading span { color: var(--color-text-muted); font-size: 12px; }
+.fragment-row { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--color-border); }
+.fragment-row.is-playing .fragment-name { color: var(--color-accent); }
+.fragment-play { align-self: start; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--color-border); background: transparent; color: var(--color-accent); cursor: pointer; font-size: 13px; }
+.fragment-play:hover { background: var(--color-surface-inset); }
+.fragment-name { display: block; font-size: 13px; font-weight: 500; overflow-wrap: anywhere; margin-bottom: 7px; }
+.fragment-badges { display: flex; flex-wrap: wrap; gap: 5px 12px; color: var(--color-text-muted); font-size: 11px; }
+.fragment-badges .musical { color: var(--color-text); }
+.fragment-row details { margin-top: 9px; color: var(--color-text-muted); font-size: 12px; }
+.fragment-row summary { cursor: pointer; }
+.fragment-row dl { display: grid; grid-template-columns: 85px minmax(0, 1fr); gap: 8px 14px; margin: 14px 0; }
+.fragment-row dt { color: var(--color-text); }
+.fragment-row dd { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.fragment-player { position: fixed; bottom: 0; left: 0; right: 0; padding: 18px max(24px, calc((100vw - 1192px) / 2)); background: var(--color-background); border-top: 1px solid var(--color-border); box-shadow: 0 -8px 30px #0002; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 420px); gap: 8px 24px; z-index: 10; }
+.fragment-player[hidden] { display: none; }
+.now-playing { min-width: 0; }
+.now-playing .eyebrow { margin-bottom: 3px; font-size: 10px; }
+.now-playing strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.now-playing p { margin-bottom: 0; }
+.fragment-player audio { width: 100%; align-self: center; }
+#playback-status { grid-column: 1 / -1; margin: 0; color: var(--color-text-muted); font-size: 12px; }
+.fragment-footer { margin-top: 36px; }
+@media (max-width: 700px) {
+  .fragment-workspace { grid-template-columns: 1fr; gap: 24px; }
+  .idea-sidebar { position: static; max-height: 210px; }
+  #fragment-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fragment-tools { align-items: stretch; flex-direction: column; gap: 10px; }
+  .fragment-player { grid-template-columns: 1fr; padding: 12px 20px; }
+  .fragments-main { margin-top: 24px; padding: 0 20px 220px; }
+}

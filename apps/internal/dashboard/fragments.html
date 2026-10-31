@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Music Fragments · Seraph</title>
+  <link rel="icon" href="shared/favicon.ico">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="fragments.css">
+  <script src="fragments.js" type="module"></script>
+</head>
+<body>
+  <main class="fragments-main">
+    <nav aria-label="Workspace"><a href="./">Songs</a><a href="sets.html">Live Sets</a><a href="fragments.html" aria-current="page">Fragments</a><a href="model.html">Model</a></nav>
+    <header><p class="eyebrow">Pieces to return to</p><h1>Music Fragments</h1><p class="muted">Browse by the idea they came from. Listen for what comes next.</p></header>
+    <div class="fragment-tools"><label for="fragment-search">Find a fragment<input id="fragment-search" type="search" placeholder="Search ideas, filenames, keys, tags, memories…" autocomplete="off"></label><p id="fragment-summary" role="status" aria-live="polite">Loading fragments…</p></div>
+    <div class="fragment-workspace">
+      <aside class="idea-sidebar" aria-label="Filter by originating Idea"><h2>Ideas</h2><div id="fragment-groups"></div></aside>
+      <section id="fragment-results" aria-label="Music fragments" aria-busy="true"></section>
+    </div>
+    <section id="fragment-player" class="fragment-player" aria-label="Fragment player" hidden>
+      <div class="now-playing"><p class="eyebrow">Listening to</p><strong id="playing-title"></strong><p id="playing-meta" class="muted"></p></div>
+      <audio id="fragment-audio" controls preload="none"></audio>
+      <p id="playback-status" role="status" aria-live="polite"></p>
+    </section>
+    <footer class="fragment-footer muted">Listen through the local dashboard. Hosted previews play without the archive drive; originals are used when needed and available.</footer>
+  </main>
+</body>
+</html>

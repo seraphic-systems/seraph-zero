@@ -20,3 +20,7 @@
 - Create an Ableton template and test with Coldness with whole export flow
 
 - Promote to Song flow
+
+- Next step is add blogs to internal and write first blog?!?
+- Finish Landing Page
+- Deploy

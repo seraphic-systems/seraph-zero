@@ -67,7 +67,7 @@ export async function buildCatalog(source, audioMixes = []) {
     byKey.set(key, record);
     return record;
   }
-  for (const [type, directory] of [['Member', 'members'], ['Horizon', 'horizons'], ['Policy', 'policies'], ['Album', 'albums'], ['AlbumTrack', 'album-tracks'], ['Song', 'songs'], ['Idea', 'ideas'], ['Mix', 'mixes'], ['StemExport', 'stems'], ['Project', 'projects']]) {
+  for (const [type, directory] of [['Member', 'members'], ['Horizon', 'horizons'], ['Policy', 'policies'], ['Album', 'albums'], ['AlbumTrack', 'album-tracks'], ['Song', 'songs'], ['Idea', 'ideas'], ['MusicFragment', 'music-fragments'], ['Mix', 'mixes'], ['StemExport', 'stems'], ['Project', 'projects']]) {
     for (const name of await files(path.join(source, 'data', directory), '.md', type === 'StemExport')) {
       const file = `data/${directory}/${name}`;
       const data = normalize(matter(await readFile(path.join(source, file), 'utf8')).data);
