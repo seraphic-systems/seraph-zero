@@ -23,6 +23,27 @@ try {
   const mounted = new Map();
   const audio = el('seraph-audio-player');
   const lens = $('#lens'), toggle = $('#nav-toggle');
+  const trailLinks = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  trailLinks.classList.add('trail-links');
+  trailLinks.setAttribute('aria-hidden', 'true');
+  trailLinks.setAttribute('focusable', 'false');
+  $('#trail').prepend(trailLinks);
+
+  function renderTrailLinks(circles) {
+    const trail = circles.filter(circle => circle.role === 'trail').sort((a, b) => a.order - b.order);
+    const segments = trail.slice(1).map((circle, i) => {
+      const previous = trail[i];
+      // The visible ring has radius 49 in each orb's 100-unit SVG.
+      const start = previous.x + previous.r * .98, end = circle.x - circle.r * .98;
+      return `M ${start} ${circle.y} H ${end}`;
+    }).join(' ');
+    if (trailLinks.firstChild?.getAttribute('d') === segments) return;
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', segments);
+    trailLinks.replaceChildren(path);
+    trailLinks.getAnimations().forEach(animation => animation.cancel());
+    animate(trailLinks, [{ opacity: 0 }, { opacity: 1 }], { delay: reduced.matches ? 0 : 650, duration: reduced.matches ? 100 : 450 });
+  }
 
   function navigate(url, push = true) {
     if (push) history.pushState(null, '', url);
@@ -157,6 +178,7 @@ try {
     const next = layout(tree, state, { width: innerWidth, height: innerHeight, scrollY: window.scrollY });
     $('#world').style.minHeight = `${next.height}px`;
     const visible = next.circles.filter(circle => circle.visible !== false);
+    renderTrailLinks(visible);
     for (const [key, button] of mounted) if (!visible.some(circle => circle.key === key)) {
       mounted.delete(key);
       const from = getComputedStyle(button).transform;
