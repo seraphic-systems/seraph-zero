@@ -227,7 +227,6 @@ try {
       detailId = id;
     } else { section.hidden = true; if (detailId) { audio.pause(); audio.remove(); } detailId = null; }
     const subject = index.get(state.detail || current.container.id).node;
-    $('#location').textContent = current.path.map(id => index.get(id).node.label).join(' / ');
     $('#hint').textContent = current.detail ? 'Scroll to move through items' : `${current.count} ${current.count === 1 ? 'orb' : 'orbs'} · Open to explore`;
     document.title = `${subject.label} · Orb · Internal`;
     $('#announcement').textContent = `${subject.label}${state.detail ? '' : `, ${current.count} ${current.count === 1 ? 'item' : 'items'}`}`;

@@ -61,14 +61,6 @@ export function layout(tree, state, viewport) {
     label: index.get(id).node.label, role: 'trail', isContainer: true, isCurrent: !detail && i === path.length - 1,
     host: path[i - 1], order: i, action: { type: 'navigate', path: path.slice(0, i + 1) } }));
   circles.push(...trail);
-  if (path.length > 1) {
-    const parent = index.get(path.at(-2)).node;
-    parent.children.filter(child => isContainer(child) && child.id !== node.id).forEach((child, i) => circles.push({
-      key: child.id, ...point(margin + (path.length - 2) * step, 125 + i * 63, 13, 'side'), label: child.label,
-      role: 'sibling', isContainer: true, isCurrent: false, host: parent.id, order: path.length + i,
-      action: { type: 'navigate', path: [...path.slice(0, -1), child.id] },
-    }));
-  }
   // A–Z can extend vertically on small screens; the renderer exposes that scroll region.
   const region = { x: narrow ? 28 : Math.min(230, w * .21), y: 180, w: w - (narrow ? 56 : Math.min(230, w * .21) + 50), h: Math.max(190, h - 295) };
   if (active === 'free' && children.length > 2) region.h = Math.max(region.h, Math.ceil(children.length / Math.max(1, Math.floor(region.w / 140))) * 150);

@@ -62,7 +62,6 @@ footer { position: fixed; left: 94px; right: 32px; bottom: 32px; display: flex; 
 
   #hint { display: none; }
   footer { right: 14px; left: 82px; bottom: 30px; gap: 8px; }
-  #location { max-width: 45%; }
   #detail { padding: 0 6px; }
   .orb-label { font-size: 12px; }
 }
