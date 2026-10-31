@@ -92,27 +92,16 @@ export function layout(tree, state, viewport) {
       role: 'trail', isContainer: false, isCurrent: true, order: path.length, action: { type: 'openDetail', id: detail } });
     detailLayout = { id: detail, x, y, r, prev: things[current - 1]?.id, next: things[current + 1]?.id };
   }
-  const navOrb = { x: 46, y: h - 48, r: 23, arrangements: node.arrangements || ['free'] };
+  const navOrb = { x: 46, y: h - 48, r: 23 };
   if (state.navOpen) {
-    const scrollY = viewport.scrollY || 0;
-    const min = Math.min(110, w * .28), max = Math.min(175, w * .32, h * .25);
-    let best = { score: -Infinity, x: w / 2, y: h / 2, r: min };
-    for (let x = min + 16; x <= w - min - 16; x += 24) for (let y = min + 115; y <= h - min - 20; y += 24) {
-      const clearance = Math.min(x - 16, w - x - 16, y - 110, h - y - 20,
-        ...circles.filter(circle => circle.visible !== false).map(circle => Math.hypot(x - circle.x, y - (circle.y - scrollY)) - circle.r - 18));
-      const score = Math.min(max, clearance) - .045 * Math.hypot(x, h - y);
-      if (score > best.score) best = { score, x, y, r: Math.max(min, Math.min(max, clearance)) };
-    }
-    Object.assign(navOrb, best);
-    for (const circle of circles.filter(circle => circle.role !== 'trail' && circle.visible !== false)) {
-      const dx = circle.x - navOrb.x, dy = circle.y - scrollY - navOrb.y, distance = Math.hypot(dx, dy);
-      if (distance < navOrb.r + circle.r + 24) {
-        circle.r *= .55;
-        const target = navOrb.r + circle.r + 24;
-        circle.x = navOrb.x + (distance ? dx / distance : 1) * target;
-        circle.y = navOrb.y + scrollY + (distance ? dy / distance : 0) * target;
-      }
-    }
+    // Reserve the breadcrumb band while giving the expanded Orb the remaining viewport.
+    const top = narrow ? 132 : 112, bottom = 24, inset = 16;
+    const availableHeight = Math.max(2, h - top - bottom);
+    Object.assign(navOrb, {
+      x: w / 2,
+      y: top + availableHeight / 2,
+      r: Math.max(1, Math.min(w - inset * 2, availableHeight) / 2),
+    });
   }
   return { circles, navOrb, detail: detailLayout, container: node, count: children.length, active, path, height: detail ? h : Math.max(h, region.y + region.h + 90) };
 }

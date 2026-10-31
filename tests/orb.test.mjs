@@ -56,14 +56,20 @@ test('detail preserves node identity and follows active arrangement order', () =
   assert.equal(result.circles.filter(circle => circle.role === 'trail' && circle.isCurrent).length, 1);
   assert.equal(layout(tree, { ...initial, path: ['home', 'missing'] }, { width: 1000, height: 800 }).container.id, 'home');
 });
-test('nav stays inside viewport and makes room in crowded views', () => {
-  for (const width of [390, 1440]) {
-    const result = layout(tree, { ...initial, navOpen: true }, { width, height: 844 });
-    const nav = result.navOrb;
-    assert.ok(nav.x >= nav.r && nav.x + nav.r <= width);
-    assert.ok(nav.y >= nav.r && nav.y + nav.r <= 844);
-    for (const circle of result.circles.filter(circle => circle.role === 'child')) {
-      assert.ok(Math.hypot(circle.x - nav.x, circle.y - nav.y) >= nav.r + circle.r);
+test('expanded nav fills the available viewport below the breadcrumb without displacing the library', () => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 844 }, { width: 844, height: 390 }]) {
+    for (const detail of [null, 'song-s0']) {
+      const state = { ...initial, detail };
+      const closed = layout(tree, state, viewport);
+      const result = layout(tree, { ...state, navOpen: true }, { ...viewport, scrollY: 500 });
+      const nav = result.navOrb;
+      const top = viewport.width < 600 ? 132 : 112;
+      assert.equal(nav.x, viewport.width / 2);
+      assert.ok(nav.x - nav.r >= 16 && nav.x + nav.r <= viewport.width - 16);
+      assert.ok(nav.y - nav.r >= top && nav.y + nav.r <= viewport.height - 24);
+      assert.equal(nav.r * 2, Math.min(viewport.width - 32, viewport.height - top - 24));
+      assert.deepEqual(result.circles, closed.circles);
+      assert.deepEqual(result.detail, closed.detail);
     }
   }
 });
@@ -77,7 +83,7 @@ test('scatter is the default, repeatable, and keeps circles apart', () => {
   for (const width of [357, 390, 900, 1440]) {
     const result = layout(tree, initial, { width, height: 844 });
     assert.equal(result.active, 'free');
-    assert.ok(!result.navOrb.arrangements.includes('ring'));
+    assert.ok(!result.container.arrangements.includes('ring'));
     const children = result.circles.filter(circle => circle.role === 'child');
     for (let i = 0; i < children.length; i++) for (let j = i + 1; j < children.length; j++) {
       assert.ok(Math.hypot(children[i].x - children[j].x, children[i].y - children[j].y) > children[i].r + children[j].r + 10);

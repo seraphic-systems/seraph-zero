@@ -74,3 +74,38 @@ footer::before { content: ""; position: fixed; bottom: 0; left: 0; right: 0; hei
 
 .filter-label { margin: 16px auto 0; max-width: 200px; color: var(--color-text-muted); }
 .filter-label input { width: 100%; margin-top: 5px; border: 0; border-bottom: 1px solid var(--hairline); background: transparent; color: var(--ink); padding: 7px 0; font: inherit; border-radius: 0; }
+
+/* The expanded navigation Orb takes focus while the breadcrumb retains context. */
+.masthead, #circles, footer { transition: opacity 350ms ease; }
+#detail { transition: filter 350ms ease; }
+body.nav-open { overflow: hidden; }
+#world.nav-open .masthead,
+#world.nav-open #circles,
+#world.nav-open footer { opacity: 0; pointer-events: none; }
+#world.nav-open #detail { filter: opacity(0); pointer-events: none; }
+#world.nav-open #trail { position: fixed; top: 0; left: 0; width: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  .masthead, #circles, #detail, footer { transition: none; }
+}
+
+/* Local view controls keep the library present and usable. */
+#view-lens { position: fixed; top: 112px; right: 28px; z-index: 9; width: 46px; height: 46px; border: 1px solid var(--hairline); border-radius: 50%; background: var(--paper); transition: width 350ms ease, height 350ms ease, opacity 350ms ease; }
+#view-toggle { position: absolute; inset: 0; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; font-size: 10px; color: var(--accent); }
+#view-lens.active { border-color: var(--accent); }
+#view-lens.open { width: 280px; height: 280px; }
+#view-lens.open #view-toggle { top: 12px; left: calc(50% - 22px); font-size: 20px; }
+#view-content { padding: 64px 38px 32px; text-align: center; }
+#view-content h2 { margin: 0 0 14px; font-size: 10px; font-weight: 400; letter-spacing: .08em; color: var(--accent); }
+#view-content .filter-label { margin-top: 12px; }
+#view-count { margin: 12px 0 0; font-size: 10px; }
+#world.nav-open #view-lens { opacity: 0; pointer-events: none; }
+@media (max-width: 600px) {
+  #view-lens { top: auto; bottom: 22px; right: 18px; }
+  #view-lens.open { left: 16px; right: 16px; bottom: 84px; width: auto; height: 222px; border-radius: 28px; box-shadow: 0 8px 30px #0000000a; }
+  #view-content { padding: 26px 32px; }
+  #view-lens.open #view-toggle { top: 8px; left: auto; right: 8px; }
+  footer { right: 82px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #view-lens { transition: none; }
+}

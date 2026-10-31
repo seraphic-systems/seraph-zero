@@ -18,7 +18,7 @@ try {
   if (responses.some(response => !response.ok)) throw new Error('Library unavailable');
   const [songs, catalog] = await Promise.all(responses.map(response => response.json()));
   const source = createContentSource(songs, catalog), tree = source.getRoot(), index = indexTree(tree);
-  let state = { ...readRoute(tree, new URL(location.href)), navOpen: false };
+  let state = { ...readRoute(tree, new URL(location.href)), navOpen: false, viewOpen: false };
   let current, detailId, focusTimer, wheelAt = 0, touchY = null;
   const mounted = new Map();
   const audio = el('seraph-audio-player');
@@ -52,6 +52,7 @@ try {
     // The query is authoritative for the current container, including Back to its default.
     if (!new URL(url, location.href).searchParams.has('arrange')) delete state.arrangement[state.path.at(-1)];
     state.navOpen = false;
+    state.viewOpen = false;
     window.scrollTo(0, 0);
     render(true);
   }
@@ -85,7 +86,7 @@ try {
     button.style.setProperty('--label-width', `${circle.labelWidth || Math.max(55, circle.r * 1.7)}px`);
     button.querySelector('.inner').style.display = circle.isContainer ? '' : 'none';
     const label = button.querySelector('.orb-label');
-    label.textContent = circle.role === 'detail' && !state.navOpen ? '' : circle.label;
+    label.textContent = circle.role === 'detail' ? '' : circle.label;
     button.querySelectorAll('circle:not(.mark)').forEach(ring => { ring.style.strokeWidth = String(50 / circle.r); });
     button.querySelector('.mark').setAttribute('r', String(2.5 * 50 / circle.r));
     button.setAttribute('aria-label', `${circle.label}${circle.isContainer ? ', container' : ''}`);
@@ -138,30 +139,45 @@ try {
       if (song.notes.trim()) { const notes = el('div', '', 'notes'); notes.innerHTML = song.notes; section.append(el('h2', 'Song notes'), notes); }
     }
   }
-  function renderNav(preserveControls = false) {
+  function renderNav() {
     const nav = current.navOrb;
     const from = getComputedStyle(lens).transform;
     lens.getAnimations().forEach(animation => animation.cancel());
     lens.style.transform = transform(nav);
     lens.style.setProperty('--inverse', 50 / nav.r);
-    lens.style.setProperty('--content-width', `${nav.r * 1.65}px`);
+    lens.style.setProperty('--content-width', `${Math.min(420, nav.r * 1.65)}px`);
     lens.classList.toggle('open', state.navOpen);
     animate(lens, [{ transform: reduced.matches ? transform(nav) : from }, { transform: transform(nav) }]);
     toggle.setAttribute('aria-expanded', String(state.navOpen));
-    toggle.setAttribute('aria-label', state.navOpen ? 'Close sort and filter' : 'Open sort and filter');
+    toggle.setAttribute('aria-label', state.navOpen ? 'Close your space' : 'Open your space');
     toggle.firstChild.textContent = state.navOpen ? '×' : '✳';
-    if (preserveControls) return;
-    const content = $('#nav-content'); content.hidden = !state.navOpen; content.replaceChildren();
-    content.append(el('h2', 'Sort & view'));
+    $('#nav-content').hidden = !state.navOpen;
+  }
+  function renderView(preserveControls = false) {
+    const view = $('#view-lens'), button = $('#view-toggle'), content = $('#view-content');
+    const available = !current.detail && current.container.children.length > 1;
+    view.hidden = !available;
+    view.inert = state.navOpen;
+    view.classList.toggle('open', state.viewOpen);
+    view.classList.toggle('active', current.active !== (current.container.arrangements?.[0] || 'free') || !!state.filter);
+    button.setAttribute('aria-expanded', String(state.viewOpen));
+    button.setAttribute('aria-label', `${state.viewOpen ? 'Close' : 'Open'} view options for ${current.container.label}`);
+    button.textContent = state.viewOpen ? '×' : 'View';
+    content.hidden = !state.viewOpen;
+    if (preserveControls) {
+      $('#view-count').textContent = `${current.count} of ${current.container.children.length} items`;
+      return;
+    }
+    content.replaceChildren(el('h2', `${current.container.label} · View`));
     const choices = el('div', null, 'arrangements');
-    nav.arrangements.forEach(id => {
+    (current.container.arrangements || ['free']).forEach(id => {
       const button = el('button', id === 'az' ? 'A–Z' : 'Scatter');
       button.setAttribute('aria-pressed', String(current.active === id));
       button.addEventListener('click', () => {
         state.arrangement[current.container.id] = id;
         history.pushState(null, '', routeFor(state.path, state.detail, id, state.filter));
         render(false);
-        $('#nav-content').querySelector(`[aria-pressed="true"]`)?.focus({ preventScroll: true });
+        $('#view-content').querySelector(`[aria-pressed="true"]`)?.focus({ preventScroll: true });
       }); choices.append(button);
     }); content.append(choices);
     const label = el('label', 'Filter titles', 'filter-label');
@@ -172,11 +188,16 @@ try {
       render(false, true);
     });
     label.append(input); content.append(label);
+    const count = el('p', `${current.count} of ${current.container.children.length} items`, 'muted');
+    count.id = 'view-count'; count.setAttribute('role', 'status'); content.append(count);
 
   }
   function render(focus, preserveNavControls = false) {
     const next = layout(tree, state, { width: innerWidth, height: innerHeight, scrollY: window.scrollY });
     $('#world').style.minHeight = `${next.height}px`;
+    $('#world').classList.toggle('nav-open', state.navOpen);
+    document.body.classList.toggle('nav-open', state.navOpen);
+    for (const node of document.querySelectorAll('.masthead, #circles, #detail, footer')) node.inert = state.navOpen;
     const visible = next.circles.filter(circle => circle.visible !== false);
     renderTrailLinks(visible);
     for (const [key, button] of mounted) if (!visible.some(circle => circle.key === key)) {
@@ -197,7 +218,7 @@ try {
     const section = $('#detail');
     if (current.detail) {
       const { x, y, r, id } = current.detail;
-      section.hidden = state.navOpen;
+      section.hidden = false;
       Object.assign(section.style, { left: `${x - r * .76}px`, top: `${y - r * .72}px`, width: `${r * 1.52}px`, height: `${r * 1.44}px` });
       if (detailId !== id) {
         detailContent(index.get(id).node);
@@ -211,20 +232,23 @@ try {
     document.title = `${subject.label} · Orb · Internal`;
     $('#announcement').textContent = `${subject.label}${state.detail ? '' : `, ${current.count} ${current.count === 1 ? 'item' : 'items'}`}`;
     const recents = [subject.id, ...saved('orb-recents').filter(id => id !== subject.id)].slice(0, 12); persist('orb-recents', recents);
-    renderNav(preserveNavControls);
+    renderNav();
+    renderView(preserveNavControls);
     clearTimeout(focusTimer);
     if (focus) focusTimer = setTimeout(() => (state.detail ? $('#detail h1') : mounted.get(current.container.id))?.focus({ preventScroll: true }), duration() + 100);
   }
-  toggle.addEventListener('click', () => { state.navOpen = !state.navOpen; render(false); toggle.focus({ preventScroll: true }); });
+  toggle.addEventListener('click', () => { state.navOpen = !state.navOpen; state.viewOpen = false; render(false); toggle.focus({ preventScroll: true }); });
+  $('#view-toggle').addEventListener('click', () => { state.viewOpen = !state.viewOpen; render(false); $('#view-toggle').focus({ preventScroll: true }); });
   $('#home-link').addEventListener('click', event => { event.preventDefault(); navigate(base); });
   $('#world').addEventListener('click', event => { if (state.detail && (event.target === $('#world') || event.target === $('#circles'))) closeDetail(); });
   $('#world').addEventListener('keydown', event => {
     if (event.key === 'Escape') {
       if (state.navOpen) { state.navOpen = false; render(false); toggle.focus(); }
+      else if (state.viewOpen) { state.viewOpen = false; render(false); $('#view-toggle').focus({ preventScroll: true }); }
       else if (state.detail) closeDetail();
     }
     if (event.target.closest('select,input,textarea,seraph-audio-player') || event.target.isContentEditable) return;
-    if (state.detail && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); step(event.key === 'ArrowDown' ? 'next' : 'prev'); }
+    if (!state.navOpen && state.detail && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); step(event.key === 'ArrowDown' ? 'next' : 'prev'); }
   });
   const canScroll = (target, delta) => {
     const section = target.closest('#detail');
