@@ -1,0 +1,1209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Seraph internal model",
+  "description": "Source record contracts. x-model and x-relations are documentation annotations used by the local Model viewer.",
+  "x-version": 11,
+  "definitions": {
+    "Policy": {
+      "title": "Policy",
+      "description": "A chosen course of action or ongoing practice intended to support one or more Horizons. Describes how to pursue preferred outcomes and can be revised as experience reveals what works.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "description": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "The concrete course of action or ongoing practice to follow."
+        },
+        "horizons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Stable Horizon IDs this policy is intended to support. At least one is required."
+        },
+        "album": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Optional stable Album ID for the work this policy concerns."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "horizons"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/policies/*.md",
+        "identity": "Permanent id",
+        "position": [
+          2,
+          4
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "Horizon": {
+      "title": "Horizon",
+      "description": "A value, guiding principle, long-term vision, or near-term goal for the practice. Levels progress from foundational purpose toward concrete action. Level measures the role of a horizon, not its importance or how far in the future it lies.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "level": {
+          "type": "integer",
+          "enum": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "description": "1 — Values: enduring goods that give the practice its purpose. 2 — Guiding principles: ongoing commitments that shape decisions and how the values are practiced. 3 — Long-term vision: the future way of life, community, or organization the practice seeks to bring about. 4 — Near-term goals: concrete outcomes or milestones pursued to advance the vision. Classify by role, not deadline: a long-term vision remains level 3 even when it becomes closer in time."
+        },
+        "description": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "The value or guiding perspective expressed in full."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "level",
+        "description"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/horizons/*.md",
+        "identity": "Permanent id",
+        "position": [
+          2,
+          3
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "Album": {
+      "title": "Album",
+      "description": "A release containing ordered track slots.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "description": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Optional overview of the album and its release experience."
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/albums/*.md",
+        "identity": "Permanent id",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "AlbumTrack": {
+      "title": "Album track",
+      "description": "An ordered slot on an album, based on a primary song and optionally incorporating additional songs. Song associations may be left unrecorded until known.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "album": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Stable Album ID."
+        },
+        "track_number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Positive position, unique within the album."
+        },
+        "primary_song": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Stable Song ID of the main musical work this track is based on. Omit when unknown."
+        },
+        "secondary_songs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "uniqueItems": true,
+          "description": "Stable Song IDs of additional musical works incorporated into this track. Omit or use an empty array when none are recorded. Must not include primary_song."
+        }
+      },
+      "required": [
+        "id",
+        "album",
+        "track_number"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/album-tracks/*.md",
+        "identity": "Permanent id",
+        "position": [
+          1,
+          0
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "Song": {
+      "title": "Song",
+      "description": "The musical work, independent of projects, dated mixes, and file formats.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "song_created": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date",
+          "description": "Verified song creation date; null or absent when unknown."
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/songs/*.md",
+        "identity": "Permanent id",
+        "position": [
+          1,
+          1
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "Mix": {
+      "title": "Mix",
+      "description": "One dated version of a song. Audio formats share metadata and associations. Metadata can exist without local audio.",
+      "type": "object",
+      "properties": {
+        "song": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Stable Song ID."
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "Version date; together with song forms the mix identity."
+        },
+        "bpm": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "description": "Positive constant tempo. Use either bpm or bpm_changes."
+        },
+        "bpm_changes": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "minItems": 2
+            }
+          ],
+          "description": "At least two positive tempos in playback order; no timing is implied."
+        },
+        "key": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Free-text musical key; blank is unknown."
+        }
+      },
+      "required": [
+        "song",
+        "date"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/mixes/*.md + media/mixes/*",
+        "identity": "song + YYYY-MM-DD",
+        "position": [
+          0,
+          1
+        ]
+      },
+      "not": {
+        "required": [
+          "bpm",
+          "bpm_changes"
+        ],
+        "properties": {
+          "bpm": {
+            "type": "number"
+          },
+          "bpm_changes": {
+            "type": "array"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "MixFile": {
+      "title": "Mix file",
+      "description": "A local audio file belonging to a dated mix. Missing audio does not invalidate mix metadata.",
+      "type": "object",
+      "properties": {
+        "mix": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "file": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "format": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "mix",
+        "file",
+        "format"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "media/mixes/*",
+        "identity": "Filename including extension",
+        "position": [
+          0,
+          2
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "StemExport": {
+      "title": "Stem export",
+      "description": "A grouped export with a full-mix master and individual stems. Existing exports were cataloged after export and have no verified source Live Set snapshot. Raw and cleaned describe processing stage, not provenance, and have separate identities.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "song": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Stable Song ID, or blank when unresolved."
+        },
+        "folder": {
+          "type": "string",
+          "pattern": "^media/stems/(raw|cleaned)/.+",
+          "description": "Relative to apps/internal; individual audio stays local."
+        },
+        "master": {
+          "type": "string",
+          "pattern": "^[^/\\\\]+\\.[wW][aA][vV]$",
+          "description": "Full-mix WAV filename inside the export folder."
+        },
+        "mixes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "uniqueItems": true,
+          "description": "Mix associations recorded after export through audio comparison or review. These indicate shared core audio, not verified export provenance or a common source Live Set snapshot. [] means unresolved."
+        },
+        "bpm": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "description": "Positive constant tempo. Use either bpm or bpm_changes. Describes the export as a whole; may be copied from explicitly linked mixes when available and consistent. Leave blank when unresolved."
+        },
+        "bpm_changes": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "minItems": 2
+            }
+          ],
+          "description": "At least two positive tempos in playback order; no timing is implied. Describes the export as a whole; may be copied from explicitly linked mixes when available and consistent. Leave blank when unresolved."
+        },
+        "key": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Free-text musical key; blank is unknown. Describes the export as a whole; may be copied from explicitly linked mixes when available and consistent. Leave blank when unresolved."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "folder",
+        "master",
+        "mixes"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/stems/**/*.md",
+        "identity": "Permanent id matching filename",
+        "position": [
+          1,
+          2
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ],
+      "not": {
+        "required": [
+          "bpm",
+          "bpm_changes"
+        ],
+        "properties": {
+          "bpm": {
+            "type": "number"
+          },
+          "bpm_changes": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "Project": {
+      "title": "Ableton project",
+      "description": "An inventory record for a project folder. Song association may be unresolved. Filename dates are labels.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "song": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Stable Song ID, or blank when unresolved."
+        },
+        "root": {
+          "const": "ableton",
+          "description": "ableton resolves to ~/Ableton."
+        },
+        "folder": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Project folder relative to the root."
+        },
+        "main_set": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Main .als path; must also appear in sets."
+        },
+        "sets": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "uniqueItems": true,
+          "description": "Original inventory of non-backup .als paths relative to the project folder."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "root",
+        "folder",
+        "main_set",
+        "sets"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/projects/*.md",
+        "identity": "Permanent id",
+        "position": [
+          2,
+          1
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "LiveSet": {
+      "title": "Live Set",
+      "description": "A registered .als file with a permanent UUID, path history, optional parent branch, and archive status.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Path history in order; the final path is current."
+        },
+        "xml_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "parent_set_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Permanent UUID of an explicitly branched parent."
+        },
+        "branched_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "archived_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Present when archived; neither file nor identity is removed."
+        },
+        "branch_origin": {
+          "type": "object",
+          "properties": {
+            "snapshot_file": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "source_sha256": {
+              "type": "string"
+            },
+            "xml_sha256": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "snapshot_file",
+            "source_sha256",
+            "xml_sha256"
+          ],
+          "description": "Snapshot filename and hashes captured at branch creation."
+        },
+        "project_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Explicit owning project for newly created ideas and their branches."
+        },
+        "song": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional explicit association for a set without a project. Otherwise inherit the owning project’s song."
+        }
+      },
+      "required": [
+        "id",
+        "paths",
+        "xml_sha256"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/set-registry.json → sets[]",
+        "identity": "Registry UUID",
+        "position": [
+          2,
+          2
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "Snapshot": {
+      "title": "Analysis snapshot",
+      "description": "An immutable report containing changed set analyses, or the parent and child states at branching. Schema 1 history has no set UUIDs.",
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "enum": [
+            1,
+            2
+          ],
+          "description": "Report format version, independent of model schema version."
+        },
+        "analyzer_version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Analyzer version; preserve when comparing results."
+        },
+        "analyzed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "event": {
+          "type": "string"
+        },
+        "parent_set_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "child_set_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SetAnalysis"
+          },
+          "description": "Changed set states; not necessarily a complete scan."
+        },
+        "errors": {
+          "type": "array",
+          "items": {},
+          "description": "Scan errors captured by the analyzer."
+        }
+      },
+      "required": [
+        "schema_version",
+        "analyzer_version",
+        "analyzed_at",
+        "source",
+        "sets",
+        "errors"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/set-snapshots/*.json",
+        "identity": "Report filename",
+        "position": [
+          2,
+          3
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "SetAnalysis": {
+      "title": "Set analysis",
+      "description": "A value embedded in a snapshot, not a separate catalog identity.",
+      "type": "object",
+      "properties": {
+        "set_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "set_path": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "source_path": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "source_sha256": {
+          "type": "string"
+        },
+        "xml_sha256": {
+          "type": "string"
+        },
+        "live_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bpm": {
+          "description": "Saved main/master track tempo in BPM; null when unavailable. Does not describe tempo automation or scene tempo changes. Optional in historical snapshots.",
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "external_plugin_instances": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "distinct_plugins": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "instances_by_format": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "plugins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PluginUsage"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "set_path",
+        "source_sha256",
+        "xml_sha256",
+        "plugins",
+        "warnings"
+      ],
+      "additionalProperties": true
+    },
+    "PluginUsage": {
+      "title": "Plugin usage",
+      "description": "A plugin count inside an analysis. Counts describe saved devices; they do not establish that the plugin is installed.",
+      "type": "object",
+      "properties": {
+        "format": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "plugin_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "instances": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "format",
+        "name",
+        "plugin_id",
+        "instances"
+      ],
+      "additionalProperties": true
+    },
+    "SetRegistry": {
+      "title": "Set registry",
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "sets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LiveSet"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "sets"
+      ],
+      "additionalProperties": true
+    },
+    "RecordBase": {
+      "title": "Shared record fields",
+      "description": "Inherited by every catalog entity. Creation is record creation in the workspace, not the musical work or source-file creation time.",
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "default": null,
+          "description": "Shared field. Timestamp when this record was created in the workspace, with a timezone. Null when unknown; never inferred from names, media dates, filesystem timestamps, or rebuild time."
+        }
+      }
+    },
+    "Member": {
+      "title": "Member",
+      "description": "A person participating in the team, with skills and optional profile and contact details.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Full or preferred display name."
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "uniqueItems": true,
+          "description": "Areas of expertise, such as software engineering or audio production. Omit or use an empty array until recorded."
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "uniqueItems": true,
+          "description": "Team responsibilities or titles, when recorded."
+        },
+        "bio": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Optional short introduction."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Optional contact email."
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://",
+          "description": "Optional HTTP or HTTPS profile, portfolio, or personal website."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/members/*.md",
+        "identity": "Permanent id",
+        "position": [
+          0,
+          3
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "Idea": {
+      "title": "Idea",
+      "description": "A musical idea with a permanent generated ID, independent of a working title. Retained when it develops into a Song. Anchored to a project or a standalone set; branches share the idea.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "song": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Song this idea developed into; absent or null while exploring."
+        },
+        "project_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "set_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "project_id"
+          ],
+          "not": {
+            "required": [
+              "set_id"
+            ]
+          }
+        },
+        {
+          "required": [
+            "set_id"
+          ],
+          "not": {
+            "required": [
+              "project_id"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/ideas/*.md",
+        "identity": "Permanent generated id",
+        "position": [
+          1,
+          3
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    }
+  },
+  "x-relations": [
+    {
+      "id": "policy-album",
+      "source": "Policy",
+      "target": "Album",
+      "field": "album",
+      "label": "concerns",
+      "cardinality": "Policy → 0…1 album; album → 0…many policies",
+      "description": "The album this course of action concerns; omitted for policies unrelated to a specific album.",
+      "kind": "reference"
+    },
+    {
+      "id": "policy-horizon",
+      "source": "Policy",
+      "target": "Horizon",
+      "field": "horizons",
+      "label": "supports",
+      "cardinality": "Policy → 1…many Horizons; Horizon → 0…many policies",
+      "description": "The preferred outcomes or values this course of action is intended to support, rather than a guarantee of achievement.",
+      "kind": "reference"
+    },
+    {
+      "id": "track-album",
+      "source": "AlbumTrack",
+      "target": "Album",
+      "field": "album",
+      "label": "slot on",
+      "cardinality": "Each track → 1 album; album → 0…many tracks",
+      "description": "Track order lives in track_number.",
+      "kind": "reference"
+    },
+    {
+      "id": "track-primary-song",
+      "source": "AlbumTrack",
+      "target": "Song",
+      "field": "primary_song",
+      "label": "primarily based on",
+      "cardinality": "Each track → 0…1 primary song; song → 0…many tracks",
+      "description": "The main musical work this track is based on; omitted when unknown.",
+      "kind": "reference"
+    },
+    {
+      "id": "track-secondary-song",
+      "source": "AlbumTrack",
+      "target": "Song",
+      "field": "secondary_songs",
+      "label": "also incorporates",
+      "cardinality": "Each track → 0…many secondary songs; song → 0…many tracks",
+      "description": "Additional musical works incorporated into the track, distinct from its primary song.",
+      "kind": "reference"
+    },
+    {
+      "id": "mix-song",
+      "source": "Mix",
+      "target": "Song",
+      "field": "song",
+      "label": "version of",
+      "cardinality": "Each mix → 1 song; song → 0…many mixes",
+      "description": "Identity is song plus date, independent of audio format.",
+      "kind": "reference"
+    },
+    {
+      "id": "file-mix",
+      "source": "MixFile",
+      "target": "Mix",
+      "field": "mix",
+      "label": "file of",
+      "cardinality": "Each file → 1 mix; mix → 0…many files",
+      "description": "Generated from local audio filenames; audio is optional.",
+      "kind": "reference"
+    },
+    {
+      "id": "stem-song",
+      "source": "StemExport",
+      "target": "Song",
+      "field": "song",
+      "label": "associated with",
+      "cardinality": "Each export → 0…1 song; song → 0…many exports",
+      "description": "Blank song means unresolved.",
+      "kind": "reference"
+    },
+    {
+      "id": "stem-mix",
+      "source": "StemExport",
+      "target": "Mix",
+      "field": "mixes",
+      "label": "shares core audio with",
+      "cardinality": "Export → 0…many mixes; mix → 0…many exports",
+      "description": "An association recorded after export through audio comparison or review, indicating a clear shared core arrangement. It does not verify identical mastering, duration, or a common source Live Set snapshot.",
+      "kind": "reference"
+    },
+    {
+      "id": "project-song",
+      "source": "Project",
+      "target": "Song",
+      "field": "song",
+      "label": "associated with",
+      "cardinality": "Each project → 0…1 song; song → 0…many projects",
+      "description": "Recorded association; not inferred by the viewer.",
+      "kind": "reference"
+    },
+    {
+      "id": "project-set",
+      "source": "Project",
+      "target": "LiveSet",
+      "field": "sets",
+      "label": "inventories",
+      "cardinality": "Project → 0…many sets; each path match → 1 registered set",
+      "description": "Derived by exact current registry path under ~/Ableton and the project folder. Unregistered inventory paths remain unresolved; newly branched sets are not added to the original inventory.",
+      "kind": "path-join"
+    },
+    {
+      "id": "set-parent",
+      "source": "LiveSet",
+      "target": "LiveSet",
+      "field": "parent_set_id",
+      "label": "branches from",
+      "cardinality": "Each set → 0…1 parent; parent → 0…many branches",
+      "description": "An explicitly created branch, not an inferred file similarity.",
+      "kind": "reference"
+    },
+    {
+      "id": "snapshot-set",
+      "source": "Snapshot",
+      "target": "LiveSet",
+      "field": "sets[].set_id",
+      "label": "captures",
+      "cardinality": "Snapshot → 0…many sets; set → 0…many snapshots",
+      "description": "Schema 1 analyses lack UUIDs and are left unlinked. Reports may contain only changed sets.",
+      "kind": "reference"
+    },
+    {
+      "id": "branch-origin",
+      "source": "LiveSet",
+      "target": "Snapshot",
+      "field": "branch_origin.snapshot_file",
+      "label": "origin captured in",
+      "cardinality": "Each set → 0…1 origin report; report → 0…many branches",
+      "description": "The snapshot recorded when the branch was made.",
+      "kind": "reference"
+    },
+    {
+      "id": "set-project",
+      "source": "LiveSet",
+      "target": "Project",
+      "field": "project_id",
+      "label": "belongs to",
+      "cardinality": "Set → 0…1 project; project → 0…many sets",
+      "description": "Recorded for new ideas; branches inherit their project ID.",
+      "kind": "reference"
+    },
+    {
+      "id": "set-song",
+      "source": "LiveSet",
+      "target": "Song",
+      "field": "song",
+      "label": "explicitly associated with",
+      "cardinality": "Set → 0…1 song; song → 0…many sets",
+      "description": "For sets without a project association. Project-associated sets use Project.song.",
+      "kind": "reference"
+    },
+    {
+      "id": "idea-song",
+      "source": "Idea",
+      "target": "Song",
+      "field": "song",
+      "label": "developed into",
+      "cardinality": "Idea → 0…1 Song; Song → 0…many ideas",
+      "description": "Recorded association; preserved after linking the idea to a song.",
+      "kind": "reference"
+    },
+    {
+      "id": "idea-project",
+      "source": "Idea",
+      "target": "Project",
+      "field": "project_id",
+      "label": "explored in",
+      "cardinality": "Idea → 0…1 Project; Project → 0…many ideas",
+      "description": "Recorded association; preserved after linking the idea to a song.",
+      "kind": "reference"
+    },
+    {
+      "id": "idea-set",
+      "source": "Idea",
+      "target": "LiveSet",
+      "field": "set_id",
+      "label": "starts with",
+      "cardinality": "Idea → 0…1 LiveSet; LiveSet → 0…many ideas",
+      "description": "Recorded association; preserved after linking the idea to a song.",
+      "kind": "reference"
+    }
+  ],
+  "x-gaps": [
+    {
+      "title": "Projects / Live Sets → mixes / exports",
+      "description": "These provenance links have not been established. Existing mix associations do not identify the exact source Live Set or snapshot used for an export. Capturing source snapshot references at export time is future work; the viewer does not infer provenance from names or dates."
+    },
+    {
+      "title": "Cleaned exports → raw exports",
+      "description": "Raw and cleaned exports are separate records. No source-export reference is recorded yet."
+    }
+  ],
+  "$comment": "Validate an individual source record against #/definitions/<Type>. This document collects contracts; it is not the schema of catalog.json. Unknown fields are allowed for additive evolution. Markdown bodies are outside these front-matter contracts."
+}

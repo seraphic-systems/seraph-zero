@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live Sets · Seraph</title>
+  <link rel="icon" href="shared/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="shared/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="shared/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="shared/apple-touch-icon.png">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="sets.css">
+  <script src="sets.js" type="module"></script>
+</head>
+<body>
+  <main class="sets-main">
+    <nav aria-label="Workspace"><a href="./">Songs</a><a href="sets.html" aria-current="page">Live Sets</a><a href="model.html">Model</a></nav>
+    <header class="sets-heading"><div><p class="eyebrow">A place to begin. A place to return.</p><h1>Live Sets</h1><p class="muted">Start something new, or pick up where you left off.</p></div><button id="refresh" class="secondary">Refresh saved sets</button></header>
+    <button id="new-idea" class="new-idea" disabled><span class="new-plus">＋</span><span><strong>New Live Set</strong><small>A fresh idea. No song association needed.</small></span><span aria-hidden="true">↗</span></button>
+    <p id="status" role="status" aria-live="polite">Loading your workspace…</p>
+    <div class="sets-workspace">
+      <section class="pick-up" aria-label="Pick up your work">
+        <label class="search-label" for="work-search">Find an idea or song</label><input type="search" id="work-search" placeholder="Search your workspace…" autocomplete="off">
+        <section aria-labelledby="ideas-title"><div class="list-heading"><h2 id="ideas-title">Ideas</h2><span id="idea-count" class="muted"></span></div><p class="muted">Room to explore. These aren’t linked to a song yet.</p><div id="idea-list"></div></section>
+        <section aria-labelledby="songs-title"><div class="list-heading"><h2 id="songs-title">Songs</h2><span id="song-count" class="muted"></span></div><p class="muted">Continue with the most recently saved set.</p><div id="song-list"></div></section>
+        <details class="archive-drawer"><summary>Archived sets <span id="archive-count"></span></summary><div id="archived-list"></div></details>
+      </section>
+      <section class="work-detail" aria-label="Continue working">
+        <div id="selection-empty"><p class="eyebrow">Back to the music</p><h2>What would you like to work on?</h2><p class="muted">Choose an idea or a song. Your latest saved set will be ready to open in Ableton.</p></div>
+        <div id="selection" hidden>
+          <p id="selection-kind" class="eyebrow"></p><h2 id="selected-title"></h2><p id="selected-subtitle" class="muted"></p>
+          <div id="selected-set" hidden>
+            <button id="open-set" class="open-set" disabled>Open in Ableton ↗</button><p id="saved-time" class="muted"></p>
+            <details id="association-panel" class="association-panel"><summary>Link to a song</summary><p class="muted" id="association-help"></p><form id="association-form"><label for="song-association">Song</label><select id="song-association"></select><button type="submit" class="secondary" id="save-association">Save association</button></form></details>
+            <details class="set-options"><summary>Versions & set details</summary><p id="selected-path" class="muted path"></p><p id="selected-analysis" class="muted"></p><div id="related-sets"></div><div id="lineage" class="lineage"></div>
+              <form id="branch-form"><label for="branch-name">Try another direction</label><input id="branch-name" maxlength="100" placeholder="e.g. Quieter ending" required autocomplete="off"><p class="muted">Branch from this set’s latest saved state. Save in Ableton first.</p><button class="secondary" id="make-branch" type="submit">Make branch</button></form>
+              <button id="archive-set" class="secondary">Archive set</button><p class="muted">Archiving hides the set. Its files and history stay intact.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+    </div>
+    <dialog id="new-dialog"><form id="new-form"><button id="cancel-new" type="button" class="dialog-close" aria-label="Cancel new idea">×</button><p class="eyebrow">Follow a thought</p><h2>Start a new idea</h2><p class="muted">A blank Live Set in its own project folder. It gets a unique date-based ID automatically. You can link it to a song later.</p><p id="new-error" class="status-error" hidden role="alert"></p><button class="open-set" id="create-idea" type="submit">Create & open in Ableton ↗</button></form></dialog>
+  </main>
+</body>
+</html>

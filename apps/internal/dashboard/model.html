@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model · Seraph</title>
+  <link rel="icon" href="shared/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="shared/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="shared/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="shared/apple-touch-icon.png">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="model.css">
+  <script src="model.js" type="module"></script>
+</head>
+<body>
+  <main class="model-main">
+    <nav aria-label="Workspace"><a href="./">Songs</a><a href="sets.html">Live Sets</a><a href="model.html" aria-current="page">Model</a></nav>
+    <header class="model-heading"><div><p class="eyebrow">The workspace, connected</p><h1>Model</h1><p class="muted">Explore the types, what they mean, and how your records connect.</p></div><a class="schema-link" href="model-schema.json" download>Download schema ↗</a></header>
+    <p id="model-status" role="status">Loading the model…</p>
+    <div id="model-content" hidden>
+      <div class="model-layout">
+        <section aria-label="Type relationships" class="map-panel">
+          <div class="map-heading"><h2>Type map</h2><p class="muted">Select a type to inspect it. Arrows point to the referenced type.</p></div>
+          <div id="type-map" class="type-map"><svg id="connections" aria-hidden="true"></svg><div id="type-nodes"></div></div>
+          <div class="map-legend"><span><i></i> Recorded reference</span><span><i class="derived"></i> Exact path lookup</span></div>
+          <div class="relation-strip" id="map-relations" aria-label="Selected type relationships"></div>
+        </section>
+        <section class="type-inspector" aria-label="Selected type" id="type-inspector"></section>
+      </div>
+      <section class="gaps-section" aria-labelledby="gaps-title"><p class="eyebrow">Room to connect</p><h2 id="gaps-title">Relationships not yet recorded</h2><div id="model-gaps" class="model-gaps"></div></section>
+      <footer class="model-footer">Generated from the workspace’s schema and records at build time. Refresh after a rebuild to see registry changes. Audio is optional; unresolved associations stay visible.</footer>
+    </div>
+  </main>
+</body>
+</html>

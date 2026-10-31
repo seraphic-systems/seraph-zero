@@ -1,0 +1,17 @@
+---
+created_at: null
+id: wont-let-you-go-10-30-26
+title: "wont-let-you-go-10-30-26"
+song: wont-let-you-go
+root: ableton
+folder: "wont-let-you-go-10-30-26 Project"
+main_set: "wont-let-you-go-10-30-26.als"
+sets:
+  - "wont-let-you-go-10-30-26.als"
+---
+
+Inventoried on 2026-10-30 from `~/Ableton`.
+
+Song association is based on the project and Live Set names: [wont-let-you-go](../songs/wont-let-you-go.md).
+
+Backup Live Sets belong to this project and are not cataloged individually. Filename dates are preserved as labels, not verified song creation or mix dates.

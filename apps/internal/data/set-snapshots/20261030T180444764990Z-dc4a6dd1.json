@@ -1,0 +1,68 @@
+{
+  "schema_version": 2,
+  "analyzer_version": 1,
+  "analyzed_at": "2026-10-30T18:04:44.764990+00:00",
+  "source": "~/Ableton",
+  "event": "branch",
+  "parent_set_id": "da652ca3-ea35-4e47-9710-021af5244db2",
+  "child_set_id": "55d0e5a5-ea7f-4854-81b7-afb56dd799da",
+  "sets": [
+    {
+      "source_sha256": "344bc723198ed2a0b6f9a6162a44fb25f6d2a05474784734fc66ace516a552f0",
+      "xml_sha256": "626e3c9381516a2e2dd08f67a79a1ae066453c7a3bd68beb042e0977adaaebb3",
+      "live_version": "Ableton Live 12.4.15",
+      "external_plugin_instances": 2,
+      "distinct_plugins": 2,
+      "instances_by_format": {
+        "VST3": 2
+      },
+      "plugins": [
+        {
+          "format": "VST3",
+          "name": "Auto-Tune Artist",
+          "plugin_id": "1245764500:540296558:-1936443048:-611032587",
+          "instances": 1
+        },
+        {
+          "format": "VST3",
+          "name": "Synthesizer V Studio 2 Plugin",
+          "plugin_id": "-1412567295:-1853687061:1148481123:1398166322",
+          "instances": 1
+        }
+      ],
+      "warnings": [],
+      "set_id": "da652ca3-ea35-4e47-9710-021af5244db2",
+      "source_path": "~/Ableton/all-the-things-you-love-10-30-26 Project/all-the-things-you-love-10-30-26.als",
+      "set_path": "all-the-things-you-love-10-30-26 Project/all-the-things-you-love-10-30-26.als"
+    },
+    {
+      "source_sha256": "344bc723198ed2a0b6f9a6162a44fb25f6d2a05474784734fc66ace516a552f0",
+      "xml_sha256": "626e3c9381516a2e2dd08f67a79a1ae066453c7a3bd68beb042e0977adaaebb3",
+      "live_version": "Ableton Live 12.4.15",
+      "external_plugin_instances": 2,
+      "distinct_plugins": 2,
+      "instances_by_format": {
+        "VST3": 2
+      },
+      "plugins": [
+        {
+          "format": "VST3",
+          "name": "Auto-Tune Artist",
+          "plugin_id": "1245764500:540296558:-1936443048:-611032587",
+          "instances": 1
+        },
+        {
+          "format": "VST3",
+          "name": "Synthesizer V Studio 2 Plugin",
+          "plugin_id": "-1412567295:-1853687061:1148481123:1398166322",
+          "instances": 1
+        }
+      ],
+      "warnings": [],
+      "set_id": "55d0e5a5-ea7f-4854-81b7-afb56dd799da",
+      "source_path": "~/Ableton/all-the-things-you-love-10-30-26 Project/test.als",
+      "set_path": "all-the-things-you-love-10-30-26 Project/test.als"
+    }
+  ],
+  "errors": []
+}

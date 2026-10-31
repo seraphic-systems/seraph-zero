@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Song library · Seraph</title>
+  <link rel="icon" href="shared/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="shared/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="shared/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="shared/apple-touch-icon.png">
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="dashboard.js" type="module"></script>
+</head>
+<body>
+  <main>
+    <nav aria-label="Workspace"><a href="./" aria-current="page">Songs</a><a href="sets.html">Live Sets</a><a href="model.html">Model</a></nav>
+    <header><h1>Songs</h1><p id="summary" class="muted" aria-live="polite">Loading…</p></header>
+    <div class="workspace">
+      <section class="library" aria-label="Song library">
+        <div class="tools"><label>Sort by<select id="sort"><option value="title">Title A–Z</option><option value="mix">Latest mix</option><option value="created">Song created</option></select></label></div>
+        <div id="songs" class="songs"></div>
+        <p id="empty" class="empty" hidden>No songs yet.</p>
+      </section>
+      <section id="detail" class="detail" aria-label="Selected song"><p class="empty">Select a song to see its mixes.</p></section>
+    </div>
+  </main>
+  <template id="song-row"><button class="song"><strong></strong><span class="mix-date"></span></button></template>
+</body>
+</html>

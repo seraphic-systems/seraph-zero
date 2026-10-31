@@ -1,0 +1,985 @@
+{
+  "all-the-things-you-love": {
+    "vocals": [
+      "All-The-Things-You-Love-7-8-25 10-Audio 2 [2024-06-17 203929] (Freeze).wav",
+      "All-The-Things-You-Love-7-8-25 13-Audio 3 (Freeze) (Freeze) [2024-06-13 120201].wav",
+      "All-The-Things-You-Love-7-8-25 2-DS_VLUARR_128_vocal_hook_female_loop_love_like_you_verse_dry_Bbmin [2024-06-10 165631].wav",
+      "All-The-Things-You-Love-7-8-25 20-DS_VLUARR_128_vocal_hook_female_loop_love_like_you_verse_dry_Bbmin (Freeze) (Freeze) [2024-06-13 172935].wav",
+      "All-The-Things-You-Love-7-8-25 22-DS_VLUARR_128_vocal_hook_female_loop_love_like_you_verse_dry_Bbmin [2024-06-10 173309] (Freeze) (Freeze).wav",
+      "All-The-Things-You-Love-7-8-25 24-Audio [2024-06-12 232612] (Freeze).wav",
+      "All-The-Things-You-Love-7-8-25 25-Audio (Freeze) (Freeze) [2024-06-13 120449].wav",
+      "All-The-Things-You-Love-7-8-25 27-DS_VLUARR_128_vocal_hook_female_loop_love_like_you_verse_dry_Bbmin (Freeze) (Freeze) (Freeze tail) [2024-06-10 192240].wav",
+      "All-The-Things-You-Love-7-8-25 5-DS_VLUARR_128_vocal_hook_female_loop_love_like_you_verse_dry_Bbmin [2024-06-10 165631].wav",
+      "All-The-Things-You-Love-7-8-25 51-Group.wav",
+      "All-The-Things-You-Love-7-8-25 54-_tmp_gradio_5c0b58caedf3ccdbfefab69f48b86d4a36548a62_audio.wav",
+      "All-The-Things-You-Love-7-8-25 6-BreathlessPercs_Loop_80.45bpm.wav",
+      "All-The-Things-You-Love-7-8-25 62-Audio.wav",
+      "All-The-Things-You-Love-7-8-25 63-- 8-Audio.wav",
+      "All-The-Things-You-Love-7-8-25 8-Group.wav",
+      "All-The-Things-You-Love-7-8-25 80-33-Audio 1-1.wav",
+      "All-The-Things-You-Love-7-8-25 9-Audio 2 [2024-06-17 203929].wav",
+      "All-The-Things-You-Love-7-8-25 Serum-2.wav",
+      "All-The-Things-You-Love-7-8-25 Serum.wav"
+    ],
+    "orchestral": [
+      "All-The-Things-You-Love-7-8-25 11-Say-You-Are-Amin-151.wav",
+      "All-The-Things-You-Love-7-8-25 32-Sick-Form.wav"
+    ],
+    "silent": [
+      "All-The-Things-You-Love-7-8-25 14-Group.wav",
+      "All-The-Things-You-Love-7-8-25 15-DS_VLUARR_128_vocal_hook_female_loop_love_like_you_verse_dry_Bbmin [2024-06-13 172913].wav",
+      "All-The-Things-You-Love-7-8-25 16-DS_VLUARR_128_vocal_hook_female_loop_love_like_you_verse_dry_Bbmin [2024-06-13 172913].wav"
+    ],
+    "synths": [
+      "All-The-Things-You-Love-7-8-25 31-Wavetable.wav",
+      "All-The-Things-You-Love-7-8-25 35-Serum.wav",
+      "All-The-Things-You-Love-7-8-25 36-Praise-Synth.wav",
+      "All-The-Things-You-Love-7-8-25 38-Serum.wav",
+      "All-The-Things-You-Love-7-8-25 50-Serum_Saw.wav",
+      "All-The-Things-You-Love-7-8-25 59-Freeze LFO-Synth [2024-06-13 170258] R.wav",
+      "All-The-Things-You-Love-7-8-25 90-Reaktor 6.wav",
+      "All-The-Things-You-Love-7-8-25 Saws.wav",
+      "All-The-Things-You-Love-7-8-25 lead.wav",
+      "All-The-Things-You-Love-7-8-25 low.wav"
+    ],
+    "bass": [
+      "All-The-Things-You-Love-7-8-25 37-Serum.wav",
+      "All-The-Things-You-Love-7-8-25 39-Reaktor 6.wav",
+      "All-The-Things-You-Love-7-8-25 49-Wavetable.wav",
+      "All-The-Things-You-Love-7-8-25 JPGC_808_sucktion_A.wav"
+    ],
+    "drums": [
+      "All-The-Things-You-Love-7-8-25 44-Drum Rack.wav",
+      "All-The-Things-You-Love-7-8-25 67-Snare RoleCall.wav",
+      "All-The-Things-You-Love-7-8-25 68-KENNY BEATS HI HAT 48.wav",
+      "All-The-Things-You-Love-7-8-25 69-Kick Plastic 1.wav",
+      "All-The-Things-You-Love-7-8-25 70-Stomp - Damage.wav",
+      "All-The-Things-You-Love-7-8-25 fill 2.wav",
+      "All-The-Things-You-Love-7-8-25 fill_1.wav"
+    ],
+    "fx": [
+      "All-The-Things-You-Love-7-8-25 47-Impact Gunshot.wav",
+      "All-The-Things-You-Love-7-8-25 48-Riser White Noise.wav",
+      "All-The-Things-You-Love-7-8-25 71-23-Audio 1.wav",
+      "All-The-Things-You-Love-7-8-25 Audio [2024-06-13 173617].wav",
+      "All-The-Things-You-Love-7-8-25 reverb_tail_rev.wav"
+    ],
+    "keys": [
+      "All-The-Things-You-Love-7-8-25 low-1.wav"
+    ],
+    "mixes": [
+      "All-The-Things-You-Love-7-8-25.wav"
+    ]
+  },
+  "because-youre-you": {
+    "vocals": [
+      "Because-Youre-You-7-8-25 10-Audio.wav",
+      "Because-Youre-You-7-8-25 12-Happiness-Rap-155-no.wav"
+    ],
+    "bass": [
+      "Because-Youre-You-7-8-25 17-OS_DO_808_floor_F.wav",
+      "Because-Youre-You-7-8-25 43-Wavetable.wav",
+      "Because-Youre-You-7-8-25 Build-Bass.wav",
+      "Because-Youre-You-7-8-25 Reaktor 6-1.wav"
+    ],
+    "synths": [
+      "Because-Youre-You-7-8-25 18-Serum_Saw.wav",
+      "Because-Youre-You-7-8-25 26-Serum_Saw.wav",
+      "Because-Youre-You-7-8-25 42-Reaktor 6.wav"
+    ],
+    "drums": [
+      "Because-Youre-You-7-8-25 19-PMHL_Kick_Thumpy.wav",
+      "Because-Youre-You-7-8-25 20-Clap Machine 12.wav",
+      "Because-Youre-You-7-8-25 21-Rico Nasty - Cold Open Hat 1.wav",
+      "Because-Youre-You-7-8-25 22-Holy Trap 118.wav",
+      "Because-Youre-You-7-8-25 23-Hihat Closed Pointy Hat.wav",
+      "Because-Youre-You-7-8-25 25-OS_TN_snare_bonkers.wav",
+      "Because-Youre-You-7-8-25 31-DS_SRD2_150_drum_one_shot_fill_downwards.wav",
+      "Because-Youre-You-7-8-25 32-Crash Build.wav",
+      "Because-Youre-You-7-8-25 Build Kick.wav"
+    ],
+    "returns": [
+      "Because-Youre-You-7-8-25 A-ValhallaRoom.wav"
+    ],
+    "mixes": [
+      "Because-Youre-You-7-8-25.wav"
+    ]
+  },
+  "between-this-world-and-the-next": {
+    "vocals": [
+      "between-this-world-and-the-next 1-24_Acapella.wav"
+    ],
+    "mixes": [
+      "between-this-world-and-the-next 16-Stutter_Loop_110bpm_Ebmin (Freeze).wav",
+      "between-this-world-and-the-next 3-Bury The Sun_stems 4-Sample.wav",
+      "between-this-world-and-the-next.wav"
+    ],
+    "synths": [
+      "between-this-world-and-the-next 19-24_Chords_BTS_SYTNH.wav",
+      "between-this-world-and-the-next 20-Serum_Saw.wav"
+    ],
+    "drums": [
+      "between-this-world-and-the-next 4-Mellow_Loop_106bpm.wav"
+    ]
+  },
+  "bury-the-sun": {
+    "vocals": [
+      "Bury The Sun_stems 1-Choir.wav"
+    ],
+    "synths": [
+      "Bury The Sun_stems 2-Chords.wav"
+    ],
+    "drums": [
+      "Bury The Sun_stems 3-Drums.wav"
+    ],
+    "mixes": [
+      "Bury The Sun_stems 4-Sample.wav",
+      "Bury The Sun_stems.wav"
+    ]
+  },
+  "coldness": {
+    "vocals": [
+      "coldness-trunk-1-19-26 1-Audio (Bounce).wav",
+      "coldness-trunk-1-19-26 13-Group.wav",
+      "coldness-trunk-1-19-26 14-FIGURE OUT_BGV 1.wav",
+      "coldness-trunk-1-19-26 15-FIGURE OUT_BGV 2.wav",
+      "coldness-trunk-1-19-26 16-FIGURE OUT_BGV 3.wav",
+      "coldness-trunk-1-19-26 17-FIGURE OUT_BGV 4.wav",
+      "coldness-trunk-1-19-26 18-FIGURE OUT_BGV 5.wav",
+      "coldness-trunk-1-19-26 19-FIGURE OUT_BGV 6.wav",
+      "coldness-trunk-1-19-26 23-Audio.wav",
+      "coldness-trunk-1-19-26 5-Track 5 Figure Out V1.wav",
+      "coldness-trunk-1-19-26 6-Changing-The-Past.wav",
+      "coldness-trunk-1-19-26 EXAMPLE.wav"
+    ],
+    "fx": [
+      "coldness-trunk-1-19-26 10-OceanWaves_BW.61066.wav",
+      "coldness-trunk-1-19-26 25-Riser White Noise.wav",
+      "coldness-trunk-1-19-26 26-Impact MetalDust.wav"
+    ],
+    "bass": [
+      "coldness-trunk-1-19-26 11-Serum_Bass.wav"
+    ],
+    "mixes": [
+      "coldness-trunk-1-19-26 22-Audio [2021-04-03 103858].wav",
+      "coldness-trunk-1-19-26.wav"
+    ],
+    "synths": [
+      "coldness-trunk-1-19-26 7-Wavetable.wav",
+      "coldness-trunk-1-19-26 outro-synth-lead.wav"
+    ],
+    "returns": [
+      "coldness-trunk-1-19-26 A-ValhallaRoom.wav"
+    ],
+    "guitar": [
+      "coldness-trunk-1-19-26 EXAMPLE-1.wav"
+    ],
+    "orchestral": [
+      "coldness-trunk-1-19-26 Strings.wav"
+    ]
+  },
+  "dream": {
+    "drums": [
+      "just_a_dream_stems 1-Drum Rack.wav"
+    ],
+    "synths": [
+      "just_a_dream_stems 13-Serum.wav"
+    ],
+    "fx": [
+      "just_a_dream_stems 14-8-Audio 1.wav"
+    ],
+    "silent": [
+      "just_a_dream_stems 5-nelly_86_-1.wav"
+    ],
+    "vocals": [
+      "just_a_dream_stems 6-nelly_86_-1 [2021-03-22 202841] (Freeze).wav"
+    ],
+    "mixes": [
+      "just_a_dream_stems 7-Instrument Rack.wav",
+      "just_a_dream_stems.wav"
+    ]
+  },
+  "envy": {
+    "fx": [
+      "Envy-7-5-25-109bpm 12-Riser White Noise.wav",
+      "Envy-7-5-25-109bpm 67-FF_TM_metallic_objects_scatter_on_table.wav"
+    ],
+    "mixes": [
+      "Envy-7-5-25-109bpm 13-Envy_mix1_stems_5_11_21 5-Wiz Khalifa - Promises [Official Video] (Freeze).wav",
+      "Envy-7-5-25-109bpm 52-No_Room_Melodyne_C#min_108.wav",
+      "Envy-7-5-25-109bpm.wav"
+    ],
+    "vocals": [
+      "Envy-7-5-25-109bpm 14-Kontakt.wav",
+      "Envy-7-5-25-109bpm 16-Group.wav",
+      "Envy-7-5-25-109bpm 17-Kontakt.wav",
+      "Envy-7-5-25-109bpm 18-Kontakt.wav",
+      "Envy-7-5-25-109bpm 2-Envy-Only-Ones-kevin_MixDown.wav",
+      "Envy-7-5-25-109bpm 3-Envy-Only-Ones-hayden_MixDown.wav",
+      "Envy-7-5-25-109bpm 4-Envy-Only-Ones-sheena_MixDown.wav"
+    ],
+    "bass": [
+      "Envy-7-5-25-109bpm 21-Audio [2024-01-13 154123].wav",
+      "Envy-7-5-25-109bpm 42-Group.wav",
+      "Envy-7-5-25-109bpm 43-Wiz Khalifa - Promises [Official Video].wav",
+      "Envy-7-5-25-109bpm 44-Danny Brown - The Cave 808.wav",
+      "Envy-7-5-25-109bpm 45-808_Buzzsaw_C.wav"
+    ],
+    "synths": [
+      "Envy-7-5-25-109bpm 28-Serum_Saw.wav",
+      "Envy-7-5-25-109bpm 29-Serum_Saw.wav",
+      "Envy-7-5-25-109bpm 30-Serum_Saw.wav",
+      "Envy-7-5-25-109bpm 48-Envy_mix1_stems_5_11_21 Massive.wav",
+      "Envy-7-5-25-109bpm 54-Serum_Saw.wav",
+      "Envy-7-5-25-109bpm 7-Default_20240117-170452.wav"
+    ],
+    "drums": [
+      "Envy-7-5-25-109bpm 34-Drum Rack.wav",
+      "Envy-7-5-25-109bpm 36-PT_160BPM__TAIKO [2023-11-25 105404].wav",
+      "Envy-7-5-25-109bpm 37-Snare 80s Space Craft.wav"
+    ],
+    "orchestral": [
+      "Envy-7-5-25-109bpm 62-tempest v2 Bamboo.wav"
+    ],
+    "returns": [
+      "Envy-7-5-25-109bpm A-Reverb.wav"
+    ]
+  },
+  "epoch": {
+    "synths": [
+      "epoch_stems_122.6_Dmin 101-serum saws.wav",
+      "epoch_stems_122.6_Dmin 102-serum saws.wav",
+      "epoch_stems_122.6_Dmin 11-Group.wav",
+      "epoch_stems_122.6_Dmin 65-Serum.wav",
+      "epoch_stems_122.6_Dmin 66-Serum.wav",
+      "epoch_stems_122.6_Dmin 83-Reaktor 6.wav",
+      "epoch_stems_122.6_Dmin 88-Group.wav",
+      "epoch_stems_122.6_Dmin 89-Wavetable.wav",
+      "epoch_stems_122.6_Dmin 91-Serum.wav",
+      "epoch_stems_122.6_Dmin 92-Serum.wav",
+      "epoch_stems_122.6_Dmin Lead.wav",
+      "epoch_stems_122.6_Dmin Leads-1.wav",
+      "epoch_stems_122.6_Dmin Resample-1.wav",
+      "epoch_stems_122.6_Dmin Synth Pads.wav"
+    ],
+    "fx": [
+      "epoch_stems_122.6_Dmin 107-Impact Hainberg.wav",
+      "epoch_stems_122.6_Dmin 32-Impact Warrior.wav",
+      "epoch_stems_122.6_Dmin 58-Group.wav",
+      "epoch_stems_122.6_Dmin 82-C.wav",
+      "epoch_stems_122.6_Dmin FX 2.wav",
+      "epoch_stems_122.6_Dmin FX.wav"
+    ],
+    "vocals": [
+      "epoch_stems_122.6_Dmin 17-HARLAND WILLIAMS - WHEN YOU WISH UPON A STAR (256 kbps).wav",
+      "epoch_stems_122.6_Dmin 18-Group.wav",
+      "epoch_stems_122.6_Dmin 19-osr_vocal_loop_let_me_be_the_reason_135_Em.wav",
+      "epoch_stems_122.6_Dmin 20-osr_vocal_loop_let_me_be_the_reason_135_Em [2020-10-18 115011].wav",
+      "epoch_stems_122.6_Dmin 38-Group.wav",
+      "epoch_stems_122.6_Dmin 7-Audio [2021-04-20 124045].wav",
+      "epoch_stems_122.6_Dmin Vocals.wav"
+    ],
+    "drums": [
+      "epoch_stems_122.6_Dmin 24-Drum Rack.wav",
+      "epoch_stems_122.6_Dmin 25-Drum Rack.wav",
+      "epoch_stems_122.6_Dmin 26-Group.wav",
+      "epoch_stems_122.6_Dmin 27-Group.wav",
+      "epoch_stems_122.6_Dmin 28-V_RIOT_MDSTP_percussion_superstompcrunch.wav",
+      "epoch_stems_122.6_Dmin 29-[ET] Pillow Kick.wav",
+      "epoch_stems_122.6_Dmin 31-TS_BLUE_BOP_snare_one_shot_sugar_9_shine.wav",
+      "epoch_stems_122.6_Dmin 36-13-Audio 1.wav",
+      "epoch_stems_122.6_Dmin 37-Breakbeat Funky-102bpm.wav",
+      "epoch_stems_122.6_Dmin 40-KENNY BEATS CRASH 2.wav",
+      "epoch_stems_122.6_Dmin 41-KENNY BEATS CRASH 2 [2020-10-16 170216] (Freeze).wav",
+      "epoch_stems_122.6_Dmin 45-KENNY BEATS CLAP 4.wav",
+      "epoch_stems_122.6_Dmin 60-kitchen snare (Freeze) [2020-10-14 123334].wav",
+      "epoch_stems_122.6_Dmin Drums.wav"
+    ],
+    "silent": [
+      "epoch_stems_122.6_Dmin 39-KENNY BEATS CRASH 2.wav",
+      "epoch_stems_122.6_Dmin 42-osr_vocal_loop_let_me_be_the_reason_135_Em.wav",
+      "epoch_stems_122.6_Dmin 44-KENNY BEATS CLAP 4 (Freeze).wav",
+      "epoch_stems_122.6_Dmin 5-VOX_LIZ_144_vocal_hook_wet_you_got_me_Fm.wav",
+      "epoch_stems_122.6_Dmin 9-Crash StudioStadium V127 1.wav"
+    ],
+    "guitar": [
+      "epoch_stems_122.6_Dmin 6-Audio [2021-04-20 125128].wav",
+      "epoch_stems_122.6_Dmin Acoustic.wav"
+    ],
+    "mixes": [
+      "epoch_stems_122.6_Dmin 70- (Freeze) (Freeze) [2020-10-15 154342].wav",
+      "epoch_stems_122.6_Dmin.wav"
+    ],
+    "keys": [
+      "epoch_stems_122.6_Dmin 78-Kontakt 5.wav",
+      "epoch_stems_122.6_Dmin 8-Audio [2021-04-20 124325].wav",
+      "epoch_stems_122.6_Dmin 90-Group.wav"
+    ],
+    "bass": [
+      "epoch_stems_122.6_Dmin 84-Group.wav",
+      "epoch_stems_122.6_Dmin 85-808 [6].wav",
+      "epoch_stems_122.6_Dmin 86-808 [6].wav",
+      "epoch_stems_122.6_Dmin 96-Group.wav",
+      "epoch_stems_122.6_Dmin Bass.wav",
+      "epoch_stems_122.6_Dmin Wavetable.wav"
+    ],
+    "returns": [
+      "epoch_stems_122.6_Dmin A-ValhallaRoom.wav"
+    ]
+  },
+  "fall": {
+    "bass": [
+      "Fall-85bpm 10-nm - mandela 808.wav",
+      "Fall-85bpm high-808.wav",
+      "Fall-85bpm saw-bass.wav"
+    ],
+    "drums": [
+      "Fall-85bpm 11-OSS_TL_82_drum_loop_breaks_fat_mics.wav",
+      "Fall-85bpm 17-Snare Jungle.wav",
+      "Fall-85bpm 8-Kick 70s 4.wav"
+    ],
+    "vocals": [
+      "Fall-85bpm 12-v1.wav",
+      "Fall-85bpm 14-Audio 5 [2023-02-06 204409].wav",
+      "Fall-85bpm 3-NoRoom_108bpm_C#min.wav",
+      "Fall-85bpm find.wav",
+      "Fall-85bpm rev-vox.wav",
+      "Fall-85bpm vox-proc.wav"
+    ],
+    "fx": [
+      "Fall-85bpm 9-epoch_faller_Dmin.wav",
+      "Fall-85bpm Serum.wav"
+    ],
+    "returns": [
+      "Fall-85bpm A-ValhallaRoom.wav"
+    ],
+    "synths": [
+      "Fall-85bpm lfo-synth.wav",
+      "Fall-85bpm pluck.wav"
+    ],
+    "keys": [
+      "Fall-85bpm rev-piano.wav"
+    ],
+    "mixes": [
+      "Fall-85bpm.wav"
+    ]
+  },
+  "genesis": {
+    "drums": [
+      "genesis album 128.47 10-Proof #1 KICK.wav",
+      "genesis album 128.47 11-Proof #1 SNARE TRANSIENT.wav",
+      "genesis album 128.47 12-Proof #1 SNARE LAYER 2.wav",
+      "genesis album 128.47 13-Proof #1 BAMBOO SNARE.wav",
+      "genesis album 128.47 14-Proof #1 DROP KICKS.wav",
+      "genesis album 128.47 15-Proof #1 HI HAT DROP @.wav",
+      "genesis album 128.47 8-Proof #1 HI HAT MAIN LOOP.wav",
+      "genesis album 128.47 9-Proof #1 MAIN PERC.wav",
+      "genesis album 128.47 Drums.wav",
+      "genesis album 128.47 drum loop reaktor.wav"
+    ],
+    "bass": [
+      "genesis album 128.47 16-Proof #1 MAIN LOOP BASS.wav",
+      "genesis album 128.47 17-Proof #1 MAIN LOOP BASS (Freeze).wav",
+      "genesis album 128.47 18-Proof #1 808.wav",
+      "genesis album 128.47 21-Proof #1 BUILDUP CHOP.wav"
+    ],
+    "fx": [
+      "genesis album 128.47 19-Proof #1 IMPACT 2.wav",
+      "genesis album 128.47 20-Proof #1 IMPACT 1.wav",
+      "genesis album 128.47 30-Proof #1 RISER.wav",
+      "genesis album 128.47 31-Proof #1 DRAGON FX.wav"
+    ],
+    "vocals": [
+      "genesis album 128.47 22-Proof #1 MAIN LOOP CHOP.wav",
+      "genesis album 128.47 23-Proof #1 MAIN LOOP CHOP.wav",
+      "genesis album 128.47 24-Proof #1 MAIN LOOP CHOP.wav",
+      "genesis album 128.47 25-Proof #1 BUILD UP CHOP.wav",
+      "genesis album 128.47 28-Proof #1 VOX.wav",
+      "genesis album 128.47 29-Proof #1 VOX.wav",
+      "genesis album 128.47 32-Proof #1 CRAZY.wav",
+      "genesis album 128.47 37-Proof #1 VOCAL.wav",
+      "genesis album 128.47 38-Proof #1 VOCAL.wav",
+      "genesis album 128.47 39-Kontakt 5.wav"
+    ],
+    "mixes": [
+      "genesis album 128.47 27-Proof #1 PRE OUTRO SAMPLE.wav",
+      "genesis album 128.47.wav"
+    ],
+    "synths": [
+      "genesis album 128.47 33-Proof #1 PAD LAYER 2.wav",
+      "genesis album 128.47 35-Proof #1 Synths ear.wav",
+      "genesis album 128.47 36-Proof #1 SUPPORT MELODY.wav"
+    ],
+    "keys": [
+      "genesis album 128.47 40-Proof #1 OUTRO PIANO.wav"
+    ],
+    "silent": [
+      "genesis album 128.47 A-Reverb.wav"
+    ]
+  },
+  "higher": {
+    "drums": [
+      "Higher-7-8-25 13-Group.wav",
+      "Higher-7-8-25 Drum-Fill.wav",
+      "Higher-7-8-25 Hat_2.wav",
+      "Higher-7-8-25 Verse_Drums.wav",
+      "Higher-7-8-25 big_clap.wav",
+      "Higher-7-8-25 hook_hat.wav",
+      "Higher-7-8-25 mid_clap.wav",
+      "Higher-7-8-25 transient_clap.wav",
+      "Higher-7-8-25 verse_Open_hat_1.wav",
+      "Higher-7-8-25 verse_closed_hat_1.wav",
+      "Higher-7-8-25 verse_kick.wav",
+      "Higher-7-8-25 verse_snare.wav"
+    ],
+    "bass": [
+      "Higher-7-8-25 25-Group.wav",
+      "Higher-7-8-25 High_808.wav",
+      "Higher-7-8-25 Low_808.wav",
+      "Higher-7-8-25 hook_bass.wav",
+      "Higher-7-8-25 verse_bass.wav"
+    ],
+    "orchestral": [
+      "Higher-7-8-25 30-Group.wav"
+    ],
+    "fx": [
+      "Higher-7-8-25 9-higher_v4_no_monark saveals 83-20-Audio 1.wav",
+      "Higher-7-8-25 hook_2_noise.wav",
+      "Higher-7-8-25 rev_chop.wav",
+      "Higher-7-8-25 riser.wav"
+    ],
+    "returns": [
+      "Higher-7-8-25 A-ValhallaRoom.wav",
+      "Higher-7-8-25 C-PING.wav"
+    ],
+    "synths": [
+      "Higher-7-8-25 Arp.wav",
+      "Higher-7-8-25 Higher_Ambient.wav",
+      "Higher-7-8-25 Hook Synths.wav",
+      "Higher-7-8-25 Outro_Synth_Square.wav",
+      "Higher-7-8-25 Square_Lead.wav",
+      "Higher-7-8-25 Verse_Synths.wav",
+      "Higher-7-8-25 hook_synth_delay.wav",
+      "Higher-7-8-25 hook_synth_flang.wav",
+      "Higher-7-8-25 outro_synth_flanger.wav",
+      "Higher-7-8-25 synth_verse_lfo.wav"
+    ],
+    "vocals": [
+      "Higher-7-8-25 HIGHER.wav",
+      "Higher-7-8-25 Reverb-Vox.wav",
+      "Higher-7-8-25 Verse-Vocals.wav",
+      "Higher-7-8-25 Vox.wav",
+      "Higher-7-8-25 bry.wav",
+      "Higher-7-8-25 higher_high.wav",
+      "Higher-7-8-25 higher_low_chop.wav",
+      "Higher-7-8-25 higher_stretched.wav",
+      "Higher-7-8-25 rev_chop_mapped.wav",
+      "Higher-7-8-25 vox_amp.wav"
+    ],
+    "guitar": [
+      "Higher-7-8-25 No_Room_1_shot.wav"
+    ],
+    "keys": [
+      "Higher-7-8-25 verse_chop.wav"
+    ],
+    "mixes": [
+      "Higher-7-8-25.wav"
+    ]
+  },
+  "jungle": {
+    "drums": [
+      "Jungle-111-bpm 23-MSKRB_drum_loop_tribal_percussion_162_v2 (Freeze).wav",
+      "Jungle-111-bpm 24-Gate_Break_080_PL.wav",
+      "Jungle-111-bpm 25-Stomps Angrier.wav",
+      "Jungle-111-bpm 6-drum fill WET 129.34 BPM.wav",
+      "Jungle-111-bpm 7-Tom-SessionDry16-Stick-Hit-Hard.wav"
+    ],
+    "synths": [
+      "Jungle-111-bpm 27-Wavetable.wav",
+      "Jungle-111-bpm High_lead-1.wav",
+      "Jungle-111-bpm High_lead.wav",
+      "Jungle-111-bpm Low_lead.wav",
+      "Jungle-111-bpm Squiggly.wav",
+      "Jungle-111-bpm Synth.wav"
+    ],
+    "vocals": [
+      "Jungle-111-bpm 33-vs2_vox120_preacherman1.wav",
+      "Jungle-111-bpm 34-vs2_vox120_preacherman1 [2021-10-11 113527].wav"
+    ],
+    "fx": [
+      "Jungle-111-bpm 57-Audio 0001 [2021-10-11 110541].wav",
+      "Jungle-111-bpm deep hit.wav",
+      "Jungle-111-bpm riser-1.wav",
+      "Jungle-111-bpm riser.wav",
+      "Jungle-111-bpm sample-1.wav",
+      "Jungle-111-bpm sample-2.wav"
+    ],
+    "bass": [
+      "Jungle-111-bpm 808.wav",
+      "Jungle-111-bpm Reaktor 6.wav",
+      "Jungle-111-bpm bass echo.wav",
+      "Jungle-111-bpm saw bass.wav"
+    ],
+    "silent": [
+      "Jungle-111-bpm main bass.wav"
+    ],
+    "mixes": [
+      "Jungle-111-bpm.wav"
+    ]
+  },
+  "mania": {
+    "mixes": [
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 1-Group.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm panned chop.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm.wav"
+    ],
+    "vocals": [
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 10-5-Audio 1.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 33-Kontakt 5.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 38-mountain.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 65-OS_VV2_He_Does_It_To_Perfection.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 66-Group.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 69-KJ 2 [2019-09-10 231635].wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 70-Kylie Jenner car collection! FULL APP VIDEO.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 71-Kylie Jenner car collection! FULL APP VIDEO [2019-09-12 161202].wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm Vox Glitch.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm Vox one shot.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm trippry shit.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm trippy shit.wav"
+    ],
+    "drums": [
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 18-Group.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 23-Group.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 37-6-Audio 2 [2019-03-05 181514].wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 57-Group.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 58-Drum Rack.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 59-Drum Rack.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 60-Drum Rack.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 61-Reaktor 6.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 9-10-Audio 1 [2019-08-26 162113].wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm DRUMS.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm hat.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm kick.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm snare.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm tamb.wav"
+    ],
+    "synths": [
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 40-Group.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 41-Massive.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 42-Massive.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 43-Massive.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 44-Massive.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 51-Massive.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm Screech.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm Tim Lead.wav"
+    ],
+    "bass": [
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 52-Massive.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 53-UZ_808_qx_01_F.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm Bass.wav"
+    ],
+    "fx": [
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 54-FFX_IMPACT_19_Cm.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 55-Impact MovDigi.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm 808.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm Impact.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm One Shot.wav",
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm Riser.wav"
+    ],
+    "returns": [
+      "10_mania:synthesis_bass_change_71bpm_to_83bpm A-Return.wav"
+    ]
+  },
+  "praise": {
+    "bass": [
+      "Praise-7-8-25 10-requiem_808_A.wav",
+      "Praise-7-8-25 11-Reaktor 6.wav",
+      "Praise-7-8-25 19-epoch_faller_Dmin.wav",
+      "Praise-7-8-25 27-requiem_stems_118 bass_drop.wav"
+    ],
+    "synths": [
+      "Praise-7-8-25 13-serum saws.wav",
+      "Praise-7-8-25 14-serum saws.wav",
+      "Praise-7-8-25 22-Freeze 14-serum saws [2022-03-21 161812].wav",
+      "Praise-7-8-25 23-RequiemFlight_Loop_129.34bpm_Amin.wav",
+      "Praise-7-8-25 31-Freeze 14-serum saws [2022-03-21 161812].wav",
+      "Praise-7-8-25 34-requiem_stems_118 43-requiem_ high pluck.wav",
+      "Praise-7-8-25 38-requiem_stems_118 drop_chop.wav"
+    ],
+    "drums": [
+      "Praise-7-8-25 16-Drum Rack.wav",
+      "Praise-7-8-25 17-Drum Rack.wav",
+      "Praise-7-8-25 24-requiem_stems_118 32-requiem_ MIDIBOY.wav",
+      "Praise-7-8-25 25-requiem_stems_118 37-Clap-808.wav",
+      "Praise-7-8-25 30-trap-kicks-12.wav"
+    ],
+    "mixes": [
+      "Praise-7-8-25 26-requiem_stems_118 17-requiem_ OUTRO.wav",
+      "Praise-7-8-25 39-requiem_stems_118 31-MIDI.wav",
+      "Praise-7-8-25.wav"
+    ],
+    "vocals": [
+      "Praise-7-8-25 35-requiem_stems_118 42-Requiem_v4_MIX1 26- (Freeze) (Freeze) (Freeze) [2021-01-19 210210].wav",
+      "Praise-7-8-25 4-2.wav",
+      "Praise-7-8-25 42-Rainfall-v4.4.2-8-13-23-MASTERED Ambience-Short.wav",
+      "Praise-7-8-25 44-Audio.wav"
+    ],
+    "returns": [
+      "Praise-7-8-25 A-Reverb.wav"
+    ]
+  },
+  "reason": {
+    "vocals": [
+      "Reason-7-8-25 104-HLS_130_vocal_hook_shame_on_me_stack_dry_Am [2020-04-28 152738] (Freeze).wav",
+      "Reason-7-8-25 105-HLS_130_vocal_hook_shame_on_me_stack_dry_Am [2020-04-28 152738] (Freeze) (Freeze) (Freeze).wav",
+      "Reason-7-8-25 18-Audio (Freeze).wav",
+      "Reason-7-8-25 22-Woman humiliates a guy who is caught masturbating on NYC subway.wav",
+      "Reason-7-8-25 25-1-Audio 1 (Freeze) (Freeze) [2020-07-02 131313].wav",
+      "Reason-7-8-25 71-Cymatics - Rose Colored Glasses Vocal - 130 BPM B Min [2024-02-12 174100] (Freeze) (Freeze).wav",
+      "Reason-7-8-25 85-Audio [2023-12-26 110654].wav",
+      "Reason-7-8-25 GET THE FUCK OFF THIS TRAIN.wav",
+      "Reason-7-8-25 Reason vox.wav",
+      "Reason-7-8-25 Vocals.wav"
+    ],
+    "fx": [
+      "Reason-7-8-25 16-Audio.wav",
+      "Reason-7-8-25 23-Torture_Stems Comb Effect.wav",
+      "Reason-7-8-25 62-Another_Heart_High_Chop_149_Dmin [2024-02-12 170359].wav",
+      "Reason-7-8-25 64-Impact Mov Digi.wav",
+      "Reason-7-8-25 68-Audio [2021-03-28 120143].wav",
+      "Reason-7-8-25 69-Impact SpringKick.wav",
+      "Reason-7-8-25 94-3-Audio 1 [2020-04-29 130039] (Freeze).wav"
+    ],
+    "orchestral": [
+      "Reason-7-8-25 17-Audio.wav"
+    ],
+    "mixes": [
+      "Reason-7-8-25 19-requiem_deity_129.34_Amin.wav",
+      "Reason-7-8-25 39-8-Audio 1 (Freeze tail) (Freeze tail).wav",
+      "Reason-7-8-25 89- (Freeze) (Freeze).wav",
+      "Reason-7-8-25 Master Resamp.wav",
+      "Reason-7-8-25.wav"
+    ],
+    "bass": [
+      "Reason-7-8-25 30-RARE_GH_808_Bamboo_A_V2.wav",
+      "Reason-7-8-25 49-Group.wav",
+      "Reason-7-8-25 50-PMTF_808_E_Feeding.wav",
+      "Reason-7-8-25 56-Serum.wav",
+      "Reason-7-8-25 808.wav",
+      "Reason-7-8-25 98-MANNIE_FRESH_808_one_shot_clean_long_A.wav",
+      "Reason-7-8-25 99-PMTF_808_E_Feeding.wav",
+      "Reason-7-8-25 Bass.wav",
+      "Reason-7-8-25 RARE_GH_808_Bamboo_A_V2.wav",
+      "Reason-7-8-25 Saw Bass.wav",
+      "Reason-7-8-25 StarWar_808_E.wav"
+    ],
+    "synths": [
+      "Reason-7-8-25 34-26-MIDI 1 (Freeze) [2020-06-27 144139].wav",
+      "Reason-7-8-25 37-Torture_Stems Lead 2.wav",
+      "Reason-7-8-25 48-Serum.wav",
+      "Reason-7-8-25 54-serum saws.wav",
+      "Reason-7-8-25 57-Serum_Saw.wav",
+      "Reason-7-8-25 75-Serum.wav",
+      "Reason-7-8-25 87-Group.wav",
+      "Reason-7-8-25 Hook Synths.wav",
+      "Reason-7-8-25 Lead 2.wav",
+      "Reason-7-8-25 Serum.wav",
+      "Reason-7-8-25 Verse Synths.wav"
+    ],
+    "drums": [
+      "Reason-7-8-25 35-26-MIDI 1 (Freeze) [2020-06-27 144139].wav",
+      "Reason-7-8-25 51-Taz Kick.wav",
+      "Reason-7-8-25 60-Drum Rack.wav",
+      "Reason-7-8-25 61-icon_snare b.wav",
+      "Reason-7-8-25 63-CLOZEE_percussion_loop_taiko_87.wav",
+      "Reason-7-8-25 65-FILL 4.wav",
+      "Reason-7-8-25 66-Drum Rack.wav",
+      "Reason-7-8-25 Snare Fill.wav"
+    ],
+    "keys": [
+      "Reason-7-8-25 38-8-Audio 1.wav"
+    ],
+    "guitar": [
+      "Reason-7-8-25 77-Audio.wav"
+    ],
+    "returns": [
+      "Reason-7-8-25 A-ValhallaRoom.wav"
+    ],
+    "silent": [
+      "Reason-7-8-25 B-Delay.wav"
+    ]
+  },
+  "stars": {
+    "fx": [
+      "stars_stems_v4 10-2 less metallic [2021-06-12 173506].wav",
+      "stars_stems_v4 15-2 less metallic (Freeze) [2021-06-13 182815].wav",
+      "stars_stems_v4 6-riser_fmin.wav",
+      "stars_stems_v4 7-Impact MonoGiant.wav",
+      "stars_stems_v4 Serum-1.wav"
+    ],
+    "synths": [
+      "stars_stems_v4 11-Serum.wav",
+      "stars_stems_v4 35-Kontakt.wav",
+      "stars_stems_v4 39-serum saws.wav",
+      "stars_stems_v4 40-Serum.wav",
+      "stars_stems_v4 Serum-2.wav",
+      "stars_stems_v4 Serum.wav"
+    ],
+    "guitar": [
+      "stars_stems_v4 16-No_room_c#min_108.wav"
+    ],
+    "drums": [
+      "stars_stems_v4 20-Group.wav",
+      "stars_stems_v4 21-Drum Rack.wav",
+      "stars_stems_v4 22-Drum Rack.wav",
+      "stars_stems_v4 23-KENNY BEATS HI HAT 26.wav",
+      "stars_stems_v4 25-[ET] Elevate Kick.wav",
+      "stars_stems_v4 27-Crash Backwoods.wav",
+      "stars_stems_v4 28-Snare OhBiggy.wav",
+      "stars_stems_v4 29-EM_kick_stomp.wav"
+    ],
+    "orchestral": [
+      "stars_stems_v4 33-Kontakt.wav",
+      "stars_stems_v4 34-Kontakt.wav",
+      "stars_stems_v4 36-Kontakt.wav"
+    ],
+    "bass": [
+      "stars_stems_v4 37-808 [2].wav",
+      "stars_stems_v4 38-Group.wav"
+    ],
+    "vocals": [
+      "stars_stems_v4 43-2.wav"
+    ],
+    "silent": [
+      "stars_stems_v4 9-Crash 808X.wav",
+      "stars_stems_v4 B-Reaktor 6 MFX.wav"
+    ],
+    "returns": [
+      "stars_stems_v4 A-ValhallaRoom.wav"
+    ],
+    "mixes": [
+      "stars_stems_v4.wav"
+    ]
+  },
+  "stay-with-me": {
+    "vocals": [
+      "Stay-With-Me-7-6-25 12-Kontakt 7.wav"
+    ],
+    "synths": [
+      "Stay-With-Me-7-6-25 13-minimal_stay_w_me.wav",
+      "Stay-With-Me-7-6-25 18-serum saws.wav",
+      "Stay-With-Me-7-6-25 3-Group.wav",
+      "Stay-With-Me-7-6-25 5-stay_w_me_melo_loop_A#min_87.wav",
+      "Stay-With-Me-7-6-25 8-Wavetable.wav",
+      "Stay-With-Me-7-6-25 9-Serum.wav"
+    ],
+    "orchestral": [
+      "Stay-With-Me-7-6-25 14-Kontakt.wav"
+    ],
+    "fx": [
+      "Stay-With-Me-7-6-25 15-Riser White Noise.wav",
+      "Stay-With-Me-7-6-25 16-stay_w_me_tn_Vocal_fx_Dmin_90 [2023-02-22 164122].wav",
+      "Stay-With-Me-7-6-25 27-Audio.wav",
+      "Stay-With-Me-7-6-25 28-Impact Mov Digi.wav"
+    ],
+    "bass": [
+      "Stay-With-Me-7-6-25 21-Group.wav",
+      "Stay-With-Me-7-6-25 22-PMD_808_G#_02.wav",
+      "Stay-With-Me-7-6-25 23-808 (Transend).wav",
+      "Stay-With-Me-7-6-25 4-Audio 4 [2023-02-20 212148].wav"
+    ],
+    "drums": [
+      "Stay-With-Me-7-6-25 24-Group.wav",
+      "Stay-With-Me-7-6-25 25-Clap Snap Fings Inna Big Room.wav",
+      "Stay-With-Me-7-6-25 26-Snare Bluesbreak 2.wav",
+      "Stay-With-Me-7-6-25 HH Pattern 1B.wav"
+    ],
+    "guitar": [
+      "Stay-With-Me-7-6-25 30-13. FEEL IT Stem - I Am A God.wav"
+    ],
+    "mixes": [
+      "Stay-With-Me-7-6-25.wav"
+    ]
+  },
+  "through": {
+    "synths": [
+      "through_collab_stems_93 1-NBH.wav",
+      "through_collab_stems_93 11-woah_squiggle_G#.wav",
+      "through_collab_stems_93 16-serum saws.wav",
+      "through_collab_stems_93 2-Audio.wav",
+      "through_collab_stems_93 4-Main mel (Freeze) [2022-02-09 105048].wav"
+    ],
+    "fx": [
+      "through_collab_stems_93 12-Audio [2022-02-09 182910].wav",
+      "through_collab_stems_93 5-Audio [2022-02-09 194840].wav",
+      "through_collab_stems_93 8-Impact Shot.wav",
+      "through_collab_stems_93 Main mel (Freeze) [2022-02-09 105048].wav"
+    ],
+    "vocals": [
+      "through_collab_stems_93 14-woah_squiggle_G# 2.wav"
+    ],
+    "drums": [
+      "through_collab_stems_93 15-NBH.wav",
+      "through_collab_stems_93 6-trap-snare-15.wav",
+      "through_collab_stems_93 7-KENNY BEATS HI HAT 48.wav"
+    ],
+    "bass": [
+      "through_collab_stems_93 17-Reaktor 6.wav"
+    ],
+    "mixes": [
+      "through_collab_stems_93 9-up_loop_Emin_118.5.wav",
+      "through_collab_stems_93 woah_squiggle_G#.wav",
+      "through_collab_stems_93.wav"
+    ],
+    "returns": [
+      "through_collab_stems_93 A-Reverb.wav"
+    ]
+  },
+  "trouble": {
+    "vocals": [
+      "Trouble-7-9-25 1-Taylor Swift - I Knew You Were Trouble (Studio Acapella).wav",
+      "Trouble-7-9-25 10-AWESOME GOD (Worship Forever 2021) - Michael W. Smith.wav",
+      "Trouble-7-9-25 19-Taylor Swift - I Knew You Were Trouble (Studio Acapella) (Freeze) [2024-03-11 175232] (Freeze).wav",
+      "Trouble-7-9-25 26-Kontakt.wav",
+      "Trouble-7-9-25 29-Group.wav",
+      "Trouble-7-9-25 3-Taylor Swift - I Knew You Were Trouble (Studio Acapella) (Freeze) (Freeze) [2024-05-17 223836] (Freeze) (Freeze) (Freeze).wav",
+      "Trouble-7-9-25 30-Audio [2024-03-11 173122].wav",
+      "Trouble-7-9-25 31-trouble-test-1_MixDown (Freeze).wav",
+      "Trouble-7-9-25 32-Audio.wav",
+      "Trouble-7-9-25 47-Sada Baby - The Cave Chant (Freeze).wav"
+    ],
+    "drums": [
+      "Trouble-7-9-25 13-Rico Nasty - Cold Hi Hat.wav",
+      "Trouble-7-9-25 14-Clap 808 Reviv 2.wav",
+      "Trouble-7-9-25 44-CRUELS_snare_clap_reverb.wav",
+      "Trouble-7-9-25 45-CRUELS_snare_clap_reverb.wav",
+      "Trouble-7-9-25 48-TeeJayX6 - The Cave Open Hat.wav",
+      "Trouble-7-9-25 49-Rim Way Source.wav"
+    ],
+    "synths": [
+      "Trouble-7-9-25 24-Serum_Saw.wav",
+      "Trouble-7-9-25 33-Massive X.wav",
+      "Trouble-7-9-25 52-Praise-Synth.wav",
+      "Trouble-7-9-25 53-Serum_Saw.wav"
+    ],
+    "bass": [
+      "Trouble-7-9-25 25-808 Heavy E.wav"
+    ],
+    "mixes": [
+      "Trouble-7-9-25 42- (Freeze) [2024-03-11 181642].wav",
+      "Trouble-7-9-25 43- (Freeze) [2024-03-11 181642].wav",
+      "Trouble-7-9-25.wav"
+    ],
+    "fx": [
+      "Trouble-7-9-25 46-Impact Mov Digi.wav",
+      "Trouble-7-9-25 50-MIDI.wav"
+    ],
+    "orchestral": [
+      "Trouble-7-9-25 51-Kontakt.wav"
+    ],
+    "silent": [
+      "Trouble-7-9-25 6-Taylor Swift - I Knew You Were Trouble (Studio Acapella) (Freeze).wav"
+    ],
+    "returns": [
+      "Trouble-7-9-25 A-ValhallaRoom.wav"
+    ]
+  },
+  "who-I-am": {
+    "vocals": [
+      "who-i-am-trunk-1-19-25 11-Audio.wav",
+      "who-i-am-trunk-1-19-25 9-Audio.wav"
+    ],
+    "guitar": [
+      "who-i-am-trunk-1-19-25 16-Say-You-Are-Amin-151 [2025-12-23 154952].wav"
+    ],
+    "fx": [
+      "who-i-am-trunk-1-19-25 18-Impact Gunshot.wav",
+      "who-i-am-trunk-1-19-25 19-Riser Taka Breath.wav"
+    ],
+    "drums": [
+      "who-i-am-trunk-1-19-25 22-Drum Rack.wav",
+      "who-i-am-trunk-1-19-25 FILL.wav"
+    ],
+    "synths": [
+      "who-i-am-trunk-1-19-25 24-Serum_Saw.wav",
+      "who-i-am-trunk-1-19-25 25-Serum_Saw.wav",
+      "who-i-am-trunk-1-19-25 39-Serum.wav"
+    ],
+    "keys": [
+      "who-i-am-trunk-1-19-25 28-Group.wav",
+      "who-i-am-trunk-1-19-25 29-Kontakt.wav"
+    ],
+    "bass": [
+      "who-i-am-trunk-1-19-25 35-Reaktor 6.wav",
+      "who-i-am-trunk-1-19-25 37-OS_DO_808_floor_F.wav"
+    ],
+    "mixes": [
+      "who-i-am-trunk-1-19-25.wav"
+    ]
+  },
+  "wont-let-you-go": {
+    "synths": [
+      "wont-let-you-go-trunk-1-19-26 11-Serum_Saw.wav",
+      "wont-let-you-go-trunk-1-19-26 12-Kontakt.wav"
+    ],
+    "mixes": [
+      "wont-let-you-go-trunk-1-19-26 8-Audio [2025-12-25 203116].wav",
+      "wont-let-you-go-trunk-1-19-26.wav"
+    ],
+    "returns": [
+      "wont-let-you-go-trunk-1-19-26 A-ValhallaRoom.wav"
+    ]
+  },
+  "wont-you-lie-to-me": {
+    "bass": [
+      "wont-you-lie-to-me-trunk-1-19-26 14-Group.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 16-Air Can 1.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 17-Operator.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 59-SDU_808_pulcity_C.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Reaktor 6-1.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Rev-808.wav"
+    ],
+    "synths": [
+      "wont-you-lie-to-me-trunk-1-19-26 19-Reaktor 6.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 8-bit-Synth.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 8-bit-lofi.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Main-Lead.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 SAW-BUILD.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 SPECTRAL (Bounce)-1.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Subtle-Lead.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Weird-Synth.wav"
+    ],
+    "vocals": [
+      "wont-you-lie-to-me-trunk-1-19-26 38-cropped-vid-audio.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 4-VOX_PPP_164_vocal_hook_nothing_that_you_say_dry_G#m [2026-01-11 104616] (Bounce).wav",
+      "wont-you-lie-to-me-trunk-1-19-26 40-THIRD-MELODY.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 48-Group.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 53-Audio.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 68-Group.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 69-PithcMApped 3rd is good.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Choir-1.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Choir-2.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Choir.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 SPECTRAL (Bounce)-2.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 SPECTRAL (Bounce)-3.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 alt-sound.wav"
+    ],
+    "returns": [
+      "wont-you-lie-to-me-trunk-1-19-26 A-ValhallaRoom.wav"
+    ],
+    "mixes": [
+      "wont-you-lie-to-me-trunk-1-19-26 Gate-Squeak (Bounce).wav",
+      "wont-you-lie-to-me-trunk-1-19-26.wav"
+    ],
+    "drums": [
+      "wont-you-lie-to-me-trunk-1-19-26 HH1.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 HH2.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Main-Snare.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Reaktor 6.wav"
+    ],
+    "fx": [
+      "wont-you-lie-to-me-trunk-1-19-26 Shimmer.wav",
+      "wont-you-lie-to-me-trunk-1-19-26 Synth-Riser.wav"
+    ]
+  }
+}

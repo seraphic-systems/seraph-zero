@@ -1,0 +1,17 @@
+---
+created_at: null
+id: higher-mix-10-28-26
+title: "higher-mix-10-28-26"
+song: higher
+root: ableton
+folder: "higher-mix-10-28-26 Project"
+main_set: "higher-mix-10-28-26.als"
+sets:
+  - "higher-mix-10-28-26.als"
+---
+
+Inventoried on 2026-10-30 from `~/Ableton`.
+
+Song association is based on the project and Live Set names: [higher](../songs/higher.md).
+
+Backup Live Sets belong to this project and are not cataloged individually. Filename dates are preserved as labels, not verified song creation or mix dates.

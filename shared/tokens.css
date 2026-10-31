@@ -1,0 +1,17 @@
+/* Shared visual values. Layout and component rules belong in styles.css. */
+:root {
+  --color-background: #faf9f6;
+  --color-surface: #fffefa;
+  --color-surface-hover: #f3f5ee;
+  --color-surface-inset: #efeee9;
+  --color-text: #252b32;
+  --color-text-muted: #646b70;
+  --color-text-secondary: #59635b;
+  --color-text-subtle: #747a7d;
+  --color-accent: #456456;
+  --color-border: #dedfd8;
+  --color-border-section: #dde3d8;
+  --font-display: electrolize, Orbitron, Mulish, system-ui, sans-serif;
+  --font-body: Mulish, system-ui, sans-serif;
+  --font-heading: Electrolize, Mulish, system-ui, sans-serif;
+}

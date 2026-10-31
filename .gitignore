@@ -1,0 +1,8 @@
+.DS_Store
+dist/
+node_modules/
+**/media/
+__pycache__/
+/apps/internal/data/set-registry.json.lock
+
+/tmp

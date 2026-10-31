@@ -1,0 +1,779 @@
+{
+  "schema_version": 2,
+  "analyzer_version": 2,
+  "created_at": "2026-10-30T19:06:15.480176+00:00",
+  "analyzed_at": "2026-10-30T19:06:15.480176+00:00",
+  "source": "~/Ableton",
+  "sets": [
+    {
+      "set_path": "Soundtrack-Idea Project/Soundtrack-Idea.als",
+      "source_path": "~/Ableton/Soundtrack-Idea Project/Soundtrack-Idea.als",
+      "source_sha256": "5c619da13a9bb7c7d74fc4e6b6b2b002871c69363443f7d8c95ea5acb6f3bb8e",
+      "xml_sha256": "3d79c0b76ba05806b84729bac5f89662ebae7851183f6c0058b0001d6218e5e4",
+      "live_version": "Ableton Live 12.4.6",
+      "bpm": 120.0,
+      "external_plugin_instances": 2,
+      "distinct_plugins": 1,
+      "instances_by_format": {
+        "VST3": 2
+      },
+      "plugins": [
+        {
+          "format": "VST3",
+          "name": "Kontakt 7",
+          "plugin_id": "1448301646:1766537067:1869509729:1802772535",
+          "instances": 2
+        }
+      ],
+      "warnings": [],
+      "set_id": "05e6c78c-89d5-4b89-919e-947fb668ee5d"
+    },
+    {
+      "set_path": "all-the-things-you-love-10-30-26 Project/all-the-things-you-love-10-30-26.als",
+      "source_path": "~/Ableton/all-the-things-you-love-10-30-26 Project/all-the-things-you-love-10-30-26.als",
+      "source_sha256": "344bc723198ed2a0b6f9a6162a44fb25f6d2a05474784734fc66ace516a552f0",
+      "xml_sha256": "626e3c9381516a2e2dd08f67a79a1ae066453c7a3bd68beb042e0977adaaebb3",
+      "live_version": "Ableton Live 12.4.15",
+      "bpm": 114.0,
+      "external_plugin_instances": 2,
+      "distinct_plugins": 2,
+      "instances_by_format": {
+        "VST3": 2
+      },
+      "plugins": [
+        {
+          "format": "VST3",
+          "name": "Auto-Tune Artist",
+          "plugin_id": "1245764500:540296558:-1936443048:-611032587",
+          "instances": 1
+        },
+        {
+          "format": "VST3",
+          "name": "Synthesizer V Studio 2 Plugin",
+          "plugin_id": "-1412567295:-1853687061:1148481123:1398166322",
+          "instances": 1
+        }
+      ],
+      "warnings": [],
+      "set_id": "da652ca3-ea35-4e47-9710-021af5244db2"
+    },
+    {
+      "set_path": "because-youre-you-10-30-26 Project/because-youre-you-10-30-26.als",
+      "source_path": "~/Ableton/because-youre-you-10-30-26 Project/because-youre-you-10-30-26.als",
+      "source_sha256": "d4328b820d25c8561925c229ea817136fea95047e83302b9d1db5494464d24ed",
+      "xml_sha256": "2ff50d8547843e427438df560b9f4f803fc1e41369218deda83f0847f9f1231a",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 142.0,
+      "external_plugin_instances": 1,
+      "distinct_plugins": 1,
+      "instances_by_format": {
+        "VST3": 1
+      },
+      "plugins": [
+        {
+          "format": "VST3",
+          "name": "AVOX DUO",
+          "plugin_id": "1448301633:1853113409:1448040480:1146441472",
+          "instances": 1
+        }
+      ],
+      "warnings": [],
+      "set_id": "51af3a8d-b52e-4740-80b0-8169db1dce0e"
+    },
+    {
+      "set_path": "between-this-world-and-the-next-10-30-26 Project/between-this-world-and-the-next-10-30-26.als",
+      "source_path": "~/Ableton/between-this-world-and-the-next-10-30-26 Project/between-this-world-and-the-next-10-30-26.als",
+      "source_sha256": "7835e380df01919e3ae1373d12e0f6e096e32a3c2ec7f34f268d51c1a4677f2f",
+      "xml_sha256": "f4b504214ac41451885be04b4a5c9a25f0837baef4b2f6ada368251e2463c43d",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 106.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "b5c88231-8213-48a8-a77d-1b20bd6d6229"
+    },
+    {
+      "set_path": "bury-the-sun-10-30-26 Project/bury-the-sun-10-30-26.als",
+      "source_path": "~/Ableton/bury-the-sun-10-30-26 Project/bury-the-sun-10-30-26.als",
+      "source_sha256": "1851a33a680121b7ac0967c97e2adcd9fe9d30627e27459ad7f602592e55bb76",
+      "xml_sha256": "1417e0c9fbd1871b67fb9638fd7d4293493fc061a23340bc857326d42716a0b0",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 104.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "d9a32b53-0020-45a3-b38e-7c36f3aa4424"
+    },
+    {
+      "set_path": "catch-me-10-30-26 Project/catch-me-10-30-26.als",
+      "source_path": "~/Ableton/catch-me-10-30-26 Project/catch-me-10-30-26.als",
+      "source_sha256": "569a44472183be8c8c5fee590320cf9d927999b95db195d3051ffc1f102e8803",
+      "xml_sha256": "ca55ba09355664b2a5883eff0980f748589ed02794754745e3e67e86149559be",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 109.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "6d74d2c2-97fc-4a6c-8724-a7ac9dbd643e"
+    },
+    {
+      "set_path": "coldness-10-30-26 Project/coldness-10-30-26.als",
+      "source_path": "~/Ableton/coldness-10-30-26 Project/coldness-10-30-26.als",
+      "source_sha256": "9a2181eb0127af70f92d49663f98706ba6c9340d9d487070a1cc488b80291a0a",
+      "xml_sha256": "f686d1d5031801fecc4e4fd214c530582d74922b80b399d8395c98100c132772",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 127.300003,
+      "external_plugin_instances": 2,
+      "distinct_plugins": 1,
+      "instances_by_format": {
+        "VST3": 2
+      },
+      "plugins": [
+        {
+          "format": "VST3",
+          "name": "Kontakt",
+          "plugin_id": "1448301646:1763984491:1869509729:1802764288",
+          "instances": 2
+        }
+      ],
+      "warnings": [],
+      "set_id": "2e548a17-f7d7-4d00-9305-0d458354ba0f"
+    },
+    {
+      "set_path": "dream-10-30-26 Project/dream-10-30-26.als",
+      "source_path": "~/Ableton/dream-10-30-26 Project/dream-10-30-26.als",
+      "source_sha256": "0de0ac24a750225bf18bb1f0c8292614300e6e4bd1173ff1243f263566096c3e",
+      "xml_sha256": "e4f3256d1aafc3bc6f087c980328e871a3a34f70e657a316318bb7e59a2e50f0",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 90.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "ee4e288f-42b6-49f0-b18b-2303f18deecf"
+    },
+    {
+      "set_path": "envy-10-30-26 Project/envy-10-30-26.als",
+      "source_path": "~/Ableton/envy-10-30-26 Project/envy-10-30-26.als",
+      "source_sha256": "517ac5fa2eaf00b8b7092f1886e7c29ac487448326c6a0ac815e742886a562dd",
+      "xml_sha256": "a9ce008e5bef74189101d2c3149a24c637a4d62353d6b1678b46802adb04b11f",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 109.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "fd7a8b25-ecc3-47fb-be40-6d579278c101"
+    },
+    {
+      "set_path": "epoch-10-30-26 Project/epoch-10-30-26.als",
+      "source_path": "~/Ableton/epoch-10-30-26 Project/epoch-10-30-26.als",
+      "source_sha256": "7feeb4dc017c817212ab22e6198eeb13d9964557021367135adb97d2691633b1",
+      "xml_sha256": "c95ee742d58bdd183387789472193ffe8246c52c02f61d37185ba2a44742049c",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 122.599998,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "fc052c01-9fab-4f84-b3d9-0aec3dc1347d"
+    },
+    {
+      "set_path": "fall-10-30-26 Project/fall-10-30-26.als",
+      "source_path": "~/Ableton/fall-10-30-26 Project/fall-10-30-26.als",
+      "source_sha256": "4063efa00fc99595d7b694068be4765bfe2b63997e88f259fabb9d5f39f69729",
+      "xml_sha256": "6a8f0f0a1942bfe538a9c40c0a7bee8617a051c7c4fdf228ed975052812808cd",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 85.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "218d71fb-fe2d-47c5-8701-7226d9869bfe"
+    },
+    {
+      "set_path": "genesis-10-30-26 Project/genesis-10-30-26.als",
+      "source_path": "~/Ableton/genesis-10-30-26 Project/genesis-10-30-26.als",
+      "source_sha256": "bb1895d0031a2203789eb9af1695f79792e5c43281f5448aaff448faa4a5baab",
+      "xml_sha256": "45d9660735e72e2c10987f623472c14e38dc990263d234f425af9f652b010a4a",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 128.470001,
+      "external_plugin_instances": 7,
+      "distinct_plugins": 6,
+      "instances_by_format": {
+        "VST2": 7
+      },
+      "plugins": [
+        {
+          "format": "VST2",
+          "name": "Guitar Rig 5",
+          "plugin_id": "1315522357",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "OTT",
+          "plugin_id": "1483101268",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "Solid Bus Comp",
+          "plugin_id": "1315513398",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "Transient Master",
+          "plugin_id": "1315513397",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaSpaceModulator",
+          "plugin_id": "1399868772",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaUberMod",
+          "plugin_id": "1969382770",
+          "instances": 2
+        }
+      ],
+      "warnings": [],
+      "set_id": "a7cadc84-ba80-4441-8f05-dcdb4539934f"
+    },
+    {
+      "set_path": "higher-mix-10-28-26 Project/higher-mix-10-28-26.als",
+      "source_path": "~/Ableton/higher-mix-10-28-26 Project/higher-mix-10-28-26.als",
+      "source_sha256": "2f2c39cb13c738818a1c80b823db9491452219ae036b24287b97c1064cce2553",
+      "xml_sha256": "74d14a42740ae4f8f13993f6222aec4e566ecba3b6f94eaeabf22d3f589d573f",
+      "live_version": "Ableton Live 12.4.15",
+      "bpm": 76.0,
+      "external_plugin_instances": 3,
+      "distinct_plugins": 3,
+      "instances_by_format": {
+        "VST3": 3
+      },
+      "plugins": [
+        {
+          "format": "VST3",
+          "name": "ADAPTIVERB",
+          "plugin_id": "-178254972:352863609:-1590997104:-1556968479",
+          "instances": 1
+        },
+        {
+          "format": "VST3",
+          "name": "Transient Master",
+          "plugin_id": "1448301646:1763980660:1918987891:1768255092",
+          "instances": 1
+        },
+        {
+          "format": "VST3",
+          "name": "Wider",
+          "plugin_id": "1448301648:1985442423:1768187250:0",
+          "instances": 1
+        }
+      ],
+      "warnings": [],
+      "set_id": "dbff8664-aa8f-418d-abde-34890d4d2320"
+    },
+    {
+      "set_path": "jungle-10-30-26 Project/jungle-10-30-26.als",
+      "source_path": "~/Ableton/jungle-10-30-26 Project/jungle-10-30-26.als",
+      "source_sha256": "70ae9958ff9974c27b052f44f0cf004ae0d84528f6a8b5db2a135579fe7d5e00",
+      "xml_sha256": "2c886b3769d3b853fe7b4e24f040b9ae5deb8af73788659fc9ffa5ec56a67909",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 111.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "8031e570-e132-4956-8c42-a86801dee291"
+    },
+    {
+      "set_path": "mania-10-30-26 Project/mania-10-30-26.als",
+      "source_path": "~/Ableton/mania-10-30-26 Project/mania-10-30-26.als",
+      "source_sha256": "70d2c4a2468f44fcab9269a3d458f3d56c79d3abf1c6ec28db3ab87eee2ab7f6",
+      "xml_sha256": "2f5e78d623058548cddf23acfe4f51e89a1ebafed13aa740a53f3b765152a198",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 83.0,
+      "external_plugin_instances": 61,
+      "distinct_plugins": 18,
+      "instances_by_format": {
+        "VST2": 61
+      },
+      "plugins": [
+        {
+          "format": "VST2",
+          "name": "Absynth 5 FX",
+          "plugin_id": "1131179318",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "Driver",
+          "plugin_id": "1315513405",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "FuzzPlus3",
+          "plugin_id": "1095001651",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "Guitar Rig 5",
+          "plugin_id": "1315522357",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "Kontakt 5",
+          "plugin_id": "1315524405",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "LFOTool",
+          "plugin_id": "1483105871",
+          "instances": 13
+        },
+        {
+          "format": "VST2",
+          "name": "Massive",
+          "plugin_id": "1315523937",
+          "instances": 11
+        },
+        {
+          "format": "VST2",
+          "name": "OTT",
+          "plugin_id": "1483101268",
+          "instances": 4
+        },
+        {
+          "format": "VST2",
+          "name": "Reaktor 6 FX",
+          "plugin_id": "1314010730",
+          "instances": 11
+        },
+        {
+          "format": "VST2",
+          "name": "Reaktor 6",
+          "plugin_id": "1315525174",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "Replika",
+          "plugin_id": "1315513410",
+          "instances": 5
+        },
+        {
+          "format": "VST2",
+          "name": "Serato Sample",
+          "plugin_id": "1399681132",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "Solid Bus Comp",
+          "plugin_id": "1315513398",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "Supercharger",
+          "plugin_id": "1315513408",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaRoom",
+          "plugin_id": "1383429485",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaSpaceModulator",
+          "plugin_id": "1399868772",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaUberMod",
+          "plugin_id": "1969382770",
+          "instances": 3
+        },
+        {
+          "format": "VST2",
+          "name": "Youlean Loudness Meter 2",
+          "plugin_id": "1970430553",
+          "instances": 1
+        }
+      ],
+      "warnings": [],
+      "set_id": "04e98bc0-1308-4377-b335-e03de4b75406"
+    },
+    {
+      "set_path": "praise-10-30-26 Project/praise-10-30-26.als",
+      "source_path": "~/Ableton/praise-10-30-26 Project/praise-10-30-26.als",
+      "source_sha256": "98d12d2c0b37173f612202fb580b7ca9b090ab15ef2ac308ecab74e0ea1854e5",
+      "xml_sha256": "df1f0a957b306d7cec5944922f394c3e70501d4494e4fba9227c0821d97832c8",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 118.0,
+      "external_plugin_instances": 4,
+      "distinct_plugins": 2,
+      "instances_by_format": {
+        "VST2": 4
+      },
+      "plugins": [
+        {
+          "format": "VST2",
+          "name": "ValhallaRoom",
+          "plugin_id": "1383429485",
+          "instances": 3
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaUberMod",
+          "plugin_id": "1969382770",
+          "instances": 1
+        }
+      ],
+      "warnings": [],
+      "set_id": "3933fb47-ea97-405d-b1a0-030fdc1917f5"
+    },
+    {
+      "set_path": "reason-10-30-26 Project/reason-10-30-26.als",
+      "source_path": "~/Ableton/reason-10-30-26 Project/reason-10-30-26.als",
+      "source_sha256": "4726c695e562249a904607732278f84a20c39a60ee5d27984c722a141b74cd6c",
+      "xml_sha256": "47e57c3caa82e68e7bdd9ac9f2e928acc868f9d6d0937ef677ac4eb3888bce7b",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 85.5999985,
+      "external_plugin_instances": 27,
+      "distinct_plugins": 12,
+      "instances_by_format": {
+        "VST2": 27
+      },
+      "plugins": [
+        {
+          "format": "VST2",
+          "name": "Absynth 5 FX",
+          "plugin_id": "1131179318",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "Driver",
+          "plugin_id": "1315513405",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "LFOTool",
+          "plugin_id": "1483105871",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "LittleAlterBoy",
+          "plugin_id": "1400130657",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "OTT",
+          "plugin_id": "1483101268",
+          "instances": 4
+        },
+        {
+          "format": "VST2",
+          "name": "Replika",
+          "plugin_id": "1315513410",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "Serum",
+          "plugin_id": "1483109208",
+          "instances": 3
+        },
+        {
+          "format": "VST2",
+          "name": "Transient Master",
+          "plugin_id": "1315513397",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaRoom",
+          "plugin_id": "1383429485",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaUberMod",
+          "plugin_id": "1969382770",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "Wider",
+          "plugin_id": "1349932914",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "iZotope Trash 2",
+          "plugin_id": "1517179954",
+          "instances": 4
+        }
+      ],
+      "warnings": [],
+      "set_id": "bd656648-3c40-4fd1-9739-ffa44a6610de"
+    },
+    {
+      "set_path": "stars-10-30-26 Project/stars-10-30-26.als",
+      "source_path": "~/Ableton/stars-10-30-26 Project/stars-10-30-26.als",
+      "source_sha256": "b558433ff932a8892fc3eacd5910bc9f802016a75d987380e53fb4f9d12da2c8",
+      "xml_sha256": "9e03a4d5cb155edda7f867f4ba668f1de87147143c5a2e339376d7fcb722f653",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 65.0,
+      "external_plugin_instances": 29,
+      "distinct_plugins": 11,
+      "instances_by_format": {
+        "VST2": 29
+      },
+      "plugins": [
+        {
+          "format": "VST2",
+          "name": "Absynth 5 FX",
+          "plugin_id": "1131179318",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "Decapitator",
+          "plugin_id": "1400128611",
+          "instances": 4
+        },
+        {
+          "format": "VST2",
+          "name": "Driver",
+          "plugin_id": "1315513405",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "LFOTool",
+          "plugin_id": "1483105871",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "OTT",
+          "plugin_id": "1483101268",
+          "instances": 3
+        },
+        {
+          "format": "VST2",
+          "name": "Serum",
+          "plugin_id": "1483109208",
+          "instances": 4
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaRoom",
+          "plugin_id": "1383429485",
+          "instances": 7
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaSpaceModulator",
+          "plugin_id": "1399868772",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaUberMod",
+          "plugin_id": "1969382770",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "Wider",
+          "plugin_id": "1349932914",
+          "instances": 3
+        },
+        {
+          "format": "VST2",
+          "name": "iZotope Trash 2",
+          "plugin_id": "1517179954",
+          "instances": 1
+        }
+      ],
+      "warnings": [],
+      "set_id": "3403a1f6-71f5-4c99-beac-868144032147"
+    },
+    {
+      "set_path": "stay-with-me-10-30-26 Project/stay-with-me-10-30-26.als",
+      "source_path": "~/Ableton/stay-with-me-10-30-26 Project/stay-with-me-10-30-26.als",
+      "source_sha256": "a8f6eee6103a3173f715b1753701c23a3ccecc939703bd5c475ec6a382593d00",
+      "xml_sha256": "fb3538cfa3f565f96f58a2f22ff202d8894014330e5f40606e64dc0fb5660347",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 91.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "7871a542-2539-4623-a466-a68872bfc3cf"
+    },
+    {
+      "set_path": "through-10-30-26 Project/through-10-30-26.als",
+      "source_path": "~/Ableton/through-10-30-26 Project/through-10-30-26.als",
+      "source_sha256": "e853f105882491dfb7654255ea23fe91734d4ca6a9d9990aa632dc1251cb63eb",
+      "xml_sha256": "54b1883e522375f38b0c08ea263ccc08c77fd49a252f8220cf3413914678f336",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 93.0,
+      "external_plugin_instances": 8,
+      "distinct_plugins": 6,
+      "instances_by_format": {
+        "VST2": 8
+      },
+      "plugins": [
+        {
+          "format": "VST2",
+          "name": "OTT",
+          "plugin_id": "1483101268",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaRoom",
+          "plugin_id": "1383429485",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "ValhallaSpaceModulator",
+          "plugin_id": "1399868772",
+          "instances": 2
+        },
+        {
+          "format": "VST2",
+          "name": "Wider",
+          "plugin_id": "1349932914",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "Youlean Loudness Meter 2",
+          "plugin_id": "1970430553",
+          "instances": 1
+        },
+        {
+          "format": "VST2",
+          "name": "iZotope Trash 2",
+          "plugin_id": "1517179954",
+          "instances": 2
+        }
+      ],
+      "warnings": [],
+      "set_id": "b4074fe0-cb08-4ef4-be2b-45ad4c34e769"
+    },
+    {
+      "set_path": "trouble-10-30-26 Project/trouble-10-30-26.als",
+      "source_path": "~/Ableton/trouble-10-30-26 Project/trouble-10-30-26.als",
+      "source_sha256": "b0a6ac54bff9f701c48945b7a4f5374440e4b789eafa194dd054db6468475984",
+      "xml_sha256": "76cf1ae38f3b352dcabe6ce024992f4deb140fe3b5eb02a5b3a88cac0a47c66d",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 138.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "d035767b-d2f3-42c8-ab2b-f3c08021276a"
+    },
+    {
+      "set_path": "who-i-am-10-30-26 Project/who-i-am-10-30-26.als",
+      "source_path": "~/Ableton/who-i-am-10-30-26 Project/who-i-am-10-30-26.als",
+      "source_sha256": "28fe04cc030696e885ab6dda4a83055b506bcd19bd6177d30e3e7317ea5deddb",
+      "xml_sha256": "f5549017f99424618de69e46e7055c5c246f1a294a4e0a5c0055d6d2ec8f48f8",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 110.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "17e0f43f-c72e-4b67-a61d-0f9cf1e5089f"
+    },
+    {
+      "set_path": "wont-let-you-go-10-30-26 Project/wont-let-you-go-10-30-26.als",
+      "source_path": "~/Ableton/wont-let-you-go-10-30-26 Project/wont-let-you-go-10-30-26.als",
+      "source_sha256": "bacd620e7fddca0d1cdd564fc1225f7fe0a812c5e7e27d4ba1337f8be6912390",
+      "xml_sha256": "5a58380f515159465cc4eed1c8f8956a8adf3b1b983c72137d19ce7f0c5b749c",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 123.0,
+      "external_plugin_instances": 0,
+      "distinct_plugins": 0,
+      "instances_by_format": {},
+      "plugins": [],
+      "warnings": [],
+      "set_id": "303bf67b-70d3-476d-aa84-5b251ffbb9a1"
+    },
+    {
+      "set_path": "wont-you-lie-to-me-10-30-26 Project/wont-you-lie-to-me-10-30-26.als",
+      "source_path": "~/Ableton/wont-you-lie-to-me-10-30-26 Project/wont-you-lie-to-me-10-30-26.als",
+      "source_sha256": "16ab98c4eb70d7be9998c6b0475a922fdf57a35f3d6f56a5b453a87d39a5e158",
+      "xml_sha256": "3cd7e2b73da96eba594bd44cf857841390c98cd9a9f3c300b1a3705938b05f94",
+      "live_version": "Ableton Live 12.4.16",
+      "bpm": 99.0,
+      "external_plugin_instances": 3,
+      "distinct_plugins": 3,
+      "instances_by_format": {
+        "VST3": 3
+      },
+      "plugins": [
+        {
+          "format": "VST3",
+          "name": "ADAPTIVERB",
+          "plugin_id": "-178254972:352863609:-1590997104:-1556968479",
+          "instances": 1
+        },
+        {
+          "format": "VST3",
+          "name": "Harmony Engine",
+          "plugin_id": "1448301640:1161048392:1634889071:1853431877",
+          "instances": 1
+        },
+        {
+          "format": "VST3",
+          "name": "Synthesizer V Studio 2 Plugin",
+          "plugin_id": "-1412567295:-1853687061:1148481123:1398166322",
+          "instances": 1
+        }
+      ],
+      "warnings": [],
+      "set_id": "3e5c79c3-c120-4158-bd48-a215e08c5737"
+    }
+  ],
+  "errors": [],
+  "unchanged_sets": 0
+}
