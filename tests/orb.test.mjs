@@ -201,3 +201,23 @@ test('a declared default can use any renderer and view-specific controls', () =>
   assert.equal(route.view.home, 'browse');
   assert.equal(layout(custom, route, { width: 1000, height: 800 }).count, 0);
 });
+
+test('open view controls reserve space for orbs and players without moving breadcrumbs', () => {
+  for (const width of [320, 390, 599, 600, 900, 1440]) for (const view of ['orb', 'player']) {
+    const state = { ...initial, view: { songs: view } };
+    const viewport = { width, height: 844 };
+    const closed = layout(tree, state, viewport);
+    const open = layout(tree, { ...state, viewOpen: true }, viewport);
+    assert.deepEqual(open.circles.filter(circle => circle.role === 'trail'), closed.circles.filter(circle => circle.role === 'trail'));
+    for (const item of [...open.items, ...open.circles.filter(circle => circle.role === 'child')]) {
+      const left = item.r ? item.x - item.r : item.x;
+      const top = item.r ? item.y - item.r : item.y;
+      assert.ok(width < 600 ? top >= 422 : left >= 284);
+      assert.ok(item.r ? item.x + item.r <= width : item.x + item.width <= width);
+    }
+    assert.deepEqual(layout(tree, state, viewport), closed);
+    // Detail pages hide View, so a stale open flag must not reserve space.
+    const detail = { ...state, detail: 'song-s0' };
+    assert.deepEqual(layout(tree, { ...detail, viewOpen: true }, viewport), layout(tree, detail, viewport));
+  }
+});

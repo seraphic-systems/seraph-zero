@@ -81,6 +81,18 @@ export function layout(tree, state, viewport) {
   circles.push(...trail);
   // A–Z can extend vertically on small screens; the renderer exposes that scroll region.
   const region = { x: narrow ? 28 : Math.min(230, w * .21), y: 180, w: w - (narrow ? 56 : Math.min(230, w * .21) + 50), h: Math.max(190, h - 295) };
+  const controls = view.controls || {};
+  const viewOpen = !!state.viewOpen && !detail && (node.views?.options?.length > 1 || controls.search || controls.arrangements?.length > 1);
+  if (viewOpen) {
+    if (narrow) {
+      // The panel scrolls with the page, above the library on small screens.
+      region.y = 422;
+    } else {
+      const inset = Math.max(0, 284 - region.x);
+      region.x += inset;
+      region.w -= inset;
+    }
+  }
   if (node.selection && w >= 900) region.w = Math.max(180, region.w - 360);
   const selection = node.selection && node.children.some(child => child.id === state.selection) ? state.selection : null;
   const related = new Set((node.relationships || []).filter(edge => edge.source === selection || edge.target === selection).flatMap(edge => [edge.source, edge.target]));

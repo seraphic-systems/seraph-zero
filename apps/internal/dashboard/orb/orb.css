@@ -4,6 +4,9 @@
   --ink: var(--color-text);
   --accent: var(--color-accent);
   --hairline: #bfc3b8;
+  --breadcrumb-color: #8299b0;
+  --view-color: #b29b70;
+  --utility-color: #9a89ad;
 }
 * {
   box-sizing: border-box;
@@ -99,28 +102,50 @@ select:focus-visible {
   overflow: visible;
 }
 .orb circle {
-  fill: var(--paper);
-  stroke: var(--hairline);
+  fill: color-mix(in srgb, var(--orb-color, var(--hairline)) 7%, var(--paper));
+  stroke: var(--orb-color, var(--hairline));
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
   transition: stroke 0.2s;
 }
+/* Muted category colors stay consistent across the library and model map. */
+.orb[data-category="music"] { --orb-color: #879a80; }
+.orb[data-category="model"] { --orb-color: #8897a8; }
+.orb[data-category="Policy"] { --orb-color: #a88c78; }
+.orb[data-category="Horizon"] { --orb-color: #b29d65; }
+.orb[data-category="albums"],
+.orb[data-category="Album"] { --orb-color: #a1849b; }
+.orb[data-category="Album track"],
+.orb[data-category="AlbumTrack"] { --orb-color: #b28c8a; }
+.orb[data-category="songs"],
+.orb[data-category="Song"] { --orb-color: #7d9a87; }
+.orb[data-category="Mix"] { --orb-color: #759ca6; }
+.orb[data-category="MixFile"] { --orb-color: #8699b5; }
+.orb[data-category="StemExport"] { --orb-color: #9690b4; }
+.orb[data-category="Project"] { --orb-color: #b48c70; }
+.orb[data-category="LiveSet"] { --orb-color: #b8a16e; }
+.orb[data-category="Snapshot"] { --orb-color: #909c70; }
+.orb[data-category="Member"] { --orb-color: #b58192; }
+.orb[data-category="MusicFragment"] { --orb-color: #73a39b; }
+.orb[data-category="Idea"] { --orb-color: #ab96b4; }
+/* Navigation roles take precedence over the content category in the trail. */
+.orb[data-role="trail"] { --orb-color: var(--breadcrumb-color); }
 .orb .inner {
   fill: none;
-  stroke: var(--hairline);
+  stroke: var(--orb-color, var(--hairline));
   opacity: 0.35;
 }
 .orb:hover circle:first-child {
-  stroke: var(--accent);
+  stroke: color-mix(in srgb, var(--orb-color, var(--accent)) 65%, var(--accent));
 }
 .orb.current circle:first-child {
-  stroke: var(--accent);
+  stroke: color-mix(in srgb, var(--orb-color, var(--accent)) 65%, var(--accent));
 }
 .orb.current .mark {
   opacity: 1;
 }
 .orb .mark {
-  fill: var(--accent);
+  fill: color-mix(in srgb, var(--orb-color, var(--accent)) 65%, var(--accent));
   stroke: none;
   opacity: 0;
 }
@@ -259,8 +284,8 @@ seraph-audio-player {
   transform-origin: 0 0;
   z-index: 10;
   border-radius: 50%;
-  border: calc(1px * var(--inverse, 1)) solid var(--hairline);
-  background: var(--paper);
+  border: calc(1px * var(--inverse, 1)) solid var(--utility-color);
+  background: color-mix(in srgb, var(--utility-color) 7%, var(--paper));
 }
 #nav-toggle {
   position: absolute;
@@ -450,24 +475,27 @@ body.nav-open {
   }
 }
 
-/* Local view controls keep the library present and usable. */
+/* The expanded view panel reserves space in the content layout. */
 #view-lens {
-  position: fixed;
+  position: absolute;
   top: 112px;
   left: 28px;
   z-index: 9;
   width: 46px;
   height: 46px;
-  border: 1px solid var(--hairline);
-  border-radius: 50%;
-  background: var(--paper);
+  border: 1px solid var(--view-color);
+  border-radius: 23px;
+  background: color-mix(in srgb, var(--view-color) 7%, var(--paper));
+  overflow: hidden;
   transition:
-    width 350ms ease,
-    height 350ms ease,
+    width 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
+    height 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
+    border-radius 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
     opacity 350ms ease;
 }
 #view-toggle {
   position: absolute;
+  z-index: 1;
   inset: 0;
   width: 44px;
   height: 44px;
@@ -478,20 +506,26 @@ body.nav-open {
   color: var(--accent);
 }
 #view-lens.active {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--view-color) 65%, var(--accent));
 }
 #view-lens.open {
-  width: 280px;
+  width: 232px;
   height: 280px;
+  border-radius: 24px;
 }
 #view-lens.open #view-toggle {
-  top: 12px;
-  left: calc(50% - 22px);
   font-size: 20px;
 }
 #view-content {
-  padding: 64px 38px 32px;
+  padding: 48px 18px 20px;
   text-align: center;
+}
+#view-lens.open #view-content {
+  animation: view-content-in 650ms ease both;
+}
+@keyframes view-content-in {
+  0%, 35% { opacity: 0; }
+  100% { opacity: 1; }
 }
 #view-content h2 {
   margin: 0 0 14px;
@@ -511,28 +545,14 @@ body.nav-open {
   opacity: 0;
   pointer-events: none;
 }
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   #view-lens {
-    top: auto;
-    bottom: 88px;
+    top: 132px;
     left: 23px;
   }
   #view-lens.open {
-    left: 16px;
-    right: 16px;
-    bottom: 84px;
-    width: auto;
-    height: 222px;
-    border-radius: 28px;
-    box-shadow: 0 8px 30px #0000000a;
-  }
-  #view-content {
-    padding: 26px 32px;
-  }
-  #view-lens.open #view-toggle {
-    top: 8px;
-    left: auto;
-    right: 8px;
+    width: calc(100% - 46px);
+    height: 266px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -550,6 +570,12 @@ body.nav-open {
 .player-card {
   padding: 18px 22px;
   border-radius: 24px;
+  transition: left 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
+    top 650ms cubic-bezier(0.22, 0.72, 0.18, 1),
+    width 650ms cubic-bezier(0.22, 0.72, 0.18, 1);
+}
+.presentation-transition .player-card {
+  transition: none;
 }
 .player-card .kind {
   margin-bottom: 4px;
@@ -618,9 +644,9 @@ body.nav-open {
   width: 46px;
   height: 46px;
   z-index: 9;
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--utility-color);
   border-radius: 50%;
-  background: var(--paper);
+  background: color-mix(in srgb, var(--utility-color) 7%, var(--paper));
 }
 #player-toggle {
   position: absolute;
@@ -638,7 +664,7 @@ body.nav-open {
   font-size: 20px;
 }
 #player-lens.playing {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--utility-color) 65%, var(--accent));
 }
 #player-lens.open {
   bottom: 88px;
@@ -675,10 +701,6 @@ body.nav-open {
 #player-content seraph-audio-player {
   margin: 12px 0 0;
 }
-#view-lens.open {
-  width: 300px;
-  height: 310px;
-}
 #presentation-choices {
   margin-bottom: 8px;
 }
@@ -687,10 +709,6 @@ input:focus-visible {
   outline-offset: 3px;
 }
 @media (max-width: 600px) {
-  #view-lens.open {
-    width: auto;
-    height: 266px;
-  }
   #player-lens.open {
     height: 350px;
     border-radius: 36px;
@@ -787,8 +805,12 @@ html.presentation-transition {
 
 @media (prefers-reduced-motion: reduce) {
   #player-lens,
-  #player-toggle {
+  #player-toggle,
+  .player-card {
     transition: none;
+  }
+  #view-lens.open #view-content {
+    animation: none;
   }
 }
 

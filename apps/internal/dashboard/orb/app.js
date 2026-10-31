@@ -173,6 +173,7 @@ try {
   }
   function move(button, circle, entering) {
     const old = button.circle;
+    const viewReflow = $('#view-lens').classList.contains('open') !== !!state.viewOpen;
     const changed = entering || !old || ['x', 'y', 'r', 'labelPlacement', 'role'].some(key => old[key] !== circle[key]);
     button.circle = circle;
     button.classList.toggle('current', circle.isCurrent);
@@ -181,6 +182,8 @@ try {
     button.classList.toggle('unrelated', !!circle.unrelated);
     if (circle.selectable) button.setAttribute('aria-pressed', String(circle.isCurrent)); else button.removeAttribute('aria-pressed');
     button.dataset.role = circle.role;
+    const node = index.get(circle.key === 'trail-detail' ? circle.action?.id : circle.key)?.node;
+    button.dataset.category = node?.data?.type || node?.kind || node?.id || '';
     button.dataset.placement = circle.labelPlacement;
     button.style.setProperty('--inverse', 50 / circle.r);
     button.style.setProperty('--label-width', `${circle.labelWidth || Math.max(55, circle.r * 1.7)}px`);
@@ -197,9 +200,9 @@ try {
     // Commit interrupted animation positions before replacing the animation.
     button.getAnimations().forEach(animation => animation.cancel());
     button.style.transform = transform(circle);
-    if (changed && !switchingPresentation) animate(button, [{ transform: entering ? from || transform(circle) : from, opacity: entering ? 0 : 1 }, { transform: transform(circle), opacity: 1 }], { delay: entering && !reduced.matches ? 150 + Math.min(circle.order, 30) * 15 : 0 });
+    if (changed && !switchingPresentation) animate(button, [{ transform: entering ? from || transform(circle) : from, opacity: entering ? 0 : 1 }, { transform: transform(circle), opacity: 1 }], { duration: viewReflow && !reduced.matches ? 650 : duration(), delay: entering && !reduced.matches ? 150 + Math.min(circle.order, 30) * 15 : 0 });
     label.getAnimations().forEach(animation => animation.cancel());
-    if (changed && !reduced.matches && !switchingPresentation) animate(label, [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .65 }, { opacity: 1, offset: 1 }]);
+    if (changed && !reduced.matches && !switchingPresentation && !viewReflow) animate(label, [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .65 }, { opacity: 1, offset: 1 }]);
   }
   function detailContent(node) {
     const section = $('#detail');
