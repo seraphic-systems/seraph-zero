@@ -94,8 +94,8 @@ protection or repository rulesets. The JSON file does not enforce protection by
 itself.
 
 Cloudflare branch routing, protected previews, and production deployment must be
-connected in the hosting account; this workflow does not deploy or require cloud
-credentials. Cloudflare's production branch must be `master`. For rollback, revert
+connected in the hosting account as described below. Cloudflare's production
+branch must be `master`. For rollback, revert
 the accepted change through a PR and deploy the resulting commit. Keep old
 checksum-addressed R2 objects so historical content references remain valid.
 
@@ -106,6 +106,79 @@ schema and manifest checks validate reference structure without contacting R2.
 The uploaders verify bytes before recording references; CI does not need storage
 credentials and cannot verify that remote objects are still present. Hosted
 playback still requires the audio API described below.
+
+### Cloudflare production and branch previews
+
+`wrangler.json` defines the existing `seraphic-systems-website` Worker and account,
+its static assets directory,
+the production Custom Domain `seraphicsystems.com`, and isolated Worker Previews.
+Wrangler is pinned in the lockfile. Production and previews serve only
+`dist/seraphic-systems`; Zero remains a separate hosting project. Orb deep links
+are generated as real files, and unknown paths return 404 rather than the landing
+page. No R2 binding or local management endpoint is deployed in this first setup:
+the landing page and catalog work, but hosted audio is a separate implementation.
+
+After committing changes and authenticating with `npx wrangler login`:
+
+```sh
+# Build and deploy this committed feature branch to a Preview:
+npm run deploy:preview
+# A detached checkout needs an explicit Preview name:
+npm run deploy:preview -- --name pr-2
+
+# After merging, deploy the accepted origin/master revision:
+npm run deploy:production
+```
+
+These commands rebuild the committed revision, read deployment routing from its
+committed `wrangler.json`, and send only that build to Cloudflare. The production
+command checks the live `origin/master` SHA and refuses an unmerged revision.
+Preview commands never promote a revision to production. An OAuth login or
+appropriately scoped `CLOUDFLARE_API_TOKEN` is required; `.env.r2.local` contains
+S3 credentials for local upload/playback, not Worker deployment credentials.
+Wrangler state and `.dev.vars` files are ignored by Git.
+
+For automatic deployments, connect this repository to **Workers Builds** in
+Cloudflare (Worker → Settings → Builds → Connect). Authorize the Cloudflare
+GitHub App for this repository and use these settings:
+
+| Setting | Value |
+| --- | --- |
+| Repository | `seraphic-systems/seraph-zero` |
+| Root directory | repository root |
+| Production branch | `master` |
+| Build command (production and previews) | `npm ci && npm test && npm run build:production` |
+| Production deploy command | `npx wrangler deploy --config wrangler.json` |
+| Preview command | `npx wrangler preview` |
+| Preview builds | enabled for feature branches |
+| Build Node version | `22` (`NODE_VERSION` build variable) |
+
+Workers Builds runs the build command before its deploy/Preview command. Its Git
+integration supplies Preview links on pull requests and updates the same branch
+Preview on later pushes. Configure only this one deployment integration to avoid
+duplicate builds; GitHub Actions continues to provide required validation.
+Deploying production for the first time attaches the configured Custom Domain;
+check the domain's existing DNS and hosting before replacing an existing site.
+The zone must be active in the selected Cloudflare account. The Worker also has
+a `workers.dev` production address for smoke checks.
+
+**Protect previews before publishing unpublished content.** Preview URLs are
+public by default; a `previews` block does not enable authentication. Enable
+Cloudflare Zero Trust, then select the Worker's **Access** tab → protect this
+Worker → **Previews only**, using an allow policy for your email or team. This
+scope protects branch and individual deployment URLs while leaving production
+public. Check that an unauthenticated request is redirected to Access or denied.
+Preview resource bindings are intentionally empty; future audio work must define
+separate preview-safe bindings rather than inheriting production storage.
+
+After setup, verify `/`, `/orb/`, an Orb deep link, and `/release.json` on both
+production and a Preview. The production release must match `origin/master`;
+the Preview release must match its branch commit. Verify an unknown URL is 404,
+and confirm preview authentication before considering the setup complete.
+See Cloudflare's [Worker Previews](https://developers.cloudflare.com/workers/previews/get-started/),
+[Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/),
+and [Access for Workers](https://developers.cloudflare.com/workers/configuration/cloudflare-access/)
+documentation.
 
 ## Write a Zero post
 

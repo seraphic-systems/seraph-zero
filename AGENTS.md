@@ -28,6 +28,8 @@ Use Node.js >=22.12 and npm with the committed `package-lock.json`. Install with
 | Preview internal workspace | `npm run dev:internal` |
 | Build both public sites | `npm run build` |
 | Build committed public release | `npm run build:production` |
+| Deploy committed branch preview | `npm run deploy:preview` |
+| Deploy accepted production revision | `npm run deploy:production` |
 | Build internal workspace | `npm run build:internal` |
 | Run Node tests | `npm test` |
 | Run Ableton Python tests | `python3 -m unittest discover -s tests -p 'test_ableton*.py'` |

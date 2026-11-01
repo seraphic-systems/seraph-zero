@@ -7,3 +7,6 @@ __pycache__/
 
 /tmp
 .env.r2.local
+.wrangler/
+.dev.vars
+.dev.vars.*
