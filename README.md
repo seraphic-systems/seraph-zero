@@ -148,7 +148,7 @@ GitHub App for this repository and use these settings:
 | Root directory | repository root |
 | Production branch | `master` |
 | Build command (production and previews) | `npm ci && npm test && npm run build:production` |
-| Production deploy command | `npx wrangler deploy` |
+| Production deploy command | `npx wrangler deploy --config wrangler.json` |
 | Preview command | `npx wrangler preview` |
 | Preview builds | enabled for feature branches |
 | Build Node version | `22` (`NODE_VERSION` build variable) |
