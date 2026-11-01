@@ -1,7 +1,8 @@
 # Seraph sites
 
 Two static sites share CSS, favicons, and images from `shared/`.
-Zero's blog is generated from Markdown; Seraphic Systems remains plain HTML.
+Zero's blog is generated from Markdown. Seraphic Systems combines the plain HTML
+landing page at `/` with the public Orb app at `/orb/` in one deployment.
 
 Site source lives in `apps/seraphic-systems/` and `apps/zero/`. Shared assets,
 build scripts, and tests stay at the repository root.
@@ -151,8 +152,9 @@ Run the build checks with `npm test`.
 
 ## Internal song workspace
 
-`apps/internal/` is a separate local dashboard. It is excluded from the default
-`npm run build` and has no link from either public site.
+`apps/internal/` holds the catalog and local management tools. Orb source lives
+in `apps/seraphic-systems/orb/` and is reused by both builds. The Seraphic Systems build publishes Orb and the
+current catalog; the classic dashboard and Ableton tools remain local-only.
 
 ```sh
 npm run dev:internal
@@ -162,9 +164,14 @@ Open http://127.0.0.1:5175 (or the printed URL). Sort songs, select a
 song, and choose a dated mix for playback. Song notes come from the Markdown
 body. Edit source files to update the song library. The Live Sets page also
 supports creating branches through the local development server.
-`npm run build:internal` generates a separate `dist/internal/` including local
-audio. It does not publish anything. Keep public hosting pointed at `dist/zero`
-or `dist/seraphic-systems`, as above.
+`npm run build:internal` generates a separate `dist/internal/` without audio.
+It does not publish anything. Public hosting uses `dist/zero` or
+`dist/seraphic-systems`; the latter includes the landing page, Orb, and catalog.
+`npm run dev:seraphic` previews both on port 5174 and provides the local mix and
+fragment streaming APIs. Ableton management APIs remain exclusive to `dev:internal`.
+Static hosting supports catalog browsing; listening still needs a hosted audio
+endpoint replacing the local `/api/mixes/` and `/api/fragments/` routes.
+R2 credentials remain server-side in `.env.r2.local`.
 
 Source records live in `apps/internal/data/`, grouped by type. This directory also
 contains `set-registry.json` and `set-snapshots/`. Dashboard code lives in
@@ -204,8 +211,9 @@ mix records rather than changing song IDs.
 The build reports duplicate IDs, malformed dates, and unmatched audio filenames.
 Missing media is fine: songs remain visible without playback, including on a
 fresh checkout. `**/media/` is ignored by Git, so local audio stays untracked;
-song metadata and dashboard code can be built in public. An internal build includes mix metadata and local API URLs, but never copies
-mix audio into its output. Listening requires `npm run dev:internal`. Keep any internal-only assets out of `shared/`, which is
+song metadata and Orb code are public in the Seraphic Systems build. Both builds
+include mix metadata and local API URLs, but never copy mix audio into their
+output. Local listening works with `npm run dev:internal` or `npm run dev:seraphic`. Keep any internal-only assets out of `shared/`, which is
 copied into both public sites.
 
 ### Horizons
@@ -713,9 +721,10 @@ records for each available audio format. Metadata-only mixes remain in the catal
 Legacy schema-1 snapshot reports remain readable but have no inferred set-ID links.
 
 `npm run build:internal` generates `model-schema.json` and `catalog.json` alongside
-the dashboard. The catalog contains front matter, set registry records, and analysis
-reports, and belongs only in the internal output. The default public build neither
-loads nor publishes it. The Python analyzer retains its existing registry and
+the dashboard. The Seraphic Systems build also publishes these files for Orb.
+The catalog contains front matter, derived set registry records, and analysis
+reports; the current catalog is intentionally public. Raw source records, registry
+files, snapshots, and local audio are not copied into public output. The Python analyzer retains its existing registry and
 snapshot formats; this model does not rewrite history. The viewer reflects the
 last build; after scanning or branching, rebuild/restart the internal server to
 refresh it. Schema and Markdown edits already trigger development rebuilds.
@@ -814,8 +823,12 @@ registered sets and inherited by their newly created branches.
 A separate spatial interface is available at
 [http://127.0.0.1:5175/orb/](http://127.0.0.1:5175/orb/) with the same
 `npm run dev:internal` command. The existing dashboard, Live Sets, and Model
-pages remain at their original URLs. The orb UI is also included in
-`npm run build:internal`; it is never included in public builds.
+pages remain at their original URLs. The same Orb source is included in
+`npm run build:internal` and the public Seraphic Systems build. On the public
+site, the landing page links to `/orb/`, and Orb links back to `/`. There is no
+separate Orb deployment or duplicate implementation. Both builds copy the same
+`apps/seraphic-systems/orb/` source, and both development servers watch that
+directory for changes.
 
 Open Home → Music → Songs or Albums. The UI reads the existing `songs.json`
 and `catalog.json`; it does not modify source records. Songs retain mix
@@ -863,7 +876,7 @@ browser history. The default Relationships view uses stable schema groupings;
 Scatter and A–Z are named alternatives, each with title search. On smaller screens the inspector follows the
 map; selecting a type scrolls to it, and clearing selection returns to the map.
 
-The framework-free modules in `apps/internal/dashboard/orb/` separate the
+The framework-free modules in `apps/seraphic-systems/orb/` separate the
 content adapter (`content.js`), pure arrangement/layout engine (`engine.js`),
 URL mapping (`routes.js`), and DOM renderer (`app.js`). Container declarations in
 `content.js` specify `views.default` and `views.options`; each option defines an

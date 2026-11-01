@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { createContentSource, indexTree } from '../apps/internal/dashboard/orb/content.js';
-import { layout } from '../apps/internal/dashboard/orb/engine.js';
-import { routeFor, readRoute, routeToNode } from '../apps/internal/dashboard/orb/routes.js';
-import { inheritedFields } from '../apps/internal/dashboard/orb/model-view.js';
+import { createContentSource, indexTree } from '../apps/seraphic-systems/orb/content.js';
+import { layout } from '../apps/seraphic-systems/orb/engine.js';
+import { routeFor, readRoute, routeToNode } from '../apps/seraphic-systems/orb/routes.js';
+import { inheritedFields } from '../apps/seraphic-systems/orb/model-view.js';
 const schema = JSON.parse(await readFile(new URL('../apps/internal/model/schema.json', import.meta.url)));
 const catalog = { records: [{ key: 'Song:test', type: 'Song', data: { id: 'test' } }] };
 const tree = createContentSource([], catalog, schema).getRoot();

@@ -62,12 +62,15 @@ test('an empty blog still generates a homepage', async (t) => {
 test('full build keeps deployments self-contained and removes unpublished or deleted posts', async (t) => {
   const { source, output, post } = await fixture(t);
   const root = path.dirname(path.dirname(source));
-  for (const directory of ['scripts', 'shared', 'apps/seraphic-systems']) {
-    await cp(new URL(`../${directory}`, import.meta.url), path.join(root, directory), { recursive: true });
+  for (const directory of ['scripts', 'shared', 'apps/seraphic-systems', 'apps/internal']) {
+    await cp(new URL(`../${directory}`, import.meta.url), path.join(root, directory), {
+      recursive: true, filter: file => path.basename(file) !== 'media',
+    });
   }
   await symlink(fileURLToPath(new URL('../node_modules', import.meta.url)), path.join(root, 'node_modules'), 'dir');
   await mkdir(path.join(root, 'apps/internal/media/mixes'), { recursive: true });
-  await writeFile(path.join(root, 'apps/internal/media/mixes/internal-only.wav'), 'local audio');
+  await writeFile(path.join(root, 'apps/internal/media/mixes/internal-only-2026-01-01.wav'), 'local audio');
+  await writeFile(path.join(root, 'apps/internal/data/songs/internal-only.md'), '---\nid: internal-only\ntitle: Fixture song\n---\n');
   const build = () => promisify(execFile)(process.execPath, [path.join(root, 'scripts/build.mjs')]);
   await post('published', 'title: Published\ndate: "2026-10-30"');
   await post('removed', 'title: Removed\ndate: "2026-10-29"');
@@ -82,10 +85,29 @@ test('full build keeps deployments self-contained and removes unpublished or del
   await assert.rejects(access(path.join(dist, 'zero/posts/removed/index.html')));
   await assert.rejects(access(path.join(dist, 'zero/content')));
   await assert.rejects(access(path.join(dist, 'zero/templates')));
+  await access(path.join(dist, 'seraphic-systems/orb/index.html'));
+  await access(path.join(dist, 'seraphic-systems/orb/music/songs/index.html'));
+  await access(path.join(dist, 'seraphic-systems/catalog.json'));
+  assert.match(await readFile(path.join(dist, 'seraphic-systems/orb/index.html'), 'utf8'), /Orb · Seraphic Systems/);
+  for (const site of ['zero', 'seraphic-systems']) {
+    for (const file of ['media/mixes/internal-only-2026-01-01.wav', 'sets.html', 'model.html', 'data/set-registry.json']) {
+      await assert.rejects(access(path.join(dist, site, file)));
+    }
+  }
+  await assert.rejects(access(path.join(dist, 'zero/catalog.json')));
   for (const site of ['zero', 'seraphic-systems']) {
     assert.equal(await readFile(path.join(dist, site, 'shared/styles.css'), 'utf8'),
       await readFile(path.join(root, 'shared/styles.css'), 'utf8'));
     await access(path.join(dist, site, 'shared/favicon.ico'));
     assert.match(await readFile(path.join(dist, site, 'index.html'), 'utf8'), /href="shared\/styles.css"/);
   }
+  await promisify(execFile)(process.execPath, [path.join(root, 'scripts/build.mjs'), 'internal']);
+  for (const file of ['app.js', 'content.js', 'orb.css']) {
+    const orbSource = await readFile(path.join(root, 'apps/seraphic-systems/orb', file), 'utf8');
+    for (const site of ['internal', 'seraphic-systems']) {
+      assert.equal(await readFile(path.join(dist, site, 'orb', file), 'utf8'), orbSource);
+    }
+  }
+  assert.match(await readFile(path.join(dist, 'internal/orb/music/songs/index.html'), 'utf8'), /Orb · Internal/);
+  await access(path.join(dist, 'internal/sets.html'));
 });

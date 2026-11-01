@@ -40,9 +40,11 @@ for (const site of sites) {
   } else {
     await cp(source, output, {
       recursive: true,
-      filter: (file) => path.basename(file) !== '.DS_Store',
+      filter: (file) => path.basename(file) !== '.DS_Store' && file !== path.join(source, 'orb'),
     });
     await rewriteSharedLinks(output, source, output);
+    const { buildInternal } = await import('./internal.mjs');
+    await buildInternal(path.join(root, 'apps/internal'), output, { publicOrb: true });
   }
   await cp(shared, path.join(output, 'shared'), {
     recursive: true,

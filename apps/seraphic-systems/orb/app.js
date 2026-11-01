@@ -515,7 +515,7 @@ try {
     } else { section.hidden = true; if (detailId) disposeDetail(); detailId = null; }
     const subject = index.get(current.selection || state.detail || current.container.id).node;
     $('#hint').textContent = current.container.selection ? `${current.count} types · Select to explore relationships` : current.detail ? 'Scroll to move through items' : `${current.count} ${current.count === 1 ? 'item' : 'items'} · Open to explore`;
-    document.title = `${subject.label} · Orb · Internal`;
+    document.title = `${subject.label} · Orb · ${document.documentElement.dataset.siteName || 'Internal'}`;
     $('#announcement').textContent = `${subject.label}${state.detail ? '' : `, ${current.count} ${current.count === 1 ? 'item' : 'items'}`}`;
     const recents = [subject.id, ...saved('orb-recents').filter(id => id !== subject.id)].slice(0, 12); persist('orb-recents', recents);
     renderNav();
@@ -575,7 +575,7 @@ try {
   render(false);
   if (state.invalid) $('#announcement').textContent = 'Location not found. Showing Home.';
 } catch (error) {
-  $('#error').hidden = false; $('#error').textContent = 'Unable to load your library. Rebuild the Internal app and refresh to try again.';
+  $('#error').hidden = false; $('#error').textContent = 'Unable to load your library. Refresh to try again.';
   $('#announcement').textContent = $('#error').textContent;
   console.error(error);
 }

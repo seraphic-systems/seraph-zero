@@ -1,12 +1,13 @@
 import { cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 import { marked } from 'marked';
 import { readMixes } from './mix-media.mjs';
 import { readStems } from './stems.mjs';
 import { buildCatalog, modelSchema } from './model.mjs';
-import { createContentSource, indexTree } from '../apps/internal/dashboard/orb/content.js';
+import { createContentSource, indexTree } from '../apps/seraphic-systems/orb/content.js';
 
 function dateString(value, context) {
   const date = value instanceof Date ? value.toISOString().slice(0, 10) : value;
@@ -17,7 +18,10 @@ function dateString(value, context) {
   return date;
 }
 
-export async function buildInternal(source, output) {
+export async function buildInternal(source, output, {
+  publicOrb = false,
+  orbSource = fileURLToPath(new URL('../apps/seraphic-systems/orb/', import.meta.url)),
+} = {}) {
   const songs = [];
   const ids = new Set();
   const mixes = await readMixes(source);
@@ -91,17 +95,25 @@ export async function buildInternal(source, output) {
   for (const stem of stems) stem.created_at = creationTimes.get(`StemExport:${stem.id}`);
   songs.sort((a, b) => a.title.localeCompare(b.title));
   await mkdir(output, { recursive: true });
-  await cp(path.join(source, 'dashboard'), output, { recursive: true });
+  if (!publicOrb) {
+    await cp(path.join(source, 'dashboard'), output, { recursive: true });
+  }
+  await cp(orbSource, path.join(output, 'orb'), { recursive: true });
   // Materialize route entry points so deep links also work on a plain static server.
-  let orbTemplate = await readFile(path.join(source, 'dashboard/orb/index.html'), 'utf8').catch(error => {
-    if (error.code === 'ENOENT') return null;
-    throw error;
-  });
+  let orbTemplate = await readFile(path.join(orbSource, 'index.html'), 'utf8');
   if (orbTemplate) {
+    if (publicOrb) {
+      orbTemplate = orbTemplate
+        .replace('data-site-name="Internal"', 'data-site-name="Seraphic Systems"')
+        .replace('A spatial view of your internal music library.', 'Explore the Seraphic Systems music library.')
+        .replace('Orb · Internal', 'Orb · Seraphic Systems')
+        .replace('internal <span>/ orb</span>', 'Seraphic Systems <span>/ orb</span>')
+        .replace('Classic workspace ↗', 'Seraphic Systems ↗');
+    }
     // dist is ignored by Vite's watcher. A new filename prevents its CSS transform
     // cache (and browser caches) from pairing a rebuilt page with an older style.
     if (/\/orb\/orb\.css(?:\?[^"']*)?["']/.test(orbTemplate)) {
-      const css = await readFile(path.join(source, 'dashboard/orb/orb.css'));
+      const css = await readFile(path.join(orbSource, 'orb.css'));
       const filename = `orb.${createHash('sha256').update(css).digest('hex').slice(0, 16)}.css`;
       await writeFile(path.join(output, 'orb', filename), css);
       orbTemplate = orbTemplate.replace(/\/orb\/orb\.css(?:\?[^"']*)?/g, `/orb/${filename}`);

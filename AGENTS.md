@@ -7,8 +7,9 @@ Read the relevant section of `README.md` before changing a workflow; it document
 content formats, music provenance, local APIs, and operational commands.
 
 - `apps/zero/`: Markdown blog posts and HTML templates.
-- `apps/seraphic-systems/`: company site, written in plain HTML, CSS, and JavaScript.
-- `apps/internal/dashboard/`: local dashboard, Live Sets, Model viewer, and Orb UI.
+- `apps/seraphic-systems/`: landing page; its build also includes the public `/orb/` app.
+- `apps/seraphic-systems/orb/`: Orb source, reused by the internal preview and build.
+- `apps/internal/dashboard/`: local dashboard, Live Sets, and Model viewer.
 - `apps/internal/data/`: persistent Markdown records, set registry, and snapshots.
 - `apps/internal/model/schema.json`: catalog model and relationship definitions.
 - `shared/`: design tokens, styles, assets, and reusable native Web Components.
@@ -56,6 +57,9 @@ any failures or verification limits.
 
 - The default build publishes only Zero and Seraphic Systems. Keep internal-only
   assets out of `shared/`, which is copied into every site's output.
+- Seraphic Systems includes Orb and the current catalog, intentionally public.
+  Classic dashboard and Ableton management tools remain local-only; raw audio,
+  source records, registry files, and snapshots are not copied to public output.
 - Local audio belongs under ignored `media/` directories. Keep R2 credentials in
   the ignored `.env.r2.local`; do not put credentials in source or browser bundles.
 - Treat the schema as the catalog model's source of truth. Preserve explicit

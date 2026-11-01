@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createPresentationTransition, changesContentView } from '../apps/internal/dashboard/orb/transitions.js';
+import { createPresentationTransition, changesContentView } from '../apps/seraphic-systems/orb/transitions.js';
 
 function setup({ native = false, reduced = false } = {}) {
   const classes = new Set(), transitions = [], animations = [];

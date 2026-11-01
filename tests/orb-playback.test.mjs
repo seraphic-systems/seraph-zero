@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createPlayback } from '../apps/internal/dashboard/orb/playback.js';
+import { createPlayback } from '../apps/seraphic-systems/orb/playback.js';
 
 class Media extends EventTarget {
   paused = true;

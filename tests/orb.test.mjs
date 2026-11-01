@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createContentSource, indexTree } from '../apps/internal/dashboard/orb/content.js';
-import { layout } from '../apps/internal/dashboard/orb/engine.js';
-import { availableViews, resolveView, hasFindControls, isFindActive, viewPanelHeight, viewConfiguration, arrangementConfiguration } from '../apps/internal/dashboard/orb/views.js';
-import { readRoute, routeFor, routeToNode } from '../apps/internal/dashboard/orb/routes.js';
+import { createContentSource, indexTree } from '../apps/seraphic-systems/orb/content.js';
+import { layout } from '../apps/seraphic-systems/orb/engine.js';
+import { availableViews, resolveView, hasFindControls, isFindActive, viewPanelHeight, viewConfiguration, arrangementConfiguration } from '../apps/seraphic-systems/orb/views.js';
+import { readRoute, routeFor, routeToNode } from '../apps/seraphic-systems/orb/routes.js';
 
 const songs = Array.from({ length: 25 }, (_, i) => ({ id: `s${i}`, title: `Song ${i}`, mixes: [], notes: '' }));
 const catalog = { records: [

@@ -25,6 +25,8 @@ export default defineConfig(async ({ mode }) => {
       configureServer(server) {
         if (site === 'internal') {
           server.middlewares.use(setsApi(root));
+        }
+        if (site === 'internal' || site === 'seraphic-systems') {
           const mixes = mixesApi(root);
           server.middlewares.use(mixes);
           server.httpServer?.once('close', () => mixes.close());
@@ -32,7 +34,12 @@ export default defineConfig(async ({ mode }) => {
           server.middlewares.use(fragments);
           server.httpServer?.once('close', () => { void fragments.close(); });
         }
-        const sources = [`apps/${site}`, 'shared', 'scripts'].map((name) => path.join(root, name));
+        const sources = [
+          `apps/${site}`,
+          ...(site === 'seraphic-systems' ? ['apps/internal'] : []),
+          ...(site === 'internal' ? ['apps/seraphic-systems/orb'] : []),
+          'shared', 'scripts',
+        ].map((name) => path.join(root, name));
         server.watcher.add(sources);
         let timer;
         let building = false;

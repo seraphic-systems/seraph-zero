@@ -6,7 +6,7 @@
     "analyze:sets": "python3 scripts/ableton.py",
     "lint:projects": "node scripts/lint-projects.mjs",
     "dev": "vite",
-    "dev:seraphic": "vite --mode seraphic-systems",
+    "dev:seraphic": "node --env-file-if-exists=.env.r2.local node_modules/vite/bin/vite.js --mode seraphic-systems",
     "dev:internal": "node --env-file-if-exists=.env.r2.local node_modules/vite/bin/vite.js --mode internal",
     "fragments:prepare": "node scripts/upload-fragment-previews.mjs --prepare",
     "fragments:upload": "node --env-file-if-exists=.env.r2.local scripts/upload-fragment-previews.mjs",

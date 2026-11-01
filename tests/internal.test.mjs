@@ -209,9 +209,10 @@ test('stem links reject unknown versions, cross-song references, and invalid exp
 test('orb UI gets static deep links alongside the unchanged classic dashboard', async (t) => {
   const { source, output, song } = await fixture(t);
   await song('higher', 'higher', 'Higher');
-  await mkdir(path.join(source, 'dashboard/orb'));
-  await writeFile(path.join(source, 'dashboard/orb/index.html'), '<script type="module" src="/orb/app.js"></script>');
-  await buildInternal(source, output);
+  const orbSource = path.join(source, 'orb-fixture');
+  await mkdir(orbSource);
+  await writeFile(path.join(orbSource, 'index.html'), '<script type="module" src="/orb/app.js"></script>');
+  await buildInternal(source, output, { orbSource });
   assert.equal(await readFile(path.join(output, 'index.html'), 'utf8'), '<h1>Library</h1>');
   for (const route of ['orb', 'orb/music', 'orb/music/songs', 'orb/music/songs/song-higher', 'orb/music/albums', 'orb/model', 'orb/model/type-Song']) {
     assert.match(await readFile(path.join(output, route, 'index.html'), 'utf8'), /src="\/orb\/app.js"/);
@@ -221,22 +222,23 @@ test('orb UI gets static deep links alongside the unchanged classic dashboard', 
 test('Orb deep links use a content-versioned stylesheet after every CSS change', async (t) => {
   const { source, output, song } = await fixture(t);
   await song('higher', 'higher', 'Higher');
-  await mkdir(path.join(source, 'dashboard/orb'));
-  await writeFile(path.join(source, 'dashboard/orb/index.html'), '<link rel="stylesheet" href="/orb/orb.css?v=old">');
-  const stylesheet = path.join(source, 'dashboard/orb/orb.css');
+  const orbSource = path.join(source, 'orb-fixture');
+  await mkdir(orbSource);
+  await writeFile(path.join(orbSource, 'index.html'), '<link rel="stylesheet" href="/orb/orb.css?v=old">');
+  const stylesheet = path.join(orbSource, 'orb.css');
   const hrefFor = async route => (await readFile(path.join(output, route, 'index.html'), 'utf8')).match(/href="([^"]+)"/)[1];
   await writeFile(stylesheet, '#view-lens { border-radius: 50%; }');
-  await buildInternal(source, output);
+  await buildInternal(source, output, { orbSource });
   const first = await hrefFor('orb');
   assert.match(first, /^\/orb\/orb\.[a-f0-9]{16}\.css$/);
   assert.equal(await hrefFor('orb/music/songs/song-higher'), first);
   assert.equal(await readFile(path.join(output, first), 'utf8'), '#view-lens { border-radius: 50%; }');
   await writeFile(stylesheet, '#find-lens { position: fixed; }');
-  await buildInternal(source, output);
+  await buildInternal(source, output, { orbSource });
   const next = await hrefFor('orb');
   assert.notEqual(next, first);
   assert.equal(await hrefFor('orb/music/songs/song-higher'), next);
   assert.equal(await readFile(path.join(output, next), 'utf8'), '#find-lens { position: fixed; }');
-  await buildInternal(source, output);
+  await buildInternal(source, output, { orbSource });
   assert.equal(await hrefFor('orb'), next);
 });
