@@ -2,6 +2,7 @@ import { cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildZero } from './zero.mjs';
+import { buildJournal } from './journal.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const allSites = ['zero', 'seraphic-systems'];
@@ -45,9 +46,10 @@ for (const site of sites) {
   } else {
     await cp(source, output, {
       recursive: true,
-      filter: (file) => path.basename(file) !== '.DS_Store' && file !== path.join(source, 'orb'),
+      filter: (file) => path.basename(file) !== '.DS_Store' && file !== path.join(source, 'orb') && file !== path.join(source, 'journal'),
     });
     await rewriteSharedLinks(output, source, output);
+    await buildJournal(path.join(source, 'journal'), path.join(output, 'journal'));
     const { buildInternal } = await import('./internal.mjs');
     await buildInternal(path.join(root, 'apps/internal'), output, { publicOrb: true, includeLocalMedia });
     const { buildAudio } = await import('./cloudflare/build-audio.mjs');
