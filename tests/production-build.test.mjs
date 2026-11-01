@@ -53,8 +53,9 @@ test('production builds HEAD, excluding staged, unstaged, untracked and ignored 
   await git('add', 'apps/internal/data/songs/unpublished.md');
   // A locally broken build script must not change the committed build either.
   await writeFile(path.join(root, 'scripts/build.mjs'), 'throw new Error("Draft build");');
+  await writeFile(path.join(root, 'scripts/cloudflare/audio-worker.mjs'), 'throw new Error("Draft audio code");');
   assert.equal(await buildProduction(root), revision);
-  for (const site of ['zero', 'seraphic-systems']) {
+  for (const site of ['zero', 'seraphic-systems', 'cloudflare']) {
     const rebuilt = await outputFiles(path.join(root, 'dist', site), `${site}/`);
     const expected = Object.fromEntries(Object.entries(official).filter(([file]) => file.startsWith(`${site}/`)));
     assert.deepEqual(rebuilt, expected);

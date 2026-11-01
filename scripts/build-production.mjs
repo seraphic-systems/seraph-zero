@@ -34,7 +34,7 @@ export async function buildProduction(root = repository) {
       await writeFile(path.join(built, 'release.json'), JSON.stringify({ revision, committed_at: committedAt }, null, 2) + '\n');
     }
     // Copy only completed builds, leaving the local internal workspace alone.
-    for (const site of ['zero', 'seraphic-systems']) {
+    for (const site of ['zero', 'seraphic-systems', 'cloudflare']) {
       const output = path.join(root, 'dist', site);
       await rm(output, { recursive: true, force: true });
       await cp(path.join(snapshot, 'dist', site), output, { recursive: true });

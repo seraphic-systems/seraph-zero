@@ -37,6 +37,7 @@ async function deploy() {
   const release = JSON.parse(await readFile(path.join(root, 'dist/seraphic-systems/release.json'), 'utf8'));
   if (release.revision !== revision) throw new Error('Build revision does not match deployment revision.');
   config.assets.directory = path.join(root, 'dist/seraphic-systems');
+  if (config.main) config.main = path.resolve(root, config.main);
   delete config.$schema;
   const temporary = await mkdtemp(path.join(tmpdir(), 'seraph-deploy-'));
   try {

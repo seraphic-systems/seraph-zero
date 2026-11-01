@@ -50,6 +50,8 @@ for (const site of sites) {
     await rewriteSharedLinks(output, source, output);
     const { buildInternal } = await import('./internal.mjs');
     await buildInternal(path.join(root, 'apps/internal'), output, { publicOrb: true, includeLocalMedia });
+    const { buildAudio } = await import('./cloudflare/build-audio.mjs');
+    await buildAudio(output, path.join(root, 'dist/cloudflare'));
   }
   await cp(shared, path.join(output, 'shared'), {
     recursive: true,

@@ -16,6 +16,7 @@
     "build:production": "node scripts/build-production.mjs",
     "deploy:production": "node scripts/deploy-cloudflare.mjs production",
     "deploy:preview": "node scripts/deploy-cloudflare.mjs preview",
+    "audio:seed-preview": "npm run build:production && node scripts/cloudflare/seed-preview.mjs",
     "test": "node --test",
     "create:internal": "node scripts/create-internal-record.mjs"
   },

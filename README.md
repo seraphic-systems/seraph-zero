@@ -105,18 +105,19 @@ they do not acquire a remote audio reference from a local filename. Existing
 schema and manifest checks validate reference structure without contacting R2.
 The uploaders verify bytes before recording references; CI does not need storage
 credentials and cannot verify that remote objects are still present. Hosted
-playback still requires the audio API described below.
+playback uses the Worker audio API described below.
 
 ### Cloudflare production and branch previews
 
 `wrangler.json` defines the existing `seraphic-systems-website` Worker and account,
 its static assets directory,
 the production Custom Domain `seraphicsystems.com`, and isolated Worker Previews.
-Wrangler is pinned in the lockfile. Production and previews serve only
-`dist/seraphic-systems`; Zero remains a separate hosting project. Orb deep links
-are generated as real files, and unknown paths return 404 rather than the landing
-page. No R2 binding or local management endpoint is deployed in this first setup:
-the landing page and catalog work, but hosted audio is a separate implementation.
+Wrangler is pinned in the lockfile. Production and previews serve static assets
+from `dist/seraphic-systems` and run the generated Worker in `dist/cloudflare`;
+Zero remains a separate hosting project. Orb deep links are generated as real
+files, and unknown paths return 404 rather than the landing page. Only `/api/*`
+requests run the Worker first; ordinary static assets retain direct asset serving.
+Local Ableton management endpoints are never deployed.
 
 After committing changes and authenticating with `npx wrangler login`:
 
@@ -168,8 +169,8 @@ Cloudflare Zero Trust, then select the Worker's **Access** tab → protect this
 Worker → **Previews only**, using an allow policy for your email or team. This
 scope protects branch and individual deployment URLs while leaving production
 public. Check that an unauthenticated request is redirected to Access or denied.
-Preview resource bindings are intentionally empty; future audio work must define
-separate preview-safe bindings rather than inheriting production storage.
+Preview audio bindings use separate private buckets rather than production
+storage; see the hosted audio setup below.
 
 After setup, verify `/`, `/orb/`, an Orb deep link, and `/release.json` on both
 production and a Preview. The production release must match `origin/master`;
@@ -179,6 +180,72 @@ See Cloudflare's [Worker Previews](https://developers.cloudflare.com/workers/pre
 [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/),
 and [Access for Workers](https://developers.cloudflare.com/workers/configuration/cloudflare-access/)
 documentation.
+
+### Hosted audio streaming
+
+Production listening is intentionally public for audio referenced by the committed
+catalog. Keeping R2 buckets private prevents direct bucket access; the public
+Worker endpoints still let visitors listen to and download approved audio. Preview
+Access protects the entire preview, including audio routes. CORS/CORP headers are
+browser embedding controls, not authentication for public production audio.
+
+`scripts/cloudflare/build-audio.mjs` derives an allowlist from validated song mix
+references and fragment `preview` fields. Public builds emit the Worker runtime
+and allowlist in **`dist/cloudflare`**, outside both public static directories.
+The committed production build snapshots this code and content together; no
+working-tree or local-only audio enters the deployed Worker. Do not publish
+`dist/` as a whole. Deploy through Wrangler with `dist/seraphic-systems` as assets.
+
+| Binding | Production bucket | Preview bucket |
+| --- | --- | --- |
+| `MIX_AUDIO` | `seraph-music-media` | `seraph-music-media-preview` |
+| `FRAGMENT_AUDIO` | `seraph-music-fragments` | `seraph-music-fragments-preview` |
+
+Keep public bucket access disabled on all four buckets. Native R2 bindings use
+Cloudflare authorization; no S3 key, `.env.r2.local`, or signed audio URL goes into
+the browser or Worker bundle. The Worker only calls `head` and `get`. It accepts:
+
+- `GET /api/mixes/<registered-filename>/audio` for registered remote mix files.
+- `GET /api/fragments/<fragment-id>/audio` for uploaded M4A listening copies.
+- `HEAD` on either route for full-object metadata without reading the audio body.
+
+Only the exact committed object key for each route is accessible. Arbitrary keys,
+unknown records, local-only mixes, and fragments without uploaded previews return
+404. Writes return 405. Missing objects return 404; missing bindings, storage
+errors, or size/MIME/SHA metadata mismatches return 503 without exposing storage
+details. There is no hosted fallback to a local filesystem or archive drive.
+
+GET supports one byte range (bounded, open-ended, or suffix) with 206 and
+`Content-Range`; malformed, multipart, and unsatisfiable ranges return 416. HEAD
+ignores Range and returns full-object headers. Strong content ETags support
+`If-None-Match` revalidation and `If-Range` seeking; a mismatched If-Range sends
+the full representation. The Worker streams R2 bodies without buffering mixes,
+and uses an R2 ETag precondition to detect an object changing between head/get.
+Private, revalidated browser caching prevents public CDN caching of preview audio
+and avoids stale audio when the committed manifest changes.
+
+Create the preview buckets once, then seed committed listening assets before
+testing a branch that adds audio:
+
+```sh
+npx wrangler r2 bucket create seraph-music-media-preview
+npx wrangler r2 bucket create seraph-music-fragments-preview
+npm run audio:seed-preview
+```
+
+The seed command requires Wrangler login, rebuilds HEAD, and uses Wrangler remote
+bindings to read production objects and write only the two named preview buckets.
+It copies the exact committed keys, verifies checksums during R2 upload and checks
+remote size/MIME/SHA metadata afterward. Matching objects are reused; conflicting
+objects cause an error rather than being overwritten. It preserves production
+objects, source records, dates, and historical objects. Interrupted runs can be
+repeated, and old preview objects are retained. This is a manual storage operation,
+not a CI step; CI and normal builds never copy audio or require R2 credentials.
+New preview references return 404 until their objects have been seeded.
+
+For release checks, test a mix and a fragment with HEAD, a small Range GET,
+seeking in Orb, and an invalid range/unknown ID. Verify preview audio redirects
+unauthenticated requests to Access while production audio is publicly playable.
 
 ## Write a Zero post
 
@@ -320,9 +387,9 @@ It does not publish anything. Public hosting uses `dist/zero` or
 `dist/seraphic-systems`; the latter includes the landing page, Orb, and catalog.
 `npm run dev:seraphic` previews both on port 5174 and provides the local mix and
 fragment streaming APIs. Ableton management APIs remain exclusive to `dev:internal`.
-Static hosting supports catalog browsing; listening still needs a hosted audio
-endpoint replacing the local `/api/mixes/` and `/api/fragments/` routes.
-R2 credentials remain server-side in `.env.r2.local`.
+Plain static hosting supports catalog browsing. The Cloudflare Worker adds hosted
+`/api/mixes/` and `/api/fragments/` playback using committed R2 references.
+Local upload/playback credentials remain server-side in `.env.r2.local`.
 
 Source records live in `apps/internal/data/`, grouped by type. This directory also
 contains `set-registry.json` and `set-snapshots/`. Dashboard code lives in
@@ -638,8 +705,8 @@ Local previews and the internal build merge registered remote files with locally
 discovered files. Public builds use only registered references, and production
 reads those references from the committed snapshot. Registered mixes remain in
 the dashboard and model catalog without the local media folder.
-Static output contains metadata only; hosted playback still requires this local
-server and Internet access, as with fragment previews. Keep a separate backup of
+Static output contains metadata only; Cloudflare serves registered audio through
+the hosted Worker, while local previews can use the local server. Keep a separate backup of
 original audio. Stem uploads are not included in this command.
 
 ### Stem exports and their mixes
@@ -811,8 +878,9 @@ inside that root can stream. For local playback, WAV and other browser audio
 formats stream directly; AIF/AIFF files get a temporary PCM WAV preview on first
 listen, using macOS `afconvert` or `ffmpeg` on other platforms. These local previews
 are cached for the server session and cleaned up on shutdown. The static build
-includes the browser and metadata, but listening requires the local dev server;
-sample audio and credentials are never bundled into the build.
+includes the browser and metadata; Cloudflare playback uses uploaded R2 previews
+through the hosted Worker. Sample audio and credentials are never bundled into
+the build.
 
 #### Private Cloudflare R2 previews
 
