@@ -89,6 +89,12 @@ test('full build keeps deployments self-contained and removes unpublished or del
   await access(path.join(dist, 'seraphic-systems/orb/index.html'));
   await access(path.join(dist, 'seraphic-systems/orb/music/songs/index.html'));
   await access(path.join(dist, 'seraphic-systems/catalog.json'));
+  await access(path.join(dist, 'seraphic-systems/journal/index.html'));
+  await access(path.join(dist, 'seraphic-systems/journal/seraph-zero/index.html'));
+  await assert.rejects(access(path.join(dist, 'seraphic-systems/journal/entries')));
+  await assert.rejects(access(path.join(dist, 'seraphic-systems/journal/templates')));
+  assert.match(await readFile(path.join(dist, 'seraphic-systems/index.html'), 'utf8'), /href="\/journal\/"/);
+  assert.match(await readFile(path.join(dist, 'seraphic-systems/orb/index.html'), 'utf8'), /href="\/journal\/"/);
   assert.match(await readFile(path.join(dist, 'seraphic-systems/orb/index.html'), 'utf8'), /Orb · Seraphic Systems/);
   for (const site of ['zero', 'seraphic-systems']) {
     for (const file of ['media/mixes/internal-only-2026-01-01.wav', 'sets.html', 'model.html', 'data/set-registry.json', 'audio-manifest.json', 'worker.mjs']) {

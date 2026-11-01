@@ -2,7 +2,8 @@
 
 Two static sites share CSS, favicons, and images from `shared/`.
 Zero's blog is generated from Markdown. Seraphic Systems combines the plain HTML
-landing page at `/` with the public Orb app at `/orb/` in one deployment.
+landing page at `/`, the curated Journal at `/journal/`, and the public Orb app
+at `/orb/` in one deployment.
 
 Site source lives in `apps/seraphic-systems/` and `apps/zero/`. Shared assets,
 build scripts, and tests stay at the repository root.
@@ -283,6 +284,55 @@ For images, add files to `shared/assets/` and reference them in posts with
 `![Description](../../shared/assets/filename.png)`. Link to another post with
 `[Another post](../another-post/)`. Paths are relative to the generated post URL.
 Markdown may include HTML, so only build content you trust.
+
+## Write a Journal entry
+
+The Seraphic Systems app has three layers: the landing page introduces the studio,
+the Journal offers curated stories and bespoke experiences, and Orb explores the
+underlying catalog. The Journal starts as a reading experience; individual entries
+can grow their own layouts and interactions without changing Orb or Zero's blog.
+
+Create `apps/seraphic-systems/journal/entries/<slug>/index.md`:
+
+```markdown
+---
+title: A title
+description: A short introduction for the index and page.
+date: "2026-11-01"
+draft: true
+---
+
+Write the entry in Markdown, with HTML where useful.
+```
+
+The directory name is the stable URL slug, for example `/journal/first-signal/`.
+Use lowercase letters, numbers, and hyphens. Title and description are required
+plain text. The shared frame supplies the H1, description, navigation, and footer.
+The date is an optional publication date, independent of catalog creation dates;
+omit it when unknown. Dated entries sort newest first, followed by undated entries,
+with slug breaking ties. Future dates do not hide entries. Set `draft: true` to
+exclude the entire entry, including its assets; remove it when ready for review.
+
+For a bespoke experience, use `index.html` with the same front matter instead of
+`index.md` (exactly one body file per entry). It supplies the HTML inside the shared
+article body, not a second document. Optional `style.css` and module `script.js` in
+the entry directory are loaded only for that page. Scope custom CSS to
+`body[data-entry="<slug>"]` or unique component classes. Put public page assets and
+supporting modules in the entry's `assets/` directory; reference them with
+`./assets/...` and import modules from `./assets/...`. Only these assets, `style.css`,
+`script.js`, and the rendered page are copied, so keep private notes outside assets.
+Markdown and HTML are trusted authored source, including scripts.
+
+Journal templates and shared layout live under `journal/templates/` and
+`journal/journal.css`; they use the shared design tokens. Custom pages can read
+`/catalog.json` and `/songs.json` or link to explicit Orb routes without duplicating
+catalog records or inferring relationships. The initial Seraph Zero entry reuses
+existing landing-page copy and intentionally has no invented publication date.
+
+Preview with `npm run dev:seraphic`; entries rebuild on save. `npm run build`
+generates the Journal alongside the landing page and Orb, excluding templates,
+Markdown source, and drafts. Publication follows the same committed PR workflow
+as the rest of Seraphic Systems.
 
 ## Templates and styles
 
@@ -1046,7 +1096,8 @@ A separate spatial interface is available at
 `npm run dev:internal` command. The existing dashboard, Live Sets, and Model
 pages remain at their original URLs. The same Orb source is included in
 `npm run build:internal` and the public Seraphic Systems build. On the public
-site, the landing page links to `/orb/`, and Orb links back to `/`. There is no
+site, the landing page links to the Journal and Orb; Orb links back to both. The
+Journal links to the catalog in Orb. There is no
 separate Orb deployment or duplicate implementation. Both builds copy the same
 `apps/seraphic-systems/orb/` source, and both development servers watch that
 directory for changes.

@@ -109,7 +109,7 @@ export async function buildInternal(source, output, {
         .replace('A spatial view of your internal music library.', 'Explore the Seraphic Systems music library.')
         .replace('Orb · Internal', 'Orb · Seraphic Systems')
         .replace('internal <span>/ orb</span>', 'Seraphic Systems <span>/ orb</span>')
-        .replace('Classic workspace ↗', 'Seraphic Systems ↗');
+        .replace('<a href="/">Classic workspace ↗</a>', '<a href="/journal/">Journal ↗</a><a href="/">Seraphic Systems ↗</a>');
     }
     // dist is ignored by Vite's watcher. A new filename prevents its CSS transform
     // cache (and browser caches) from pairing a rebuilt page with an older style.
