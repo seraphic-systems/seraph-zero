@@ -8,21 +8,13 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import { validateRecord } from './model.mjs';
 import { createR2Store, r2Config } from './r2-store.mjs';
+import { audioRange } from './audio-range.mjs';
+export { audioRange } from './audio-range.mjs';
 
 const execute = promisify(execFile);
 async function convertAudio(input, output) {
   if (process.platform === 'darwin') await execute('/usr/bin/afconvert', ['-f', 'WAVE', '-d', 'LEI16', input, output]);
   else await execute('ffmpeg', ['-v', 'error', '-nostdin', '-i', input, '-vn', '-c:a', 'pcm_s16le', '-y', output]);
-}
-
-export function audioRange(header, size) {
-  if (!header) return null;
-  const match = /^bytes=(\d*)-(\d*)$/.exec(header);
-  if (!match || (!match[1] && !match[2]) || size === 0) return false;
-  const start = match[1] ? Number(match[1]) : Math.max(0, size - Number(match[2]));
-  const end = match[1] && match[2] ? Math.min(size - 1, Number(match[2])) : size - 1;
-  if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start > end || start >= size) return false;
-  return { start, end };
 }
 
 export function fragmentsApi(root, { library = process.env.SERAPH_FRAGMENT_LIBRARY || '/Volumes/MusicArchive/_keepers', convert = convertAudio, cloud = createR2Store(r2Config()) } = {}) {

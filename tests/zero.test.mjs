@@ -76,7 +76,8 @@ test('full build keeps deployments self-contained and removes unpublished or del
   await post('removed', 'title: Removed\ndate: "2026-10-29"');
   await build();
   const dist = path.join(root, 'dist');
-  assert.deepEqual((await readdir(dist)).sort(), ['seraphic-systems', 'zero']);
+  assert.deepEqual((await readdir(dist)).sort(), ['cloudflare', 'seraphic-systems', 'zero']);
+  await access(path.join(dist, 'cloudflare/worker.mjs'));
   await access(path.join(dist, 'zero/posts/published/index.html'));
   await post('published', 'title: Published\ndate: "2026-10-30"\ndraft: true');
   await rm(path.join(source, 'content/posts/removed.md'));
@@ -90,7 +91,7 @@ test('full build keeps deployments self-contained and removes unpublished or del
   await access(path.join(dist, 'seraphic-systems/catalog.json'));
   assert.match(await readFile(path.join(dist, 'seraphic-systems/orb/index.html'), 'utf8'), /Orb · Seraphic Systems/);
   for (const site of ['zero', 'seraphic-systems']) {
-    for (const file of ['media/mixes/internal-only-2026-01-01.wav', 'sets.html', 'model.html', 'data/set-registry.json']) {
+    for (const file of ['media/mixes/internal-only-2026-01-01.wav', 'sets.html', 'model.html', 'data/set-registry.json', 'audio-manifest.json', 'worker.mjs']) {
       await assert.rejects(access(path.join(dist, site, file)));
     }
   }

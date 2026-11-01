@@ -14,6 +14,7 @@ content formats, music provenance, local APIs, and operational commands.
 - `apps/internal/model/schema.json`: catalog model and relationship definitions.
 - `shared/`: design tokens, styles, assets, and reusable native Web Components.
 - `scripts/`: Node build tools and local APIs, plus Python Ableton tools.
+- `scripts/cloudflare/`: hosted audio runtime, committed allowlist build, and preview seeding.
 - `tests/`: Node tests (`*.test.mjs`) and Python Ableton tests (`test_ableton*.py`).
 
 ## Development and verification
@@ -30,6 +31,7 @@ Use Node.js >=22.12 and npm with the committed `package-lock.json`. Install with
 | Build committed public release | `npm run build:production` |
 | Deploy committed branch preview | `npm run deploy:preview` |
 | Deploy accepted production revision | `npm run deploy:production` |
+| Copy committed audio to preview buckets | `npm run audio:seed-preview` |
 | Build internal workspace | `npm run build:internal` |
 | Run Node tests | `npm test` |
 | Run Ableton Python tests | `python3 -m unittest discover -s tests -p 'test_ableton*.py'` |
@@ -69,6 +71,9 @@ any failures or verification limits.
   source records, registry files, and snapshots are not copied to public output.
 - Local audio belongs under ignored `media/` directories. Keep R2 credentials in
   the ignored `.env.r2.local`; do not put credentials in source or browser bundles.
+- Hosted audio is public only through committed reference routes; R2 buckets stay
+  private. Keep generated Worker files in `dist/cloudflare`, outside static assets.
+  Use separate preview R2 buckets and preserve production objects when seeding.
 - Treat the schema as the catalog model's source of truth. Preserve explicit
   relationships; do not infer song links or production provenance from filenames,
   similar titles, or filesystem timestamps.

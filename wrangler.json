@@ -2,6 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "seraphic-systems-website",
   "account_id": "b933dd1e63176a8e86849fe1de58e93d",
+  "main": "./dist/cloudflare/worker.mjs",
   "compatibility_date": "2026-11-01",
   "workers_dev": true,
   "routes": [
@@ -9,7 +10,18 @@
   ],
   "assets": {
     "directory": "./dist/seraphic-systems",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
     "not_found_handling": "404-page"
   },
-  "previews": {}
+  "r2_buckets": [
+    { "binding": "MIX_AUDIO", "bucket_name": "seraph-music-media" },
+    { "binding": "FRAGMENT_AUDIO", "bucket_name": "seraph-music-fragments" }
+  ],
+  "previews": {
+    "r2_buckets": [
+      { "binding": "MIX_AUDIO", "bucket_name": "seraph-music-media-preview" },
+      { "binding": "FRAGMENT_AUDIO", "bucket_name": "seraph-music-fragments-preview" }
+    ]
+  }
 }
