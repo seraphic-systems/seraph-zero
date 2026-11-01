@@ -142,6 +142,7 @@ try {
     }
     container.append(links);
     for (const item of catalog.unresolved.filter((item) => item.record === record.key)) container.append(el('p', item.reason, 'unresolved-note'));
+    for (const item of (catalog.lint || []).filter((item) => item.record === record.key)) container.append(el('p', `${item.path}: ${item.message}`, 'unresolved-note'));
     container.append(el('pre', JSON.stringify(record.data, null, 2), 'example-json'));
   }
   function select(type, updateHash = true) {

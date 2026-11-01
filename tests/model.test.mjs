@@ -45,6 +45,8 @@ test('exact current paths, explicit branch IDs and legacy history stay distinct'
   assert.ok(catalog.edges.some((e) => e.source === `LiveSet:${child}` && e.target === `LiveSet:${parent}`));
   assert.equal(catalog.edges.filter((e) => e.relation === 'snapshot-set').length, 0);
   assert.equal(catalog.unresolved.length, 3);
+  assert.ok(catalog.lint.some((item) => item.record === `LiveSet:${child}` && item.rule === 'project-set-name'));
+  assert.ok(!catalog.lint.some((item) => item.path.endsWith('/old.als')));
   assert.equal(catalog.records.find((r) => r.type === 'Snapshot').data.created_at, '2026-01-01T00:00:00Z');
   assert.ok(catalog.records.filter((r) => r.type === 'LiveSet').every((r) => r.data.created_at === null));
   await record('projects/work.md', { ...project, sets: ['old.als'], main_set: 'old.als' });

@@ -10,7 +10,8 @@ const time = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds
 export function playbackControls(song, mix, playback) {
   const root = el('div', null, 'inline-player');
   if (!mix) { root.append(el('p', 'No mixes yet.', 'muted')); return { element: root, dispose() {} }; }
-  const button = el('button', 'Play', 'inline-play'); button.type = 'button';
+  const button = el('button', null, 'inline-play'); button.type = 'button';
+  button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="play-icon" d="m9 5 11 7-11 7Z"/><path class="pause-icon" d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>';
   const seek = el('input'); seek.type = 'range'; seek.min = '0'; seek.max = '0'; seek.step = '.1';
   seek.value = '0'; seek.setAttribute('aria-label', `Seek ${song.title}`);
   const elapsed = el('span', '', 'muted');
@@ -19,7 +20,7 @@ export function playbackControls(song, mix, playback) {
   root.append(button, seek, elapsed);
   const dispose = playback.subscribe(() => {
     const active = playback.matches(mix), playing = active && playback.playing;
-    button.textContent = playing ? 'Pause' : 'Play';
+    button.classList.toggle('playing', playing);
     button.setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} ${song.title}`);
     seek.disabled = !active || !playback.duration;
     seek.max = String(active ? playback.duration : 0);

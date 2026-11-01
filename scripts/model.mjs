@@ -3,6 +3,7 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import { lintProjectNames } from './project-naming.mjs';
 
 export const modelSchema = JSON.parse(await readFile(new URL('../apps/internal/model/schema.json', import.meta.url), 'utf8'));
 const ajv = new Ajv({ allErrors: true });
@@ -145,5 +146,5 @@ export async function buildCatalog(source, audioMixes = []) {
       }
     }
   }
-  return { schema_version: 1, records, edges, unresolved };
+  return { schema_version: 1, records, edges, unresolved, lint: lintProjectNames(records) };
 }

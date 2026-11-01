@@ -1,13 +1,13 @@
 ---
 created_at: null
 id: soundtrack-idea
-title: "Soundtrack-Idea"
+title: "idea-Soundtrack-Idea"
 song: 
 root: ableton
-folder: "Soundtrack-Idea Project"
-main_set: "Soundtrack-Idea.als"
+folder: "idea-Soundtrack-Idea Project"
+main_set: "idea-Soundtrack-Idea.als"
 sets:
-  - "Soundtrack-Idea.als"
+  - "idea-Soundtrack-Idea.als"
 ---
 
 Inventoried on 2026-10-30 from `~/Ableton`.

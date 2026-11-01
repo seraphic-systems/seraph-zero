@@ -4,7 +4,8 @@
     {
       "id": "05e6c78c-89d5-4b89-919e-947fb668ee5d",
       "paths": [
-        "~/Ableton/Soundtrack-Idea Project/Soundtrack-Idea.als"
+        "~/Ableton/Soundtrack-Idea Project/Soundtrack-Idea.als",
+        "~/Ableton/idea-Soundtrack-Idea Project/idea-Soundtrack-Idea.als"
       ],
       "xml_sha256": "3d79c0b76ba05806b84729bac5f89662ebae7851183f6c0058b0001d6218e5e4",
       "created_at": null
@@ -44,7 +45,8 @@
     {
       "id": "6d74d2c2-97fc-4a6c-8724-a7ac9dbd643e",
       "paths": [
-        "~/Ableton/catch-me-10-30-26 Project/catch-me-10-30-26.als"
+        "~/Ableton/catch-me-10-30-26 Project/catch-me-10-30-26.als",
+        "~/Ableton/idea-catch-me-10-30-26 Project/idea-catch-me-10-30-26.als"
       ],
       "xml_sha256": "ca55ba09355664b2a5883eff0980f748589ed02794754745e3e67e86149559be",
       "created_at": null
@@ -196,7 +198,8 @@
     {
       "id": "55d0e5a5-ea7f-4854-81b7-afb56dd799da",
       "paths": [
-        "~/Ableton/all-the-things-you-love-10-30-26 Project/test.als"
+        "~/Ableton/all-the-things-you-love-10-30-26 Project/test.als",
+        "~/Ableton/all-the-things-you-love-10-30-26 Project/idea-test.als"
       ],
       "xml_sha256": "626e3c9381516a2e2dd08f67a79a1ae066453c7a3bd68beb042e0977adaaebb3",
       "parent_set_id": "da652ca3-ea35-4e47-9710-021af5244db2",

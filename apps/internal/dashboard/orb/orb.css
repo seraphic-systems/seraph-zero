@@ -642,12 +642,28 @@ body.nav-open {
   margin: 10px 0;
 }
 .inline-play {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 0;
   border: 1px solid var(--hairline);
   border-radius: 50%;
   background: transparent;
   color: var(--accent);
   width: 46px;
   height: 46px;
+}
+.inline-play svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+.inline-play .pause-icon,
+.inline-play.playing .play-icon {
+  display: none;
+}
+.inline-play.playing .pause-icon {
+  display: initial;
 }
 .inline-player input {
   min-width: 0;

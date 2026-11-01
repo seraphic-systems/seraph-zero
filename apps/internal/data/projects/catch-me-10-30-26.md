@@ -1,13 +1,13 @@
 ---
 created_at: null
 id: catch-me-10-30-26
-title: "catch-me-10-30-26"
+title: "idea-catch-me-10-30-26"
 song: 
 root: ableton
-folder: "catch-me-10-30-26 Project"
-main_set: "catch-me-10-30-26.als"
+folder: "idea-catch-me-10-30-26 Project"
+main_set: "idea-catch-me-10-30-26.als"
 sets:
-  - "catch-me-10-30-26.als"
+  - "idea-catch-me-10-30-26.als"
 ---
 
 Inventoried on 2026-10-30 from `~/Ableton`.

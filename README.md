@@ -272,6 +272,19 @@ Twenty-two match existing song IDs by name. Two remain unassigned:
 No project name matched `anyone`, `gold`, or `need-someone` in this folder.
 Project-to-mix and project-to-stem relationships have not been inferred.
 
+Run `npm run lint:projects` to check inventoried project folders, inventory-only
+sets, and the current paths in the set registry. Names must start with
+`idea-<name>` or an existing Song title or ID. Matching ignores case, apostrophes,
+and differences between spaces, underscores, and hyphens; any suffix must be
+separated from the Song name. For example, `idea-piano-sketch.als` and
+`higher-mix-10-28-26.als` pass; `higherground.als` does not match `higher`.
+The `.als` extension and Ableton's trailing ` Project` folder label are ignored.
+The command exits with status 1 on violations. The catalog also includes these
+diagnostics, shown with the affected record in the model inspector, without
+blocking builds or imports. This check reads repository metadata; refresh the
+set registry with `analyze:sets` to include newly discovered files. It never
+renames files, changes permanent IDs, or infers Song associations.
+
 ### Analyze Live Sets and save history
 
 With Python 3 installed, scan the current sets in `~/Ableton`:
