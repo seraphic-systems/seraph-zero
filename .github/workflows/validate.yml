@@ -29,6 +29,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: python3 -m unittest discover -s tests -p 'test_ableton*.py'
+      - run: python3 -m pip install -r scripts/requirements-resample.txt
+      - run: python3 -m unittest discover -s tests -p 'test_resample.py'
       - run: npm run lint:projects
       - run: npm run build:internal
       - run: npm run build:production

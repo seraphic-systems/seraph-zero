@@ -1,0 +1,3 @@
+# Optional local audio tool; independent of the Node/public-site build.
+pedalboard==0.9.26
+numpy==2.4.2
