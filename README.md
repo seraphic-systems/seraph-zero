@@ -109,7 +109,8 @@ playback still requires the audio API described below.
 
 ### Cloudflare production and branch previews
 
-`wrangler.json` defines the `seraphic-systems` Worker, its static assets directory,
+`wrangler.json` defines the existing `seraphic-systems-website` Worker and account,
+its static assets directory,
 the production Custom Domain `seraphicsystems.com`, and isolated Worker Previews.
 Wrangler is pinned in the lockfile. Production and previews serve only
 `dist/seraphic-systems`; Zero remains a separate hosting project. Orb deep links

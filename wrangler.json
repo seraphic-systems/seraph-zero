@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "seraphic-systems",
+  "name": "seraphic-systems-website",
+  "account_id": "b933dd1e63176a8e86849fe1de58e93d",
   "compatibility_date": "2026-11-01",
   "workers_dev": true,
   "routes": [
