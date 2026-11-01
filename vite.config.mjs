@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { setsApi } from './scripts/sets-api.mjs';
+import { mixesApi } from './scripts/mixes-api.mjs';
 import { fragmentsApi } from './scripts/fragments-api.mjs';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
@@ -24,6 +25,9 @@ export default defineConfig(async ({ mode }) => {
       configureServer(server) {
         if (site === 'internal') {
           server.middlewares.use(setsApi(root));
+          const mixes = mixesApi(root);
+          server.middlewares.use(mixes);
+          server.httpServer?.once('close', () => mixes.close());
           const fragments = fragmentsApi(root);
           server.middlewares.use(fragments);
           server.httpServer?.once('close', () => { void fragments.close(); });

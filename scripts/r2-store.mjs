@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { S3Client, CreateBucketCommand, HeadObjectCommand, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 
 export function r2Config(env = process.env) {
@@ -12,6 +13,15 @@ export function r2Config(env = process.env) {
   return { endpoint, bucket: env.R2_BUCKET, credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY } };
 }
 
+// Media may use a separate bucket-scoped key without affecting fragments.
+export function mediaR2Config(env = process.env) {
+  if (!env.R2_MEDIA_BUCKET) return null;
+  if (Boolean(env.R2_MEDIA_ACCESS_KEY_ID) !== Boolean(env.R2_MEDIA_SECRET_ACCESS_KEY)) throw new Error('Set both R2_MEDIA_ACCESS_KEY_ID and R2_MEDIA_SECRET_ACCESS_KEY.');
+  return r2Config({ ...env, R2_BUCKET: env.R2_MEDIA_BUCKET,
+    R2_ACCESS_KEY_ID: env.R2_MEDIA_ACCESS_KEY_ID || env.R2_ACCESS_KEY_ID,
+    R2_SECRET_ACCESS_KEY: env.R2_MEDIA_SECRET_ACCESS_KEY || env.R2_SECRET_ACCESS_KEY });
+}
+
 export function createR2Store(config) {
   if (!config) return null;
   const client = new S3Client({ region: 'auto', endpoint: config.endpoint, credentials: config.credentials,
@@ -23,8 +33,9 @@ export function createR2Store(config) {
       catch (error) { if (error.name !== 'BucketAlreadyOwnedByYou') throw error; }
     },
     head: (key) => client.send(new HeadObjectCommand({ Bucket: config.bucket, Key: key })),
-    put: (key, body, metadata) => client.send(new PutObjectCommand({ Bucket: config.bucket, Key: key, Body: body,
-      ContentType: 'audio/mp4', CacheControl: 'private, max-age=3600', Metadata: metadata })),
+    put: (key, body, metadata, contentType = 'audio/mp4') => client.send(new PutObjectCommand({ Bucket: config.bucket, Key: key, Body: body,
+      ...(Buffer.isBuffer(body) ? { ContentMD5: createHash('md5').update(body).digest('base64') } : {}),
+      ContentType: contentType, CacheControl: 'private, max-age=3600', Metadata: metadata })),
     async audio(preview, { range, head = false } = {}) {
       if (preview.bucket !== config.bucket) throw new Error('Preview bucket does not match the configured R2 bucket.');
       const command = head ? new HeadObjectCommand({ Bucket: config.bucket, Key: preview.key, ...(range ? { Range: range } : {}) })

@@ -329,7 +329,7 @@
     },
     "MixFile": {
       "title": "Mix file",
-      "description": "A local audio file belonging to a dated mix. Missing audio does not invalidate mix metadata.",
+      "description": "An audio file belonging to a dated mix, available locally or through a verified private R2 object. Missing local audio does not invalidate registered remote files or mix metadata.",
       "type": "object",
       "properties": {
         "mix": {
@@ -352,7 +352,7 @@
       ],
       "additionalProperties": true,
       "x-model": {
-        "source": "media/mixes/*",
+        "source": "media/mixes/* + data/mix-media.json",
         "identity": "Filename including extension",
         "position": [
           0,

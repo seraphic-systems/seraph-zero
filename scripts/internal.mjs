@@ -3,6 +3,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import { readMixes } from './mix-media.mjs';
 import { readStems } from './stems.mjs';
 import { buildCatalog, modelSchema } from './model.mjs';
 import { createContentSource, indexTree } from '../apps/internal/dashboard/orb/content.js';
@@ -19,16 +20,7 @@ function dateString(value, context) {
 export async function buildInternal(source, output) {
   const songs = [];
   const ids = new Set();
-  const mixDirectory = path.join(source, 'media/mixes');
-  const files = await readdir(mixDirectory, { withFileTypes: true }).catch((error) => {
-    if (error.code === 'ENOENT') return [];
-    throw error;
-  });
-  const mixes = files.filter((entry) => entry.isFile() && /\.(wav|mp3|m4a|ogg|flac|aac)$/i.test(entry.name)).map(({ name }) => {
-    const match = /^(.*)-(\d{4}-\d{2}-\d{2})\.([a-z0-9]+)$/i.exec(name);
-    if (!match) throw new Error(`${name}: name mixes <song-id>-YYYY-MM-DD.<extension>`);
-    return { id: match[1], date: dateString(match[2], name), file: name, format: match[3].toUpperCase(), url: `media/mixes/${encodeURIComponent(name)}` };
-  });
+  const mixes = await readMixes(source);
   for (const entry of await readdir(path.join(source, 'data/songs'), { withFileTypes: true })) {
     if (!entry.isFile() || !entry.name.endsWith('.md')) continue;
     const { data, content } = matter(await readFile(path.join(source, 'data/songs', entry.name), 'utf8'));
@@ -125,8 +117,6 @@ export async function buildInternal(source, output) {
   await writeFile(path.join(output, 'catalog.json'), JSON.stringify(catalog));
   await writeFile(path.join(output, 'songs.json'), JSON.stringify(songs));
   await writeFile(path.join(output, 'stems.json'), JSON.stringify(stems));
-  // Copy only matched audio; Markdown sources and unrelated media stay out of the output.
-  await mkdir(path.join(output, 'media/mixes'), { recursive: true });
-  for (const mix of mixes) await cp(path.join(mixDirectory, mix.file), path.join(output, 'media/mixes', mix.file));
+  // Mixes stream through the private local API; audio never enters static output.
   return songs.length;
 }

@@ -79,7 +79,7 @@ export async function buildCatalog(source, audioMixes = []) {
   for (const audio of audioMixes) {
     const mixId = `${audio.id}-${audio.date}`;
     if (!byKey.has(`Mix:${mixId}`)) add('Mix', mixId, { song: audio.id, date: audio.date }, `media/mixes/${audio.file}`);
-    add('MixFile', audio.file, { mix: mixId, file: audio.file, format: audio.format }, `media/mixes/${audio.file}`);
+    add('MixFile', audio.file, { mix: mixId, file: audio.file, format: audio.format, ...(audio.remote ? { remote: audio.remote } : {}) }, `media/mixes/${audio.file}`);
   }
   const registry = await readFile(path.join(source, 'data/set-registry.json'), 'utf8').then(JSON.parse).catch((error) => {
     if (error.code === 'ENOENT') return { schema_version: 1, sets: [] };

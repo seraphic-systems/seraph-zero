@@ -29,7 +29,8 @@ test('links versions by stable id despite renamed title and filename, newest fir
   assert.deepEqual(renamed.mixes.map((mix) => mix.date), ['2026-01-01', '2025-01-01']);
   assert.match(renamed.notes, /<strong>note<\/strong>/);
   assert.equal(songs.find((song) => song.id === 'no-audio').mixes.length, 0);
-  await access(path.join(output, renamed.mixes[0].url));
+  assert.equal(renamed.mixes[0].url, 'api/mixes/original-id-2026-01-01.mp3/audio');
+  await assert.rejects(access(path.join(output, 'media/mixes/original-id-2026-01-01.mp3')));
   await assert.rejects(access(path.join(output, 'songs')));
 });
 

@@ -204,9 +204,8 @@ mix records rather than changing song IDs.
 The build reports duplicate IDs, malformed dates, and unmatched audio filenames.
 Missing media is fine: songs remain visible without playback, including on a
 fresh checkout. `**/media/` is ignored by Git, so local audio stays untracked;
-song metadata and dashboard code can be built in public. An internal build
-copies matched audio into its output, so deploying that output would make those
-files accessible too. Keep any internal-only assets out of `shared/`, which is
+song metadata and dashboard code can be built in public. An internal build includes mix metadata and local API URLs, but never copies
+mix audio into its output. Listening requires `npm run dev:internal`. Keep any internal-only assets out of `shared/`, which is
 copied into both public sites.
 
 ### Horizons
@@ -444,6 +443,43 @@ bpm_changes: [71, 83]
 The dashboard displays `71 → 83 BPM`. Use `bpm` for constant tempo, or
 `bpm_changes` for variable tempo, never both. Add section names or transition
 timestamps in the Markdown notes if useful; this list does not specify timing.
+
+### Private R2 mixes
+
+Mix originals use the private `seraph-music-media` bucket, separate from fragment
+previews. Keep public access disabled. `npm run dev:internal` serves
+`/api/mixes/<filename>/audio` on localhost, trying the verified R2 object first,
+then the original in `apps/internal/media/mixes/` if R2 is unconfigured or
+unavailable. Both paths support GET, HEAD, and byte ranges for seeking. Credentials
+stay on the server; the browser receives no signed URLs or R2 keys.
+
+Set `R2_MEDIA_BUCKET=seraph-music-media` in the ignored `.env.r2.local`. Shared
+`R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, and `R2_SECRET_ACCESS_KEY` are reused unless
+`R2_MEDIA_ACCESS_KEY_ID` and `R2_MEDIA_SECRET_ACCESS_KEY` specify a separate key.
+Use a bucket-scoped **Object Read & Write** key for upload; playback can use an
+Object Read key. Existing fragment-only credentials cannot access this bucket.
+Create the private bucket in Cloudflare first, or use `--create-bucket` with
+credentials that already permit bucket creation.
+
+```sh
+npm run mixes:upload
+# Only with existing bucket-creation permission:
+npm run mixes:upload -- --create-bucket
+```
+
+Uploads preserve original formats and bytes. Objects use
+`mixes/<filename>/<sha256>` keys with the correct audio content type, private cache
+headers, and an upload transport checksum. The uploader verifies remote size,
+content type, and SHA-256 metadata before atomically updating the tracked
+`apps/internal/data/mix-media.json` manifest. Rerunning reuses matching objects and
+resumes interrupted uploads; changed files receive new objects, and old remote
+versions are retained. Local originals and mix Markdown notes are never modified.
+
+The build merges registered remote files with locally discovered files. Registered
+mixes remain in the dashboard and model catalog without the local media folder.
+Static output contains metadata only; hosted playback still requires this local
+server and Internet access, as with fragment previews. Keep a separate backup of
+original audio. Stem uploads are not included in this command.
 
 ### Stem exports and their mixes
 

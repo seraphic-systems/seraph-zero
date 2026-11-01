@@ -1,0 +1,377 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "file": "all-the-things-you-love-2025-07-08.wav",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/all-the-things-you-love-2025-07-08.wav/34274256d7d52bb5ebb0a6261d5b38f716b8e29121c48f8aa7a7ec2e505aada5",
+        "content_type": "audio/wav",
+        "sha256": "34274256d7d52bb5ebb0a6261d5b38f716b8e29121c48f8aa7a7ec2e505aada5",
+        "bytes": 72158672,
+        "uploaded_at": "2026-11-01T12:11:42.605Z"
+      }
+    },
+    {
+      "file": "all-the-things-you-love-2026-03-10.wav",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/all-the-things-you-love-2026-03-10.wav/65c4893deb84c763c9e840610bda188d003c88604ab09deb69fb78e251cdf1a1",
+        "content_type": "audio/wav",
+        "sha256": "65c4893deb84c763c9e840610bda188d003c88604ab09deb69fb78e251cdf1a1",
+        "bytes": 72232472,
+        "uploaded_at": "2026-11-01T12:11:46.068Z"
+      }
+    },
+    {
+      "file": "anyone-2020-03-15.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/anyone-2020-03-15.mp3/551384d5cb91aacd06fb7db81dea6b0bc011dafa8f1d4c47bcb279801b59e2fe",
+        "content_type": "audio/mpeg",
+        "sha256": "551384d5cb91aacd06fb7db81dea6b0bc011dafa8f1d4c47bcb279801b59e2fe",
+        "bytes": 2454693,
+        "uploaded_at": "2026-11-01T12:11:46.576Z"
+      }
+    },
+    {
+      "file": "between-this-world-and-the-next-2023-04-12.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/between-this-world-and-the-next-2023-04-12.mp3/6374785828be8e2a26bcecf23afd45ff0921d1a7977a3abad173ec4f41089952",
+        "content_type": "audio/mpeg",
+        "sha256": "6374785828be8e2a26bcecf23afd45ff0921d1a7977a3abad173ec4f41089952",
+        "bytes": 3839469,
+        "uploaded_at": "2026-11-01T12:11:47.153Z"
+      }
+    },
+    {
+      "file": "bury-the-sun-2026-01-26.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/bury-the-sun-2026-01-26.mp3/23c1cea390b2592fe4057b25b26f983f09fcbd4b02f106227d8b2a1c95aac500",
+        "content_type": "audio/mpeg",
+        "sha256": "23c1cea390b2592fe4057b25b26f983f09fcbd4b02f106227d8b2a1c95aac500",
+        "bytes": 4457421,
+        "uploaded_at": "2026-11-01T12:11:47.825Z"
+      }
+    },
+    {
+      "file": "coldness-2019-03-28.wav",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/coldness-2019-03-28.wav/e595e7e0bc09e0aa699b8074dec469863b161f756892636db04c32480a38a020",
+        "content_type": "audio/wav",
+        "sha256": "e595e7e0bc09e0aa699b8074dec469863b161f756892636db04c32480a38a020",
+        "bytes": 10974816,
+        "uploaded_at": "2026-11-01T12:11:48.841Z"
+      }
+    },
+    {
+      "file": "coldness-2026-01-19.wav",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/coldness-2026-01-19.wav/56f59d88b9d45325e7399bdcea48bd9738315e13c147b5964b944be855c5b2b0",
+        "content_type": "audio/wav",
+        "sha256": "56f59d88b9d45325e7399bdcea48bd9738315e13c147b5964b944be855c5b2b0",
+        "bytes": 18790216,
+        "uploaded_at": "2026-11-01T12:11:49.940Z"
+      }
+    },
+    {
+      "file": "coldness-2026-04-04.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/coldness-2026-04-04.mp3/09576300d4cb78f2946b21463b8a2adfacc50dfbf03bed392f076024fbd9ba35",
+        "content_type": "audio/mpeg",
+        "sha256": "09576300d4cb78f2946b21463b8a2adfacc50dfbf03bed392f076024fbd9ba35",
+        "bytes": 1406565,
+        "uploaded_at": "2026-11-01T12:11:50.392Z"
+      }
+    },
+    {
+      "file": "dream-2020-03-29.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/dream-2020-03-29.mp3/616b8732ea5210feafd793eeab72bfc5db8c0c01908c9223add463ff22fc8317",
+        "content_type": "audio/mpeg",
+        "sha256": "616b8732ea5210feafd793eeab72bfc5db8c0c01908c9223add463ff22fc8317",
+        "bytes": 1327629,
+        "uploaded_at": "2026-11-01T12:11:50.865Z"
+      }
+    },
+    {
+      "file": "envy-2023-11-14.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/envy-2023-11-14.mp3/5628972820874e7034a2a4708871d5196d8170ce33db3d31e4c4691b60b85248",
+        "content_type": "audio/mpeg",
+        "sha256": "5628972820874e7034a2a4708871d5196d8170ce33db3d31e4c4691b60b85248",
+        "bytes": 3127077,
+        "uploaded_at": "2026-11-01T12:11:51.863Z"
+      }
+    },
+    {
+      "file": "epoch-2021-04-25.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/epoch-2021-04-25.mp3/5d5cac5c5a5e72887212a6d9a22660a62d7c3af1d6d5b37ac0c80932a2989140",
+        "content_type": "audio/mpeg",
+        "sha256": "5d5cac5c5a5e72887212a6d9a22660a62d7c3af1d6d5b37ac0c80932a2989140",
+        "bytes": 3411573,
+        "uploaded_at": "2026-11-01T12:11:52.577Z"
+      }
+    },
+    {
+      "file": "fall-2023-05-21.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/fall-2023-05-21.mp3/69c4b47053301a40051aa483669e9170a41973ce505d312a098129b7e96deeab",
+        "content_type": "audio/mpeg",
+        "sha256": "69c4b47053301a40051aa483669e9170a41973ce505d312a098129b7e96deeab",
+        "bytes": 1293309,
+        "uploaded_at": "2026-11-01T12:11:53.015Z"
+      }
+    },
+    {
+      "file": "genesis-2018-09-28.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/genesis-2018-09-28.mp3/775e7c7665b375a50363eef9f50e3c255ee7090cba2df0fb0b73b10f2eff60c3",
+        "content_type": "audio/mpeg",
+        "sha256": "775e7c7665b375a50363eef9f50e3c255ee7090cba2df0fb0b73b10f2eff60c3",
+        "bytes": 4227837,
+        "uploaded_at": "2026-11-01T12:11:53.788Z"
+      }
+    },
+    {
+      "file": "gold-2021-08-15.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/gold-2021-08-15.mp3/81327184f72e2dd09e2aaa337aad1464ea6bf71ee218ccb218985d2fc7e794ad",
+        "content_type": "audio/mpeg",
+        "sha256": "81327184f72e2dd09e2aaa337aad1464ea6bf71ee218ccb218985d2fc7e794ad",
+        "bytes": 5960541,
+        "uploaded_at": "2026-11-01T12:11:54.567Z"
+      }
+    },
+    {
+      "file": "higher-2019-11-03.wav",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/higher-2019-11-03.wav/70f4f9dacbd3ef319211cf25f8d0d0e74bca372fa8e722093e8e99baa53470d1",
+        "content_type": "audio/wav",
+        "sha256": "70f4f9dacbd3ef319211cf25f8d0d0e74bca372fa8e722093e8e99baa53470d1",
+        "bytes": 8912888,
+        "uploaded_at": "2026-11-01T12:11:56.150Z"
+      }
+    },
+    {
+      "file": "higher-2024-07-10.wav",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/higher-2024-07-10.wav/c5415d699467466cb360453f0b4d899ab44741c4b41b58841a322ed124ae321b",
+        "content_type": "audio/wav",
+        "sha256": "c5415d699467466cb360453f0b4d899ab44741c4b41b58841a322ed124ae321b",
+        "bytes": 51805984,
+        "uploaded_at": "2026-11-01T12:11:58.828Z"
+      }
+    },
+    {
+      "file": "higher-2026-04-27.wav",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/higher-2026-04-27.wav/e627198b65a45e31fcc758f3e45a48330556da600f73c5a9156aa9dfe0c06067",
+        "content_type": "audio/wav",
+        "sha256": "e627198b65a45e31fcc758f3e45a48330556da600f73c5a9156aa9dfe0c06067",
+        "bytes": 90799664,
+        "uploaded_at": "2026-11-01T12:12:02.639Z"
+      }
+    },
+    {
+      "file": "jungle-2023-05-21.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/jungle-2023-05-21.mp3/18693ba88237b449dc54aafd4e9b65e7eef44d4d4d32e84d660c50370ed50c98",
+        "content_type": "audio/mpeg",
+        "sha256": "18693ba88237b449dc54aafd4e9b65e7eef44d4d4d32e84d660c50370ed50c98",
+        "bytes": 2068461,
+        "uploaded_at": "2026-11-01T12:12:03.113Z"
+      }
+    },
+    {
+      "file": "mania-2024-04-27.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/mania-2024-04-27.mp3/4c02c7882fcec2cad5052e186f208b57ad93ac93560d610814a3deef5b3a5565",
+        "content_type": "audio/mpeg",
+        "sha256": "4c02c7882fcec2cad5052e186f208b57ad93ac93560d610814a3deef5b3a5565",
+        "bytes": 1393485,
+        "uploaded_at": "2026-11-01T12:12:03.532Z"
+      }
+    },
+    {
+      "file": "need-someone-2020-11-18.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/need-someone-2020-11-18.mp3/8643af09f96898c46d14a7c0ecfcb23eec9653fb29439f024c10b7b2b981ea6d",
+        "content_type": "audio/mpeg",
+        "sha256": "8643af09f96898c46d14a7c0ecfcb23eec9653fb29439f024c10b7b2b981ea6d",
+        "bytes": 4527069,
+        "uploaded_at": "2026-11-01T12:12:04.158Z"
+      }
+    },
+    {
+      "file": "praise-2022-03-22.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/praise-2022-03-22.mp3/68a950df3d1e624e0ba53483ca7c37834a02f07abd26d36032678632299735c9",
+        "content_type": "audio/mpeg",
+        "sha256": "68a950df3d1e624e0ba53483ca7c37834a02f07abd26d36032678632299735c9",
+        "bytes": 2873373,
+        "uploaded_at": "2026-11-01T12:12:04.771Z"
+      }
+    },
+    {
+      "file": "reason-2020-06-08.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/reason-2020-06-08.mp3/4b31affa83b1b9a2c992e3f9753b2e91aa23cd8964b792242f1f47c7c632abdf",
+        "content_type": "audio/mpeg",
+        "sha256": "4b31affa83b1b9a2c992e3f9753b2e91aa23cd8964b792242f1f47c7c632abdf",
+        "bytes": 1144300,
+        "uploaded_at": "2026-11-01T12:12:05.198Z"
+      }
+    },
+    {
+      "file": "reason-2020-08-04.wav",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/reason-2020-08-04.wav/70487fdf581aaf367b309f92d7386c164b3b634e15b2015b8e9a9796af8579a2",
+        "content_type": "audio/wav",
+        "sha256": "70487fdf581aaf367b309f92d7386c164b3b634e15b2015b8e9a9796af8579a2",
+        "bytes": 38577244,
+        "uploaded_at": "2026-11-01T12:12:07.723Z"
+      }
+    },
+    {
+      "file": "reason-2023-06-12.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/reason-2023-06-12.mp3/73853ae776c9302a08ffd474288cf0ec2d8061833b4d20a7ef74abf0c095af04",
+        "content_type": "audio/mpeg",
+        "sha256": "73853ae776c9302a08ffd474288cf0ec2d8061833b4d20a7ef74abf0c095af04",
+        "bytes": 8147709,
+        "uploaded_at": "2026-11-01T12:12:09.227Z"
+      }
+    },
+    {
+      "file": "stars-2021-09-21.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/stars-2021-09-21.mp3/36266369795ad9c25548eaa3f7373159806a1ec3e6630cbd28dcde23cf748123",
+        "content_type": "audio/mpeg",
+        "sha256": "36266369795ad9c25548eaa3f7373159806a1ec3e6630cbd28dcde23cf748123",
+        "bytes": 2843901,
+        "uploaded_at": "2026-11-01T12:12:09.806Z"
+      }
+    },
+    {
+      "file": "stay-with-me-2021-01-16.wav",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/stay-with-me-2021-01-16.wav/621b368fdf5e9380c9db0d5ad6f7b5e46d08820a225f927887d786313a71be0e",
+        "content_type": "audio/wav",
+        "sha256": "621b368fdf5e9380c9db0d5ad6f7b5e46d08820a225f927887d786313a71be0e",
+        "bytes": 3763244,
+        "uploaded_at": "2026-11-01T12:12:10.458Z"
+      }
+    },
+    {
+      "file": "stay-with-me-2024-01-07.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/stay-with-me-2024-01-07.mp3/020c41dcaa6518135765d4f19b4d075697fb81d6494f27479cedb20301aa8c64",
+        "content_type": "audio/mpeg",
+        "sha256": "020c41dcaa6518135765d4f19b4d075697fb81d6494f27479cedb20301aa8c64",
+        "bytes": 2308077,
+        "uploaded_at": "2026-11-01T12:12:11.051Z"
+      }
+    },
+    {
+      "file": "through-2022-02-09.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/through-2022-02-09.mp3/773a3d4bd2f9a81af94aee545391c1cc2a4feb7cc048feb2d9f490e1aa57b847",
+        "content_type": "audio/mpeg",
+        "sha256": "773a3d4bd2f9a81af94aee545391c1cc2a4feb7cc048feb2d9f490e1aa57b847",
+        "bytes": 2769261,
+        "uploaded_at": "2026-11-01T12:12:11.588Z"
+      }
+    },
+    {
+      "file": "trouble-2024-03-24.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/trouble-2024-03-24.mp3/4576b4a7c92ba25d6c6e40eb756ff0a3e2872c4536d362768621260413e8b240",
+        "content_type": "audio/mpeg",
+        "sha256": "4576b4a7c92ba25d6c6e40eb756ff0a3e2872c4536d362768621260413e8b240",
+        "bytes": 2684565,
+        "uploaded_at": "2026-11-01T12:12:12.162Z"
+      }
+    },
+    {
+      "file": "wont-let-you-go-2026-09-02.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/wont-let-you-go-2026-09-02.mp3/f48605f73f872585352245739f7e4fd45c054e189ad071f62de2eb8320cd46a2",
+        "content_type": "audio/mpeg",
+        "sha256": "f48605f73f872585352245739f7e4fd45c054e189ad071f62de2eb8320cd46a2",
+        "bytes": 378381,
+        "uploaded_at": "2026-11-01T12:12:12.458Z"
+      }
+    },
+    {
+      "file": "wont-you-lie-to-me-2026-01-10.mp3",
+      "remote": {
+        "provider": "r2",
+        "bucket": "seraph-music-media",
+        "key": "mixes/wont-you-lie-to-me-2026-01-10.mp3/9ba39a546eefc920af9dadb768c2cff0cf73aa35d2ee079899886da6ef64bdd9",
+        "content_type": "audio/mpeg",
+        "sha256": "9ba39a546eefc920af9dadb768c2cff0cf73aa35d2ee079899886da6ef64bdd9",
+        "bytes": 2343189,
+        "uploaded_at": "2026-11-01T12:12:13.015Z"
+      }
+    }
+  ]
+}
