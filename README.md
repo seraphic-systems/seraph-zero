@@ -15,16 +15,33 @@ Use Node.js 22.12 or later. Install dependencies once:
 npm ci
 ```
 
-Build both sites:
+Build both sites from the working directory to check unpublished edits:
 
 ```sh
 npm run build
 ```
 
 `node scripts/build.mjs` also works after dependencies are installed.
+This public build uses registered mix references only; ignored local mixes do
+not enter the catalog. For deployment, build the committed revision instead:
+
+```sh
+npm run build:production
+```
+
+The production command exports `HEAD` into a temporary directory and runs the
+committed build code against committed content, schema, and assets. Staged edits,
+unstaged edits, untracked files, ignored media, and local credentials are excluded.
+It requires Git and `tar`, plus dependencies installed with `npm ci` against the
+committed package files. Uncommitted package changes cause an actionable error.
+The completed public outputs replace `dist/zero` and `dist/seraphic-systems`;
+`dist/internal` is left alone. Each site includes `/release.json` with its full
+source commit and commit time. This is the source revision time, not a content
+creation date or deployment time.
+
 Configure two hosting projects using the same repository with the repository
-root as the build working directory. Use `npm ci && npm run build` as the
-build command and assign each its own domain:
+root as the build working directory. Use `npm ci && npm run build:production`
+as the build command and assign each its own domain:
 
 | Site             | Publish directory       |
 | ---------------- | ----------------------- |
@@ -33,6 +50,62 @@ build command and assign each its own domain:
 
 Each output includes its own copy of `shared/`. Generated output is ignored by
 Git and rebuilt from source. Zero's Markdown and templates are not published.
+
+### Shared source of truth and publication
+
+GitHub's protected `master` branch is the official version of code, records, schema,
+relationships, and verified media references. R2 stores the referenced audio bytes.
+Production is a build of an accepted commit; editing a local file or uploading an
+R2 object does not publish it. Ableton projects and other working originals remain
+local and need their own backups.
+
+1. Start from current `master` and create a short-lived `feature/` branch.
+2. Edit locally and use `npm run dev:seraphic` or `npm run dev:internal` to preview.
+   Use `npm run create:internal -- <Type> '<JSON front matter>'` for new records.
+3. Upload new mixes with `npm run mixes:upload`, or prepare and upload fragment
+   previews with `npm run fragments:prepare` and `npm run fragments:upload`.
+   Commit the resulting `data/mix-media.json` entries or fragment `preview` fields
+   with the corresponding records and notes. Keep credentials and audio out of Git.
+4. Commit and open a pull request. A hosted preview must build that candidate's
+   committed revision with `npm run build:production`. Inspect the preview before
+   merging. The PR template records the checks and preview link.
+5. Merge after validation passes. Only `master` should deploy to the public domain.
+   Feature branches may deploy to protected preview addresses. A separate
+   long-lived `develop` branch is optional.
+
+`.github/workflows/validate.yml` runs Node and Python tests, project naming checks,
+the internal build, and the committed production build on PRs and pushes to `master`.
+Configure a GitHub branch rule/ruleset for `master` requiring pull requests and the
+**Repository validation** status check, blocking force pushes and branch deletion,
+and applying the rule to administrators without routine bypasses. While solo,
+leave required approving reviews disabled so you can merge your own checked PRs.
+These protections are GitHub settings; adding the workflow file alone does not
+enable them, and availability depends on repository visibility and GitHub plan.
+The intended configuration is saved in `.github/branch-protection.json`. An
+administrator can apply it on an eligible plan with:
+
+```sh
+gh api --method PUT repos/seraphic-systems/seraph-zero/branches/master/protection \
+  --input .github/branch-protection.json
+```
+
+For private repositories, GitHub may require a paid plan before allowing branch
+protection or repository rulesets. The JSON file does not enforce protection by
+itself.
+
+Cloudflare branch routing, protected previews, and production deployment must be
+connected in the hosting account; this workflow does not deploy or require cloud
+credentials. Cloudflare's production branch must be `master`. For rollback, revert
+the accepted change through a PR and deploy the resulting commit. Keep old
+checksum-addressed R2 objects so historical content references remain valid.
+
+Production includes only mix files registered in the committed manifest. Mix
+notes and fragment records without uploaded audio remain legitimate metadata;
+they do not acquire a remote audio reference from a local filename. Existing
+schema and manifest checks validate reference structure without contacting R2.
+The uploaders verify bytes before recording references; CI does not need storage
+credentials and cannot verify that remote objects are still present. Hosted
+playback still requires the audio API described below.
 
 ## Write a Zero post
 
@@ -145,8 +218,13 @@ and build scripts, then rebuilds and refreshes the browser after edits.
 Build errors appear in the terminal; fix the source and save to retry.
 Draft posts remain excluded, matching deployment behavior. Stop with Ctrl+C.
 
-Vite is used only for local serving and browser refresh. Deployment still uses
-`npm run build` and the same `dist/` directories.
+Vite is used only for local serving and browser refresh. Deployment uses
+`npm run build:production` and the same `dist/` directories. Local previews use
+working content and discover ignored audio. `npm run build` checks working
+content with registered mix references only; `npm run build:internal` retains
+local discovery. To inspect unpublished content, use these working-directory
+builds before committing; production deliberately builds the previous commit
+until those edits are committed.
 
 Run the build checks with `npm test`.
 
@@ -483,8 +561,10 @@ content type, and SHA-256 metadata before atomically updating the tracked
 resumes interrupted uploads; changed files receive new objects, and old remote
 versions are retained. Local originals and mix Markdown notes are never modified.
 
-The build merges registered remote files with locally discovered files. Registered
-mixes remain in the dashboard and model catalog without the local media folder.
+Local previews and the internal build merge registered remote files with locally
+discovered files. Public builds use only registered references, and production
+reads those references from the committed snapshot. Registered mixes remain in
+the dashboard and model catalog without the local media folder.
 Static output contains metadata only; hosted playback still requires this local
 server and Internet access, as with fragment previews. Keep a separate backup of
 original audio. Stem uploads are not included in this command.

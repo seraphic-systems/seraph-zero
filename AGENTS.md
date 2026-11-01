@@ -27,6 +27,7 @@ Use Node.js >=22.12 and npm with the committed `package-lock.json`. Install with
 | Preview Seraphic Systems | `npm run dev:seraphic` |
 | Preview internal workspace | `npm run dev:internal` |
 | Build both public sites | `npm run build` |
+| Build committed public release | `npm run build:production` |
 | Build internal workspace | `npm run build:internal` |
 | Run Node tests | `npm test` |
 | Run Ableton Python tests | `python3 -m unittest discover -s tests -p 'test_ableton*.py'` |
@@ -45,6 +46,10 @@ any failures or verification limits.
   native Web Components where useful, and Python for Ableton analysis/branching.
   Vite serves local previews; `scripts/build.mjs` produces deployment output.
 - Edit source files, never generated `dist/` output.
+- Use `npm run build:production` for deployment; it builds `HEAD`, excluding
+  uncommitted content and local media. Public builds use registered mix references;
+  local previews and the internal build retain local audio discovery. Official
+  changes go through pull requests to protected `master`; see README publication flow.
 - Use semantic tokens from `shared/tokens.css` for shared colors and fonts.
   Keep reusable components in `shared/components/` and application layout in the app.
 - Keep the Orb content adapter, pure layout engine, URL routing, presentations,
