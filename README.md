@@ -484,6 +484,99 @@ include mix metadata and local API URLs, but never copy mix audio into their
 output. Local listening works with `npm run dev:internal` or `npm run dev:seraphic`. Keep any internal-only assets out of `shared/`, which is
 copied into both public sites.
 
+### Local plugin resampling
+
+`scripts/resample.py` captures ordered VST3/Audio Unit effect chains, auditions a
+loop through the full chain while native editors are open, and renders files or
+folders without Ableton. This is an optional local Python tool, independent of
+the public sites and catalog. Use Python 3.12 on macOS for the tested setup:
+
+```sh
+python3 -m venv apps/internal/media/resampling/.venv
+source apps/internal/media/resampling/.venv/bin/activate
+python -m pip install -r scripts/requirements-resample.txt
+python scripts/resample.py devices
+python scripts/resample.py probe \
+  "/Library/Audio/Plug-Ins/Components/Decapitator.component" \
+  "/Library/Audio/Plug-Ins/VST3/ValhallaRoom.vst3"
+```
+
+Capture a chain using an audio file you choose. Both plugins process the loop
+throughout the session; close one editor to open the next. Afterward, enter a
+plugin number to reopen it, `s` to save the whole chain, or `q` to discard changes.
+An interrupted session does not replace the previous saved revision.
+
+```sh
+python scripts/resample.py capture grit \
+  "/Library/Audio/Plug-Ins/Components/Decapitator.component" \
+  "/Library/Audio/Plug-Ins/VST3/ValhallaRoom.vst3" \
+  --audio "/path/to/source.wav" --start 10 --duration 8
+python scripts/resample.py edit grit --audio "/path/to/source.wav"
+python scripts/resample.py audition grit --audio "/path/to/source.wav" --seconds 20
+python scripts/resample.py list
+python scripts/resample.py render "/path/to/stems" "/path/to/renders" \
+  --chains grit --tail 8 --trim -70 --normalize -1 --recursive
+```
+
+`--start` and `--duration` select the audition excerpt only (default: first eight
+seconds). Loops wrap without resetting effects, preserving delay/reverb state.
+Playback runs on a background thread while native editors stay on the main thread.
+`--device` selects a name from `devices`. Monitoring defaults to -12 dB and has a
+hard ceiling at 0.98; `--monitor-db` changes only listening gain. Rendering never
+uses that monitor gain or ceiling. Mono is duplicated to stereo by default; use
+`--mono preserve` for chains that accept mono. Only mono/stereo audio effects are
+supported. This is not a DAW transport, automation, MIDI, sidechain, or ARA host;
+verify any tempo-synced effects against your intended result.
+
+Capture requires an audio file, and render accepts either one audio file or a
+folder. Render preserves source sample rates, appends four seconds of silence by
+default, and writes 24-bit WAVs. `--trim` removes trailing audio below its threshold
+without shortening the source duration. `--normalize` is optional peak normalization,
+not loudness normalization. Without it, peaks above 0 dBFS are reported in the worker
+log and clip when encoded to integer WAV. Files are currently decoded/processed in
+memory, so use shorter sources for large batches or long tails.
+
+Output must be outside the input folder. Each chain gets a readable folder with a
+name hash; source extensions are retained (`kick.aif.wav`, `kick.wav.wav`) to avoid
+collisions. Existing outputs are skipped unless `--overwrite` is supplied. Each
+file/chain render uses a fresh subprocess, with a default 600-second `--timeout`.
+Crashes, timeouts, and Python exceptions are recorded and do not stop subsequent
+jobs; any failure gives the batch a nonzero exit status. Complete WAVs are published
+atomically, so interrupted writes never become final outputs. A forcibly killed
+worker can leave a hidden `.resample-*.wav` temporary file beside its destination;
+these can be removed after the batch has stopped.
+
+The default workspace is `apps/internal/media/resampling/`: `chains.json` points
+to immutable `presets/<revision>/` states, and `jobs/<batch>/` contains manifests,
+requests, results, and worker logs. Manifests include source/output hashes, exact
+chain revisions and state hashes, processing settings, plugin bundle versions,
+and Python/tool versions. Missing, empty, or changed state fails explicitly;
+changed plugin bundle versions require recapture. Decapitator AU must be prepared
+with audio before it exposes parameters/state; the tool does this before capture
+and restoration. Render workers use fresh plugin instances and do not reset
+them again after restoring state: Decapitator AU otherwise resets to its factory
+settings. Plugin updates and random/modulated effects can still change
+results; a recipe is not a guarantee of bit-identical audio across machines.
+
+All workspace files are ignored by Git and excluded from public builds; back them
+up separately. Original audio and installed plugin presets are never overwritten,
+and renders do not automatically create catalog records. To use another workspace,
+put `--workspace /path/to/workspace` **before** the command. Concurrent capture/edit
+sessions in the same workspace are refused; old revisions are retained so ongoing
+render jobs keep their original preset state. `capture --force` replaces a chain's
+current revision while preserving previous state files.
+
+Run the fixture tests with the optional environment activated:
+
+```sh
+python -m unittest discover -s tests -p 'test_resample.py'
+```
+
+`probe` performs an isolated non-default state round trip and a short synthetic
+render for each installed plugin, without opening editors or playing audio.
+Native plugin licensing, architecture, editor behavior, and audio-device access
+must be checked locally; fixture tests do not establish plugin compatibility.
+
 ### Horizons
 
 `apps/internal/data/horizons/` holds values and guiding perspectives for the
