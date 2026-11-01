@@ -5,7 +5,12 @@ import { buildZero } from './zero.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const allSites = ['zero', 'seraphic-systems'];
-const requestedSite = process.argv[2];
+const args = process.argv.slice(2);
+const includeLocalMedia = args.includes('--local-media');
+const requestedSite = args.find(arg => !arg.startsWith('--'));
+if (args.some(arg => arg.startsWith('--') && arg !== '--local-media') || args.filter(arg => !arg.startsWith('--')).length > 1) {
+  throw new Error('Usage: node scripts/build.mjs [zero|seraphic-systems|internal] [--local-media]');
+}
 if (requestedSite && ![...allSites, 'internal'].includes(requestedSite)) {
   throw new Error(`Unknown site: ${requestedSite}`);
 }
@@ -44,7 +49,7 @@ for (const site of sites) {
     });
     await rewriteSharedLinks(output, source, output);
     const { buildInternal } = await import('./internal.mjs');
-    await buildInternal(path.join(root, 'apps/internal'), output, { publicOrb: true });
+    await buildInternal(path.join(root, 'apps/internal'), output, { publicOrb: true, includeLocalMedia });
   }
   await cp(shared, path.join(output, 'shared'), {
     recursive: true,

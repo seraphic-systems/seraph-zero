@@ -27,9 +27,10 @@ export async function readMixManifest(source) {
   }
   return registry;
 }
-export async function readMixes(source) {
+export async function readMixes(source, { includeLocalMedia = true } = {}) {
   const registry = await readMixManifest(source);
   const mixes = new Map(registry.files.map(item => [item.file, { ...mixIdentity(item.file), remote: item.remote }]));
+  if (!includeLocalMedia) return [...mixes.values()].sort((a, b) => a.file.localeCompare(b.file));
   const entries = await readdir(path.join(source, 'media/mixes'), { withFileTypes: true }).catch(error => {
     if (error.code === 'ENOENT') return [];
     throw error;

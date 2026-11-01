@@ -13,6 +13,7 @@
     "mixes:upload": "node --env-file-if-exists=.env.r2.local scripts/upload-mixes.mjs",
     "build:internal": "node scripts/build.mjs internal",
     "build": "node scripts/build.mjs",
+    "build:production": "node scripts/build-production.mjs",
     "test": "node --test",
     "create:internal": "node scripts/create-internal-record.mjs"
   },

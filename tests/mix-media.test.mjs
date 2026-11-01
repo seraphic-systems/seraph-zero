@@ -74,6 +74,19 @@ test('failed verification never records an upload', async t => {
   await assert.rejects(access(manifest));
 });
 
+test('published media ignores local discovery while retaining verified manifest references', async t => {
+  const { root, source, store } = await fixture(t);
+  await uploadMixes({ root, store });
+  // Even invalid local filenames must have no effect on a published catalog.
+  await writeFile(path.join(source, 'media/mixes/unregistered.mp3'), 'draft audio');
+  const output = path.join(root, 'published');
+  await buildInternal(source, output, { publicOrb: true, includeLocalMedia: false });
+  const [song] = JSON.parse(await readFile(path.join(output, 'songs.json'), 'utf8'));
+  assert.deepEqual(song.mixes.map(mix => mix.file), ['song-2026-01-01.mp3']);
+  assert.equal(song.mixes[0].remote.bucket, store.bucket);
+  await assert.rejects(buildInternal(source, path.join(root, 'local')), /name mixes/);
+});
+
 test('mixes stream remotely without local audio, seek, support HEAD, and fall back locally on cloud errors', async t => {
   const { root, source, file, store } = await fixture(t);
   await uploadMixes({ root, store });

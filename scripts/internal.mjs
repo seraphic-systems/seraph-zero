@@ -20,11 +20,12 @@ function dateString(value, context) {
 
 export async function buildInternal(source, output, {
   publicOrb = false,
+  includeLocalMedia = true,
   orbSource = fileURLToPath(new URL('../apps/seraphic-systems/orb/', import.meta.url)),
 } = {}) {
   const songs = [];
   const ids = new Set();
-  const mixes = await readMixes(source);
+  const mixes = await readMixes(source, { includeLocalMedia });
   for (const entry of await readdir(path.join(source, 'data/songs'), { withFileTypes: true })) {
     if (!entry.isFile() || !entry.name.endsWith('.md')) continue;
     const { data, content } = matter(await readFile(path.join(source, 'data/songs', entry.name), 'utf8'));

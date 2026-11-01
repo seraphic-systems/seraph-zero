@@ -11,7 +11,7 @@ const root = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig(async ({ mode }) => {
   const site = ['seraphic-systems', 'internal'].includes(mode) ? mode : 'zero';
-  const build = () => promisify(execFile)(process.execPath, [path.join(root, 'scripts/build.mjs'), site]);
+  const build = () => promisify(execFile)(process.execPath, [path.join(root, 'scripts/build.mjs'), site, '--local-media']);
   await build();
 
   return {
