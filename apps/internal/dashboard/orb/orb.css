@@ -82,6 +82,15 @@ select:focus-visible {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.orb-group-heading {
+  position: absolute;
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--hairline);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
 .orb {
   position: absolute;
   top: 0;
@@ -114,6 +123,9 @@ select:focus-visible {
 }
 .orb[data-category="model"] {
   --orb-color: #8897a8;
+}
+.orb[data-category="operations"] {
+  --orb-color: #a8957d;
 }
 .orb[data-category="Policy"] {
   --orb-color: #a88c78;
@@ -1048,6 +1060,12 @@ html.presentation-transition {
   text-align: left;
   scrollbar-width: thin;
 }
+.view-preset-row {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+}
 .view-presets button {
   flex-shrink: 0;
   width: 100%;
@@ -1059,6 +1077,50 @@ html.presentation-transition {
   color: inherit;
   font: inherit;
   text-align: left;
+}
+.view-preset-row > button:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.view-presets .view-config-button {
+  width: 36px;
+  min-height: 36px;
+  padding: 8px 0;
+  text-align: center;
+  color: var(--accent);
+  font-family: monospace;
+}
+.view-config {
+  box-sizing: border-box;
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  padding: 24px;
+  border: 1px solid var(--hairline);
+  border-radius: 20px;
+  background: var(--paper);
+  color: var(--ink);
+  overflow: auto;
+}
+.view-config::backdrop {
+  background: rgb(0 0 0 / 35%);
+}
+.view-config > button {
+  float: right;
+  margin-left: 12px;
+}
+.view-config h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.view-config p {
+  font-size: 12px;
+}
+.view-config pre {
+  margin: 20px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .view-presets button:hover {
   background: color-mix(in srgb, var(--view-color) 10%, var(--paper));

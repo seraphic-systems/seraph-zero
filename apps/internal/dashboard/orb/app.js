@@ -1,13 +1,13 @@
 import { renderModelInspector } from './model-view.js';
 import '/shared/components/audio-player/audio-player.js';
-import { createContentSource, indexTree } from './content.js';
+import { createContentSource, indexTree, horizonLevels } from './content.js';
 import { layout, arrangements } from './engine.js';
 import { presentations } from './presentations.js';
-import { availableViews, defaultView, resolveFilter, viewPanelHeight, hasFindControls, isFindActive } from './views.js';
+import { availableViews, defaultView, resolveFilter, viewPanelHeight, hasFindControls, isFindActive, viewConfiguration } from './views.js';
 import { createPlayback } from './playback.js';
 import { createPresentationTransition, changesContentView } from './transitions.js';
 import { playbackControls, presentationViews, songFor } from './presentation-views.js';
-import { readRoute, routeFor, base } from './routes.js';
+import { readRoute, routeFor, routeToNode, base } from './routes.js';
 
 const $ = selector => document.querySelector(selector);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -236,6 +236,31 @@ try {
     }
     const title = el('h1', node.label); title.tabIndex = -1;
     section.append(controls, el('p', node.kind, 'kind'), title);
+    if (node.kind === 'Horizon' || node.kind === 'Policy') {
+      if (node.kind === 'Horizon') {
+        section.append(el('p', horizonLevels[node.data.level - 1], 'muted'));
+      }
+      section.append(el('p', node.data.description, 'fragment-detail-text'));
+      const related = node.kind === 'Policy'
+        ? (node.data.horizons || []).map(id => index.get(`horizon-${id}`)?.node).filter(Boolean)
+        : source.getChildren('policies').filter(policy => policy.data.horizons?.includes(node.data.id));
+      const album = node.kind === 'Policy' && index.get(`album-${node.data.album}`)?.node;
+      const relatedLinks = (label, nodes) => {
+        if (!nodes.length) return;
+        section.append(el('h2', label));
+        for (const related of nodes) {
+          const link = el('a', related.label, 'file-link');
+          link.href = routeToNode(tree, related.id);
+          link.addEventListener('click', event => {
+            if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault(); navigate(link.href);
+          });
+          const paragraph = el('p'); paragraph.append(link); section.append(paragraph);
+        }
+      };
+      relatedLinks(node.kind === 'Policy' ? 'Supports horizons' : 'Supporting policies', related);
+      if (album) relatedLinks('Album', [album]);
+    }
     const song = songFor(node);
     if (node.kind === 'Album track') {
       section.append(el('p', `Track ${node.data.track_number}`, 'muted'));
@@ -293,6 +318,20 @@ try {
     toggle.firstChild.textContent = state.navOpen ? '×' : '✳';
     $('#nav-content').hidden = !state.navOpen;
   }
+  const configDialog = el('dialog', null, 'view-config');
+  configDialog.setAttribute('aria-labelledby', 'view-config-title');
+  document.body.append(configDialog);
+  configDialog.addEventListener('click', event => { if (event.target === configDialog) configDialog.close(); });
+  function inspectView(option) {
+    const heading = el('h2', `${option.label} · Configuration`);
+    heading.id = 'view-config-title';
+    const close = el('button', 'Close', 'text-button'); close.type = 'button';
+    close.addEventListener('click', () => configDialog.close());
+    const code = el('code', JSON.stringify(viewConfiguration(current.container, option, state), null, 2));
+    const pre = el('pre'); pre.append(code);
+    configDialog.replaceChildren(close, heading, el('p', 'Preset definition, grouping, sorting (in priority order), and placement. Current settings include any active arrangement override.', 'muted'), pre);
+    configDialog.showModal();
+  }
   function renderView(preserveControls = false) {
     const view = $('#view-lens'), button = $('#view-toggle'), content = $('#view-content');
     const options = availableViews(current.container);
@@ -312,6 +351,7 @@ try {
     presentationChoices.setAttribute('role', 'group');
     presentationChoices.setAttribute('aria-label', 'View presets');
     options.forEach(option => {
+      const row = el('div', null, 'view-preset-row');
       const button = el('button'); button.type = 'button';
       button.append(el('span', option.label, 'preset-label'));
       if (option.description) button.append(el('small', option.description, 'preset-description'));
@@ -324,7 +364,13 @@ try {
         render(false);
         $('#presentation-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
       });
-      presentationChoices.append(button);
+      const inspect = el('button', '{}', 'view-config-button'); inspect.type = 'button';
+      inspect.setAttribute('aria-label', `Show configuration for ${option.label}`);
+      inspect.title = `Show configuration for ${option.label}`;
+      inspect.setAttribute('aria-haspopup', 'dialog');
+      inspect.addEventListener('click', () => inspectView(option));
+      row.append(button, inspect);
+      presentationChoices.append(row);
     });
     presentationChoices.id = 'presentation-choices';
     if (options.length > 1) content.append(presentationChoices);
@@ -400,6 +446,12 @@ try {
     document.body.classList.toggle('nav-open', state.navOpen);
     for (const node of document.querySelectorAll('.masthead, #circles, #cards, #detail, #selection, #player-lens, footer')) node.inert = state.navOpen;
     const visible = next.circles.filter(circle => circle.visible !== false);
+    $('#circles').querySelectorAll('.orb-group-heading').forEach(heading => heading.remove());
+    for (const group of next.groups) {
+      const heading = el('h2', group.label, 'orb-group-heading');
+      Object.assign(heading.style, { left: `${group.x}px`, top: `${group.y}px`, width: `${group.width}px` });
+      $('#circles').append(heading);
+    }
     renderTrailLinks(visible);
     for (const [key, button] of mounted) if (!visible.some(circle => circle.key === key)) {
       mounted.delete(key);

@@ -1,14 +1,31 @@
 import { relationshipGeometry } from './relationships.js';
-import { indexTree } from './content.js';
+import { indexTree, horizonLevels } from './content.js';
 import { presentations } from './presentations.js';
 import { resolveView, resolveArrangement, resolveFilter, matchesView, viewPanelHeight } from './views.js';
 
 export const isContainer = node => Array.isArray(node.children);
-export const orderedChildren = (node, arrangement) => arrangement === 'az'
-  ? [...node.children].sort((a, b) => a.label.localeCompare(b.label)) : node.children;
+export const orderedChildren = (node, arrangement) => arrangement === 'level'
+  ? [...node.children].sort((a, b) => (a.groupLevel ?? Infinity) - (b.groupLevel ?? Infinity) || a.label.localeCompare(b.label))
+  : arrangement === 'az' ? [...node.children].sort((a, b) => a.label.localeCompare(b.label)) : node.children;
 const point = (x, y, r, labelPlacement = 'inside') => ({ x, y, r, labelPlacement });
 
+function levelLayout(region, children) {
+  const columns = Math.max(1, Math.floor(region.w / 160));
+  const cellWidth = region.w / columns, positions = new Map(), groups = [];
+  let y = region.y;
+  for (const level of [1, 2, 3, 4, null]) {
+    const members = children.filter(child => (child.groupLevel ?? null) === level);
+    if (!members.length) continue;
+    groups.push({ label: level === null ? 'No linked Horizon level' : `${level} · ${horizonLevels[level - 1]}`, x: region.x, y, width: region.w });
+    members.forEach((child, i) => positions.set(child.id,
+      point(region.x + (i % columns + .5) * cellWidth, y + 110 + Math.floor(i / columns) * 160, 58)));
+    y += 48 + Math.ceil(members.length / columns) * 160;
+  }
+  return { positions: children.map(child => positions.get(child.id)), groups, height: y - region.y };
+}
+
 export const arrangements = {
+  level: { label: 'Horizon level', layout: (region, children) => levelLayout(region, children).positions },
   relationships: { label: 'Relationships', layout(region, children) {
     const columns = region.w < 500 ? 2 : 3;
     const ordered = [...children].sort((a, b) => (a.modelPosition?.[1] || 0) - (b.modelPosition?.[1] || 0) || (a.modelPosition?.[0] || 0) - (b.modelPosition?.[0] || 0));
@@ -98,11 +115,16 @@ export function layout(tree, state, viewport) {
   const related = new Set((node.relationships || []).filter(edge => edge.source === selection || edge.target === selection).flatMap(edge => [edge.source, edge.target]));
   const presentation = view.presentation;
   const alternate = !detail && presentation !== 'orb', items = [];
-  let positions;
+  let positions, groups = [];
   if (alternate) {
     const result = presentations[presentation].layout(region, children);
     region.h = Math.max(190, result.height);
     positions = result.items;
+  } else if (active === 'level') {
+    const grouped = levelLayout(region, children);
+    positions = grouped.positions;
+    groups = detail ? [] : grouped.groups;
+    region.h = Math.max(region.h, grouped.height);
   } else {
     if (active === 'free' && children.length > 2) region.h = Math.max(region.h, Math.ceil(children.length / Math.max(1, Math.floor(region.w / 140))) * 150);
     if (active === 'az' && narrow) region.h = Math.max(region.h, children.length * 64);
@@ -149,5 +171,5 @@ export function layout(tree, state, viewport) {
       r: Math.max(1, Math.min(w - inset * 2, availableHeight) / 2),
     });
   }
-  return { view, selection, connections: relationshipGeometry(node.relationships || [], circles.filter(circle => circle.role === 'child'), selection), circles, items, presentation, navOrb, detail: detailLayout, container: node, count: children.length, active, path, height: detail ? h : Math.max(h, region.y + region.h + 90) };
+  return { view, selection, groups, connections: relationshipGeometry(node.relationships || [], circles.filter(circle => circle.role === 'child'), selection), circles, items, presentation, navOrb, detail: detailLayout, container: node, count: children.length, active, path, height: detail ? h : Math.max(h, region.y + region.h + 90) };
 }

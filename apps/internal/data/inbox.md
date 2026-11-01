@@ -24,3 +24,5 @@
 - Next step is add blogs to internal and write first blog?!?
 - Finish Landing Page copy
 - Deploy
+
+- Memories, Dreams, and Visions

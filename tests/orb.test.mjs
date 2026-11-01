@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createContentSource, indexTree } from '../apps/internal/dashboard/orb/content.js';
 import { layout } from '../apps/internal/dashboard/orb/engine.js';
-import { availableViews, resolveView, hasFindControls, isFindActive, viewPanelHeight } from '../apps/internal/dashboard/orb/views.js';
+import { availableViews, resolveView, hasFindControls, isFindActive, viewPanelHeight, viewConfiguration, arrangementConfiguration } from '../apps/internal/dashboard/orb/views.js';
 import { readRoute, routeFor, routeToNode } from '../apps/internal/dashboard/orb/routes.js';
 
 const songs = Array.from({ length: 25 }, (_, i) => ({ id: `s${i}`, title: `Song ${i}`, mixes: [], notes: '' }));
@@ -12,6 +12,111 @@ const catalog = { records: [
 ] };
 const tree = createContentSource(songs, catalog).getRoot();
 const initial = { path: ['home', 'music', 'songs'], detail: null, arrangement: {}, navOpen: false };
+
+test('view inspection preserves preset definitions and reports only effective active settings', () => {
+  const node = indexTree(tree).get('songs').node;
+  const [orb, player] = availableViews(node);
+  const state = { view: { songs: player.id }, arrangement: { songs: 'az' }, filter: 'Song 2' };
+  const snapshot = JSON.stringify(node);
+  assert.deepEqual(viewConfiguration(node, player, state), {
+    page: 'songs', default: false, preset: player, ...arrangementConfiguration(node, player),
+    current: { presentation: 'player', arrangement: 'az', filter: {}, query: 'Song 2', ...arrangementConfiguration(node, player, 'az') },
+  });
+  assert.deepEqual(viewConfiguration(node, orb, state), { page: 'songs', default: true, preset: orb, ...arrangementConfiguration(node, orb) });
+  const album = indexTree(tree).get('album-a').node;
+  const fixed = resolveView(album);
+  assert.deepEqual(viewConfiguration(album, fixed, { arrangement: { 'album-a': 'az' }, filter: 'ignored' }).current,
+    { presentation: 'orb', arrangement: 'free', filter: {}, query: '', ...arrangementConfiguration(album, fixed) });
+  assert.equal(JSON.stringify(node), snapshot);
+});
+
+test('configuration explains grouping, tie breakers, source sorting and spatial placement', () => {
+  const index = indexTree(tree);
+  const inspect = id => {
+    const node = index.get(id).node;
+    return arrangementConfiguration(node, resolveView(node));
+  };
+  const levels = inspect('horizons');
+  assert.equal(levels.grouping.field, 'groupLevel');
+  assert.equal(levels.grouping.missing, 'last');
+  assert.deepEqual(levels.sorting.map(rule => [rule.field, rule.direction]), [['groupLevel', 'ascending'], ['label', 'ascending']]);
+  assert.match(inspect('policies').grouping.derivedFrom, /Highest valid level/);
+  assert.deepEqual(inspect('album-a').sorting, [{ field: 'track_number', direction: 'ascending', comparison: 'numeric' }]);
+  assert.deepEqual(inspect('fragments').sorting.map(rule => rule.field), ['groupLabel', 'label']);
+  assert.equal(inspect('fragments').grouping, null);
+  assert.match(inspect('songs').placement, /scatter/);
+  const node = index.get('songs').node, player = resolveView(node, 'player');
+  assert.match(arrangementConfiguration(node, player).placement, /Cards/);
+  assert.deepEqual(arrangementConfiguration(node, player, 'az').sorting.map(rule => rule.field), ['label']);
+  assert.match(arrangementConfiguration({}, { presentation: 'orb', arrangement: 'relationships' }).placement, /row ascending, then column ascending/);
+});
+
+test('Horizons defaults to ascending level groups and preserves filtering and detail order', () => {
+  const horizonTree = createContentSource([], { records: [
+    { type: 'Horizon', data: { id: 'goal', title: 'Goal', level: 4 } },
+    { type: 'Horizon', data: { id: 'value-z', title: 'Z value', level: 1 } },
+    { type: 'Horizon', data: { id: 'vision', title: 'Vision', level: 3 } },
+    { type: 'Horizon', data: { id: 'value-a', title: 'A value', level: 1 } },
+    { type: 'Horizon', data: { id: 'principle', title: 'Principle', level: 2 } },
+  ] }).getRoot();
+  const route = readRoute(horizonTree, new URL('http://localhost/orb/operations/horizons/'));
+  assert.equal(route.view.horizons, 'levels');
+  for (const width of [320, 390, 1440]) {
+    const viewport = { width, height: 844 };
+    const result = layout(horizonTree, route, viewport);
+    assert.deepEqual(result.groups.map(group => group.label), ['1 · Values', '2 · Guiding principles', '3 · Long-term vision', '4 · Near-term goals']);
+    const children = result.circles.filter(circle => circle.role === 'child');
+    assert.deepEqual(children.map(child => child.key), ['horizon-value-a', 'horizon-value-z', 'horizon-principle', 'horizon-vision', 'horizon-goal']);
+    for (const circle of children) {
+      assert.ok(circle.x - circle.r >= 0 && circle.x + circle.r <= width);
+      assert.ok(circle.y + circle.r < result.height);
+    }
+    assert.ok(children[2].y > children[1].y);
+    const filtered = layout(horizonTree, { ...route, filter: 'Goal' }, viewport);
+    assert.deepEqual(filtered.groups.map(group => group.label), ['4 · Near-term goals']);
+    assert.equal(filtered.count, 1);
+    const empty = layout(horizonTree, { ...route, filter: 'missing' }, viewport);
+    assert.equal(empty.groups.length, 0);
+    assert.equal(empty.circles.at(-1).role, 'empty');
+    const detail = layout(horizonTree, { ...route, detail: 'horizon-vision' }, viewport);
+    assert.equal(detail.groups.length, 0);
+    assert.equal(detail.detail.prev, 'horizon-principle');
+    assert.equal(detail.detail.next, 'horizon-goal');
+    const scatter = layout(horizonTree, { ...route, view: { horizons: 'orb' } }, viewport);
+    assert.equal(scatter.active, 'free');
+    assert.equal(scatter.groups.length, 0);
+  }
+});
+
+test('Policies default to their highest linked Horizon level without adding a level to the record', () => {
+  const records = [
+    { type: 'Horizon', data: { id: 'goal', title: 'Goal', level: 4 } },
+    { type: 'Horizon', data: { id: 'value', title: 'Value', level: 1 } },
+    { type: 'Horizon', data: { id: 'principle', title: 'Principle', level: 2 } },
+    { type: 'Policy', data: { id: 'goal-only', title: 'Goal only', horizons: ['goal'] } },
+    { type: 'Policy', data: { id: 'mixed', title: 'Mixed', horizons: ['goal', 'value', 'principle'] } },
+    { type: 'Policy', data: { id: 'principle-only', title: 'Principle only', horizons: ['principle', 'missing'] } },
+    { type: 'Policy', data: { id: 'unlinked', title: 'Unlinked', horizons: ['missing'] } },
+  ];
+  const policyTree = createContentSource([], { records }).getRoot();
+  const route = readRoute(policyTree, new URL('http://localhost/orb/operations/policies/'));
+  assert.equal(route.view.policies, 'levels');
+  assert.ok(records.filter(record => record.type === 'Policy').every(record => !Object.hasOwn(record.data, 'level')));
+  for (const width of [320, 1440]) {
+    const viewport = { width, height: 844 };
+    const result = layout(policyTree, route, viewport);
+    assert.deepEqual(result.groups.map(group => group.label), ['2 · Guiding principles', '4 · Near-term goals', 'No linked Horizon level']);
+    const children = result.circles.filter(circle => circle.role === 'child');
+    assert.deepEqual(children.map(child => child.key), ['policy-principle-only', 'policy-goal-only', 'policy-mixed', 'policy-unlinked']);
+    for (const circle of children) assert.ok(Number.isFinite(circle.y) && circle.y + circle.r < result.height);
+    const filtered = layout(policyTree, { ...route, filter: 'Mixed' }, viewport);
+    assert.deepEqual(filtered.groups.map(group => group.label), ['4 · Near-term goals']);
+    const detail = layout(policyTree, { ...route, detail: 'policy-principle-only' }, viewport);
+    assert.equal(detail.detail.prev, undefined);
+    assert.equal(detail.detail.next, 'policy-goal-only');
+    assert.equal(layout(policyTree, { ...route, view: { policies: 'orb' } }, viewport).active, 'free');
+  }
+});
 
 test('content adapter preserves identities and does not infer album-song associations', () => {
   const index = indexTree(tree);
