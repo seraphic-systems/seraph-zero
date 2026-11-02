@@ -1114,10 +1114,16 @@ exposes the Note type, metadata, and outgoing/incoming relationships. Writing is
 currently done in Markdown files; there is no dedicated note editor yet.
 
 ```sh
-npm run create:internal -- Note '{"id":"constraints-and-creativity","title":"Constraints can encourage creativity"}'
+npm run create:internal -- Note
 ```
 
-Then edit the generated file, for example:
+This creates a blank private Markdown file with a unique permanent ID, an
+`Untitled note` title, creation timestamp, and empty `related_notes` list. The
+command prints the file path. Open it in your editor, replace the title, and write
+below the closing `---`. Keep its generated ID when renaming the title.
+You can still supply JSON front matter when you want to choose the metadata.
+
+An edited note might look like:
 
 ```yaml
 ---
