@@ -68,6 +68,9 @@ test('full build keeps deployments self-contained and removes unpublished or del
     });
   }
   await symlink(fileURLToPath(new URL('../node_modules', import.meta.url)), path.join(root, 'node_modules'), 'dir');
+  const journalEntry = path.join(root, 'apps/seraphic-systems/journal/entries/build-check');
+  await mkdir(journalEntry, { recursive: true });
+  await writeFile(path.join(journalEntry, 'index.md'), '---\ntitle: Build check\ndescription: Journal fixture\n---\nA published entry.\n');
   await mkdir(path.join(root, 'apps/internal/media/mixes'), { recursive: true });
   await writeFile(path.join(root, 'apps/internal/media/mixes/internal-only-2026-01-01.wav'), 'local audio');
   await writeFile(path.join(root, 'apps/internal/data/songs/internal-only.md'), '---\nid: internal-only\ntitle: Fixture song\n---\n');
@@ -90,7 +93,8 @@ test('full build keeps deployments self-contained and removes unpublished or del
   await access(path.join(dist, 'seraphic-systems/orb/music/songs/index.html'));
   await access(path.join(dist, 'seraphic-systems/catalog.json'));
   await access(path.join(dist, 'seraphic-systems/journal/index.html'));
-  await access(path.join(dist, 'seraphic-systems/journal/seraph-zero/index.html'));
+  await access(path.join(dist, 'seraphic-systems/journal/build-check/index.html'));
+  await access(path.join(dist, 'seraphic-systems/journal/build-check/thumbnail.svg'));
   await assert.rejects(access(path.join(dist, 'seraphic-systems/journal/entries')));
   await assert.rejects(access(path.join(dist, 'seraphic-systems/journal/templates')));
   assert.match(await readFile(path.join(dist, 'seraphic-systems/index.html'), 'utf8'), /href="\/journal\/"/);

@@ -329,6 +329,14 @@ Journal templates and shared layout live under `journal/templates/` and
 catalog records or inferring relationships. The initial Seraph Zero entry reuses
 existing landing-page copy and intentionally has no invented publication date.
 
+Each published entry automatically receives a `thumbnail.svg`, shown on the
+Journal listing. `scripts/journal-art.mjs` generates orbital geometry from the
+rendered document's headings and text blocks, with the permanent slug anchoring
+the arrangement. Block lengths influence ring sizes in coarse steps, so small
+edits usually leave the artwork unchanged; larger structural edits reshape it.
+Markdown and bespoke HTML use the same generator. Artwork uses the shared
+background and accent tokens, requires no external service, and embeds no prose.
+
 Preview with `npm run dev:seraphic`; entries rebuild on save. `npm run build`
 generates the Journal alongside the landing page and Orb, excluding templates,
 Markdown source, and drafts. Publication follows the same committed PR workflow
