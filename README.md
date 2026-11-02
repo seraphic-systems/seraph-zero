@@ -1226,8 +1226,10 @@ the controls shown there; choosing Play switches the shared player to that mix.
 
 Recent locations are stored in this browser only. Routes and arrangement
 queries support reload, sharing, and browser back/forward. Static builds emit
-an HTML entry point for every current content route. Use Escape to close the
-nav orb or detail, and up/down arrows or scroll to step between detail items.
+an HTML entry point for every current content route. Escape dismisses Find,
+then the player, then navigation or View, before closing detail or clearing a
+Model selection. Focus returns to the dismissed panel's toggle. Use up/down
+arrows or scroll to step between detail items.
 Scrollable notes and playback controls retain their native interactions.
 Reduced-motion preferences replace morphs with short fades.
 
@@ -1248,10 +1250,28 @@ URL mapping (`routes.js`), and DOM renderer (`app.js`). Container declarations i
 `id`, `label`, `presentation`, `arrangement`, and optional `controls` (`search`
 and/or an `arrangements` allowlist). `views.js` resolves those policies for both
 routing and layout. Renderer support alone never exposes views or controls.
+`navigation.js` owns immutable navigation snapshots with three modes: `browsing`,
+`detail`, and `selection`. Container, subject, preset, sort, search, and history
+events go through its pure transition function. It returns browser history and
+panel-reset effects for `app.js` to apply. Search replaces the current history
+entry; Back/Forward restores the URL without pushing a new entry. Detail stepping
+uses the same filtered content order as rendering. URLs remain the source of
+truth for the current container's view and sorting, including their defaults.
+`panels.js` owns the pure panel state machine: `panel` is `none`, `nav`, `view`,
+or `find`, with a separate `player` state of `open` or `closed`. Navigation closes
+the player; View and Find can coexist with it. Route navigation dismisses the
+primary panel while preserving the player. Panel transitions do not stop audio.
 Presentation capabilities
 and geometry live in `presentations.js`; type-specific DOM views and inline
 playback controls live in `presentation-views.js`. New presentations declare
 supported node types and layout geometry, then provide a DOM renderer with a
 `dispose` hook for subscriptions. Unsupported types retain the standard Orb.
-`playback.js` coordinates a single media element owned by the persistent player. Add or change records
+`playback.js` coordinates a single media element owned by the persistent player.
+Its read-only `state` snapshot contains `status`, `selection`, and `error`.
+The explicit states are `empty` (no selection), `ready` (selected), `preparing`
+(play requested), `playing`, `buffering`, `paused`, `ended`, and `error`.
+Commands and native player events drive the same transitions; preparing and
+buffering keep Pause available. New playback requests, track changes, and pauses
+invalidate older requests so a delayed failure cannot replace the current state.
+Add or change records
 in the existing data directories and rebuild to update this view.

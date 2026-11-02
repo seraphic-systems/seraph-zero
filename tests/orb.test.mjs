@@ -11,7 +11,7 @@ const catalog = { records: [
   { type: 'AlbumTrack', data: { id: 't', album: 'a', track_number: 1 } },
 ] };
 const tree = createContentSource(songs, catalog).getRoot();
-const initial = { path: ['home', 'music', 'songs'], detail: null, arrangement: {}, navOpen: false };
+const initial = { path: ['home', 'music', 'songs'], detail: null, arrangement: {}, panel: 'none' };
 
 test('view inspection preserves preset definitions and reports only effective active settings', () => {
   const node = indexTree(tree).get('songs').node;
@@ -167,7 +167,7 @@ test('expanded nav fills the available viewport below the breadcrumb without dis
     for (const detail of [null, 'song-s0']) {
       const state = { ...initial, detail };
       const closed = layout(tree, state, viewport);
-      const result = layout(tree, { ...state, navOpen: true }, { ...viewport, scrollY: 500 });
+      const result = layout(tree, { ...state, panel: 'nav' }, { ...viewport, scrollY: 500 });
       const nav = result.navOrb;
       const top = viewport.width < 600 ? 132 : 112;
       assert.equal(nav.x, viewport.width / 2);
@@ -312,7 +312,7 @@ test('open view controls reserve space for orbs and players without moving bread
     const state = { ...initial, view: { songs: view } };
     const viewport = { width, height: 844 };
     const closed = layout(tree, state, viewport);
-    const open = layout(tree, { ...state, viewOpen: true }, viewport);
+    const open = layout(tree, { ...state, panel: 'view' }, viewport);
     assert.deepEqual(open.circles.filter(circle => circle.role === 'trail'), closed.circles.filter(circle => circle.role === 'trail'));
     for (const item of [...open.items, ...open.circles.filter(circle => circle.role === 'child')]) {
       const left = item.r ? item.x - item.r : item.x;
@@ -321,9 +321,9 @@ test('open view controls reserve space for orbs and players without moving bread
       assert.ok(item.r ? item.x + item.r <= width : item.x + item.width <= width);
     }
     assert.deepEqual(layout(tree, state, viewport), closed);
-    // Detail pages hide View, so a stale open flag must not reserve space.
+    // Detail pages hide View, so a stale View state must not reserve space.
     const detail = { ...state, detail: 'song-s0' };
-    assert.deepEqual(layout(tree, { ...detail, viewOpen: true }, viewport), layout(tree, detail, viewport));
+    assert.deepEqual(layout(tree, { ...detail, panel: 'view' }, viewport), layout(tree, detail, viewport));
   }
 });
 
@@ -341,7 +341,7 @@ test('fragments default to a playable sample list with real Idea groups and safe
   assert.ok(availableViews(container).every(view => view.controls.search && view.controls.arrangements.length === 2));
   assert.equal(index.get('fragment-loop').node.audio.mixes[0].url, 'api/fragments/loop/audio');
   for (const width of [320, 390, 600, 1440]) {
-    const result = layout(fragmentTree, { path: fragmentPath, viewOpen: true }, { width, height: 844 });
+    const result = layout(fragmentTree, { path: fragmentPath, panel: 'view' }, { width, height: 844 });
     assert.equal(result.items.length, 2);
     assert.equal(result.circles.some(circle => circle.role === 'child'), false);
     for (const item of result.items) {
@@ -411,11 +411,11 @@ test('Find is opt-in, highlights only effective queries, and overlays without ch
   for (const width of [320, 390, 900, 1440]) for (const presentation of ['orb', 'player']) {
     const state = { ...initial, view: { songs: presentation }, filter: 'Song 2', arrangement: { songs: 'az' } };
     const closed = layout(tree, state, { width, height: 844 });
-    assert.deepEqual(layout(tree, { ...state, findOpen: true }, { width, height: 844 }), closed);
+    assert.deepEqual(layout(tree, { ...state, panel: 'find' }, { width, height: 844 }), closed);
   }
   const onlyFind = { id: 'home', children: [{ id: 'a', label: 'A' }], views: { options: [
     { id: 'only', presentation: 'orb', arrangement: 'free', controls: { search: true } },
   ] } };
   const state = { path: ['home'] }, viewport = { width: 390, height: 844 };
-  assert.deepEqual(layout(onlyFind, { ...state, viewOpen: true }, viewport), layout(onlyFind, state, viewport));
+  assert.deepEqual(layout(onlyFind, { ...state, panel: 'view' }, viewport), layout(onlyFind, state, viewport));
 });

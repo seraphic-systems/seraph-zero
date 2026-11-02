@@ -35,14 +35,17 @@ export class SeraphAudioPlayer extends HTMLElement {
         </div>
       </div>`;
     this.audio = root.querySelector('audio');
+    this.playRequest = 0;
     this.ui = Object.fromEntries(['player', 'play', 'seek', 'elapsed', 'duration', 'status', 'mute', 'volume'].map((name) => [name, root.querySelector(`.${name}`)]));
     this.ui.play.addEventListener('click', async () => {
       if (!this.audio.paused) return this.audio.pause();
+      const request = ++this.playRequest;
+      const source = this.audio.src;
       try {
         await this.audio.play();
       } catch (error) {
         // Changing tracks or detaching cancels pending playback normally.
-        if (error.name !== 'AbortError') this.ui.status.textContent = 'Unable to play this audio. Try opening the file directly.';
+        if (request === this.playRequest && source === this.audio.src && error.name !== 'AbortError') this.ui.status.textContent = 'Unable to play this audio. Try opening the file directly.';
       }
     });
     this.ui.seek.addEventListener('input', () => {
@@ -57,6 +60,7 @@ export class SeraphAudioPlayer extends HTMLElement {
     for (const event of ['loadedmetadata', 'durationchange', 'timeupdate', 'play', 'pause', 'ended', 'emptied', 'volumechange']) {
       this.audio.addEventListener(event, () => this.update());
     }
+    this.audio.addEventListener('pause', () => { if (this.audio.paused) this.playRequest++; });
     this.audio.addEventListener('waiting', () => { this.ui.status.textContent = 'Buffering…'; });
     this.audio.addEventListener('playing', () => { this.ui.status.textContent = ''; });
     this.audio.addEventListener('canplay', () => { this.ui.status.textContent = ''; });
@@ -72,6 +76,7 @@ export class SeraphAudioPlayer extends HTMLElement {
       this.ui.player.setAttribute('aria-label', this.getAttribute('label') || 'Audio player');
       return;
     }
+    this.playRequest++;
     this.audio.pause();
     const source = this.getAttribute('src');
     if (source) this.audio.setAttribute('src', source);
@@ -88,7 +93,7 @@ export class SeraphAudioPlayer extends HTMLElement {
     if (value) this.setAttribute('src', value);
     else this.removeAttribute('src');
   }
-  pause() { this.audio.pause(); }
+  pause() { this.playRequest++; this.audio.pause(); }
 
   update() {
     const { audio, ui } = this;

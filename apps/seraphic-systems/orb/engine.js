@@ -84,14 +84,22 @@ export function resolveState(tree, state) {
   return { node, path, detail: node.children?.some(child => child.id === state.detail && !isContainer(child)) ? state.detail : null, index };
 }
 
+// Navigation stepping and rendering must use the same filtered content order.
+export function visibleChildren(node, state) {
+  const view = resolveView(node, state.view?.[node.id]);
+  const active = resolveArrangement(view, state.arrangement?.[node.id]);
+  const filter = resolveFilter(view, state.filter).trim().toLocaleLowerCase();
+  return orderedChildren(node, active).filter(child => child.id === state.detail || child.id === state.selection ||
+    (matchesView(view, child) && (!filter || `${child.label} ${child.searchText || ''}`.toLocaleLowerCase().includes(filter))));
+}
+
 export function layout(tree, state, viewport) {
   const { width: w, height: h } = viewport;
   const index = indexTree(tree), resolved = resolveState(tree, state), { node, path, detail } = resolved;
   const view = resolveView(node, state.view?.[node.id]);
   const active = resolveArrangement(view, state.arrangement?.[node.id]);
   const filter = resolveFilter(view, state.filter).trim().toLocaleLowerCase();
-  const children = orderedChildren(node, active).filter(child => child.id === detail || child.id === state.selection ||
-    (matchesView(view, child) && (!filter || `${child.label} ${child.searchText || ''}`.toLocaleLowerCase().includes(filter)))), circles = [];
+  const children = visibleChildren(node, { ...state, detail }), circles = [];
   const narrow = w < 600, margin = narrow ? 28 : 60, step = narrow ? 68 : 96, trailY = narrow ? 76 : 56;
   const trail = path.map((id, i) => ({ key: id, ...point(margin + i * step, trailY, i === 0 ? 15 : 19, 'top'),
     label: index.get(id).node.label, role: 'trail', isContainer: true, isCurrent: !detail && i === path.length - 1,
@@ -99,7 +107,7 @@ export function layout(tree, state, viewport) {
   circles.push(...trail);
   // A–Z can extend vertically on small screens; the renderer exposes that scroll region.
   const region = { x: narrow ? 28 : Math.min(230, w * .21), y: 180, w: w - (narrow ? 56 : Math.min(230, w * .21) + 50), h: Math.max(190, h - 295) };
-  const viewOpen = !!state.viewOpen && !detail && (node.views?.options?.length > 1);
+  const viewOpen = state.panel === 'view' && !detail && (node.views?.options?.length > 1);
   if (viewOpen) {
     if (narrow) {
       // The panel scrolls with the page, above the library on small screens.
@@ -161,7 +169,7 @@ export function layout(tree, state, viewport) {
     detailLayout = { id: detail, x, y, r, prev: things[current - 1]?.id, next: things[current + 1]?.id };
   }
   const navOrb = { x: 46, y: h - 48, r: 23 };
-  if (state.navOpen) {
+  if (state.panel === 'nav') {
     // Reserve the breadcrumb band while giving the expanded Orb the remaining viewport.
     const top = narrow ? 132 : 112, bottom = 24, inset = 16;
     const availableHeight = Math.max(2, h - top - bottom);
