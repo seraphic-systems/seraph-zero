@@ -13,5 +13,6 @@
   "assets": {
     "directory": "./dist/seraphic-systems",
     "not_found_handling": "404-page"
-  }
+  },
+  "previews": {}
 }

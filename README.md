@@ -170,7 +170,8 @@ files must match HEAD and dependencies must be installed. `/release.json` identi
 the source commit and commit time, not content publication time.
 
 `wrangler.json` retains the existing Worker identity and production Custom Domain,
-serving static assets only. There is no generated Worker runtime, audio allowlist,
+serving static assets only. An empty `previews: {}` block is retained because
+`wrangler preview` requires it, even without storage bindings. There is no generated Worker runtime, audio allowlist,
 or R2 binding. No hosting changes occur until deployment. Legacy audio routes would
 stop serving from this site if this reduction is deployed; remote objects remain
 untouched in their private buckets. Review this behavior before accepting deployment.
