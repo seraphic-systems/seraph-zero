@@ -69,3 +69,5 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; line-height: 1.
   .entry-description { font-size: 1rem; }
   .entry-end { gap: 1rem; font-size: .7rem; }
 }
+
+.draft-notice { margin-bottom: 2rem; padding: 1rem 1.25rem; border: 1px solid var(--color-border); background: var(--color-surface-inset); font-size: .85rem; }

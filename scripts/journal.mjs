@@ -2,11 +2,11 @@ import { cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import matter from 'gray-matter';
 import { marked } from 'marked';
-import { escapeHtml, render } from './zero.mjs';
+import { escapeHtml, render } from './html.mjs';
 import { journalThumbnail } from './journal-art.mjs';
 
 // Entries share a document frame, but own their body and optional assets.
-export async function buildJournal(source, output) {
+export async function buildJournal(source, output, { includeDrafts = false } = {}) {
   const tokens = await readFile(new URL('../shared/tokens.css', import.meta.url), 'utf8');
   const colors = Object.fromEntries(['background', 'accent'].map(name => {
     const value = tokens.match(new RegExp(`--color-${name}:\\s*(#[a-fA-F0-9]{3,8})\\s*;`))?.[1];
@@ -26,7 +26,7 @@ export async function buildJournal(source, output) {
     if (bodies.length !== 1) fail('provide exactly one index.md or index.html');
     const { data, content } = matter(await readFile(path.join(folder, bodies[0]), 'utf8'));
     if (data.draft !== undefined && typeof data.draft !== 'boolean') fail('draft must be true or false');
-    if (data.draft === true) continue;
+    if (data.draft === true && !includeDrafts) continue;
     for (const field of ['title', 'description']) {
       if (typeof data[field] !== 'string' || !data[field].trim()) fail(`${field} is required`);
     }
@@ -35,7 +35,7 @@ export async function buildJournal(source, output) {
         !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date)) {
       fail('date must be a quoted, real YYYY-MM-DD date, or omitted');
     }
-    entries.push({ slug, folder, title: data.title, description: data.description, date,
+    entries.push({ slug, folder, draft: data.draft === true, title: data.title, description: data.description, date,
       content: bodies[0].endsWith('.md') ? marked.parse(content) : content,
       styles: files.includes('style.css') ? '<link rel="stylesheet" href="./style.css">' : '',
       scripts: files.includes('script.js') ? '<script type="module" src="./script.js"></script>' : '',
@@ -54,7 +54,7 @@ export async function buildJournal(source, output) {
   const listing = entries.map(entry => `<li><a class="entry-link" href="/journal/${entry.slug}/">
     <img class="entry-thumbnail" src="/journal/${entry.slug}/thumbnail.svg" alt="" width="480" height="320" loading="lazy">
     <div class="entry-summary">
-    <div class="entry-meta">${dateHtml(entry) || '<span>Journal</span>'}</div>
+    <div class="entry-meta">${dateHtml(entry) || `<span>${entry.draft ? 'Review draft' : 'Journal'}</span>`}</div>
     <div><h2>${escapeHtml(entry.title)}</h2><p>${escapeHtml(entry.description)}</p></div>
     </div>
     <span class="entry-arrow" aria-hidden="true">↗</span>
@@ -74,7 +74,7 @@ export async function buildJournal(source, output) {
     }
     await writeFile(path.join(target, 'index.html'), page({ ...entry, entry: entry.slug,
       title: entry.title, description: entry.description,
-    }, render(entryTemplate, { ...entry, date: dateHtml(entry) })));
+    }, render(entryTemplate, { ...entry, content: (entry.draft ? '<aside class="draft-notice"><strong>Review draft</strong> — unpublished; wording is awaiting review.</aside>' : '') + entry.content, date: dateHtml(entry) })));
   }
   return entries.length;
 }

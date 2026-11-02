@@ -3,28 +3,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "analyze:sets": "python3 scripts/ableton.py",
-    "lint:projects": "node scripts/lint-projects.mjs",
     "dev": "vite",
-    "dev:seraphic": "node --env-file-if-exists=.env.r2.local node_modules/vite/bin/vite.js --mode seraphic-systems",
-    "dev:internal": "node --env-file-if-exists=.env.r2.local node_modules/vite/bin/vite.js --mode internal",
-    "fragments:prepare": "node scripts/upload-fragment-previews.mjs --prepare",
-    "fragments:upload": "node --env-file-if-exists=.env.r2.local scripts/upload-fragment-previews.mjs",
-    "mixes:upload": "node --env-file-if-exists=.env.r2.local scripts/upload-mixes.mjs",
-    "build:internal": "node scripts/build.mjs internal",
+    "dev:seraphic": "vite",
     "build": "node scripts/build.mjs",
     "build:production": "node scripts/build-production.mjs",
     "deploy:production": "node scripts/deploy-cloudflare.mjs production",
     "deploy:preview": "node scripts/deploy-cloudflare.mjs preview",
-    "audio:seed-preview": "npm run build:production && node scripts/cloudflare/seed-preview.mjs",
     "test": "node --test",
-    "create:internal": "node scripts/create-internal-record.mjs"
+    "create:record": "node scripts/create-internal-record.mjs"
   },
   "engines": {
     "node": ">=22.12"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1161.0",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "gray-matter": "^4.0.3",

@@ -1,26 +1,26 @@
-// Presentation capabilities and geometry stay independent of DOM and catalog data.
-export const presentations = {
-  orb: { label: 'Orbs', supports: () => true },
-  samples: {
-    label: 'Sample library',
-    arrangementLabels: { free: 'Group order' },
-    supports: node => node.kind === 'Music fragment',
-    layout(region, children) {
-      const height = region.w < 500 ? 194 : 134, gap = 10;
-      return { height: children.length * (height + gap),
-        items: children.map((node, i) => ({ x: region.x, y: region.y + i * (height + gap), width: region.w, height })) };
-    },
-  },
-  player: {
-    label: 'Players',
-    arrangementLabels: { free: 'Library order' },
-    supports: node => node.kind === 'Song' || node.kind === 'Album track',
-    layout(region, children) {
-      const columns = Math.max(1, Math.floor((region.w + 20) / 320));
-      const width = (region.w - (columns - 1) * 20) / columns, height = 172;
-      return { height: Math.ceil(children.length / columns) * (height + 20),
-        items: children.map((node, i) => ({ x: region.x + (i % columns) * (width + 20),
-          y: region.y + Math.floor(i / columns) * (height + 20), width, height })) };
-    },
-  },
-};
+import { layout } from './engine.js';
+import { horizonLevels } from './content.js';
+import { horizonRoute } from './routes.js';
+
+const escape = value => String(value).replace(/[&<>"']/g, character => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+})[character]);
+
+export function renderWorld(container, selectedId) {
+  const selected = container.children.find(node => node.id === selectedId);
+  const groups = layout(container).map(group => `<section class="horizon-group" aria-labelledby="level-${group.level}">
+    <h2 id="level-${group.level}" class="group-label">${group.level} <span> / </span> ${escape(group.label)}</h2>
+    <ul class="orbs">${group.nodes.map(node => `<li><a class="orb${selectedId === node.id ? ' current' : ''}" href="${horizonRoute(node.id)}" data-horizon="${node.id}"${selectedId === node.id ? ' aria-current="page"' : ''}>
+      <svg viewBox="0 0 140 140" fill="none" aria-hidden="true"><circle cx="70" cy="70" r="67"/><circle class="inner" cx="70" cy="70" r="59"/><circle class="mark" cx="70" cy="119" r="2"/></svg>
+      <span>${escape(node.label)}</span></a></li>`).join('')}</ul>
+  </section>`).join('');
+  const detail = selected ? `<article id="detail" aria-labelledby="detail-title">
+    <a href="/orb/" class="close-detail" data-close>← All Horizons <span class="key-hint">Esc</span></a>
+    <p class="eyebrow">${escape(horizonLevels[selected.level - 1])}</p>
+    <h2 id="detail-title" tabindex="-1">${escape(selected.label)}</h2>
+    <p class="description">${escape(selected.description)}</p>
+    <div class="record-body">${selected.contentHtml || ''}</div>
+    <details><summary>About this record</summary><dl><dt>Permanent ID</dt><dd>${escape(selected.id)}</dd><dt>Record created</dt><dd>${escape(selected.createdAt || 'Unknown')}</dd></dl></details>
+  </article>` : `<aside class="orientation"><p class="eyebrow">A place to begin</p><h2>What gives the work direction?</h2><p>Horizons describe the values, principles, visions, and goals that guide the practice.</p><p>Open an orb to read a Horizon.</p></aside>`;
+  return `<div class="orb-layout"><div class="horizon-library" aria-label="Horizons">${groups || '<p>No public Horizons yet.</p>'}</div>${detail}</div>`;
+}

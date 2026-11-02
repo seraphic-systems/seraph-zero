@@ -10,24 +10,22 @@ import { buildProduction } from '../scripts/build-production.mjs';
 
 const exec = promisify(execFile);
 const repository = fileURLToPath(new URL('../', import.meta.url));
-
 async function fixture(t) {
   const root = await mkdtemp(path.join(tmpdir(), 'seraph-production-test-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   for (const file of ['apps', 'shared', 'scripts', 'package.json', 'package-lock.json', '.gitignore']) {
     await cp(path.join(repository, file), path.join(root, file), {
       recursive: true,
-      filter: file => !file.split(path.sep).includes('media') && !file.endsWith('.DS_Store'),
+      filter: file => !file.split(path.sep).some(part => ['media', 'private', '.DS_Store', '__pycache__'].includes(part)),
     });
   }
   const git = async (...args) => (await exec('git', ['-C', root, ...args])).stdout.trim();
-  await git('init');
-  await git('add', '.');
-  await git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', '-c', 'commit.gpgsign=false', 'commit', '-m', 'Official content');
+  await git('init'); await git('add', '.');
+  const commit = message => git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', '-c', 'commit.gpgsign=false', 'commit', '-m', message);
+  await commit('Official foundation');
   await symlink(path.join(repository, 'node_modules'), path.join(root, 'node_modules'), 'dir');
-  return { root, git };
+  return { root, git, commit };
 }
-
 async function outputFiles(directory, prefix = '') {
   const result = {};
   for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -38,36 +36,35 @@ async function outputFiles(directory, prefix = '') {
   return result;
 }
 
-test('production builds HEAD, excluding staged, unstaged, untracked and ignored content', async t => {
-  const { root, git } = await fixture(t);
+test('production builds only committed public Horizons and reviewed Journal content, excluding every local edit', async t => {
+  const { root, git, commit } = await fixture(t);
   const revision = await buildProduction(root);
-  const official = await outputFiles(path.join(root, 'dist'));
+  const site = path.join(root, 'dist/seraphic-systems');
+  const official = await outputFiles(site);
+  const catalog = JSON.parse(await readFile(path.join(site, 'catalog.json'), 'utf8'));
+  assert.equal(catalog.records.length, 4);
+  assert.ok(catalog.records.every(record => record.type === 'Horizon'));
+  assert.match(await readFile(path.join(site, 'journal/index.html'), 'utf8'), /first entry is taking shape/);
+  for (const file of ['songs.json', 'stems.json', 'notes.json', 'pages.json', 'model-schema.json', 'orb/music', 'orb/model', 'orb/operations', 'journal/a-foundation-to-trust', 'api', 'shared/components/audio-player']) {
+    assert.equal(Object.keys(official).some(name => name === file || name.startsWith(`${file}/`)), false, `unexpected public path: ${file}`);
+  }
   await writeFile(path.join(root, 'apps/seraphic-systems/index.html'), '<h1>Unstaged draft</h1>');
   await writeFile(path.join(root, 'shared/untracked.txt'), 'Not official');
-  await writeFile(path.join(root, 'apps/internal/data/mix-media.json'), '{broken draft manifest');
+  await mkdir(path.join(root, 'apps/internal/media'), { recursive: true });
+  await writeFile(path.join(root, 'apps/internal/media/private.wav'), 'PRIVATE_AUDIO');
   await mkdir(path.join(root, 'dist/internal'), { recursive: true });
   await writeFile(path.join(root, 'dist/internal/local.txt'), 'Local workspace');
-  await mkdir(path.join(root, 'apps/internal/media/mixes'), { recursive: true });
-  await writeFile(path.join(root, 'apps/internal/media/mixes/not-a-valid-mix.wav'), 'local audio');
-  await writeFile(path.join(root, 'apps/internal/data/songs/unpublished.md'), '---\nid: unpublished\ntitle: Unpublished\n---\n');
-  await git('add', 'apps/internal/data/songs/unpublished.md');
-  // A locally broken build script must not change the committed build either.
+  const horizon = 'apps/internal/data/horizons/new-direction.md';
+  await writeFile(path.join(root, horizon), '---\nid: new-direction\ntitle: New direction\nlevel: 4\ndescription: A deliberate addition.\n---\n');
+  await git('add', horizon);
   await writeFile(path.join(root, 'scripts/build.mjs'), 'throw new Error("Draft build");');
-  await writeFile(path.join(root, 'scripts/cloudflare/audio-worker.mjs'), 'throw new Error("Draft audio code");');
   assert.equal(await buildProduction(root), revision);
-  for (const site of ['zero', 'seraphic-systems', 'cloudflare']) {
-    const rebuilt = await outputFiles(path.join(root, 'dist', site), `${site}/`);
-    const expected = Object.fromEntries(Object.entries(official).filter(([file]) => file.startsWith(`${site}/`)));
-    assert.deepEqual(rebuilt, expected);
-  }
+  assert.deepEqual(await outputFiles(site), official);
   assert.equal(await readFile(path.join(root, 'dist/internal/local.txt'), 'utf8'), 'Local workspace');
-  const release = JSON.parse(await readFile(path.join(root, 'dist/seraphic-systems/release.json'), 'utf8'));
-  assert.equal(release.revision, await git('rev-parse', 'HEAD'));
-  // Accepting the content into a commit makes it appear in the next release.
-  await git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', '-c', 'commit.gpgsign=false', 'commit', '-m', 'Accept new song');
+  assert.equal(JSON.parse(await readFile(path.join(site, 'release.json'), 'utf8')).revision, revision);
+  await commit('Accept a new Horizon');
   assert.notEqual(await buildProduction(root), revision);
-  const songs = JSON.parse(await readFile(path.join(root, 'dist/seraphic-systems/songs.json'), 'utf8'));
-  assert.ok(songs.some(song => song.id === 'unpublished'));
+  assert.ok(JSON.parse(await readFile(path.join(site, 'catalog.json'), 'utf8')).records.some(record => record.data.id === 'new-direction'));
   await writeFile(path.join(root, 'package-lock.json'), '{}');
   await assert.rejects(buildProduction(root), /package-lock.json differs from HEAD/);
 });
