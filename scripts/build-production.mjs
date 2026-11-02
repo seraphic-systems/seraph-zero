@@ -29,12 +29,12 @@ export async function buildProduction(root = repository) {
     }
     await symlink(path.join(root, 'node_modules'), path.join(snapshot, 'node_modules'), 'dir');
     const { stdout } = await exec(process.execPath, [path.join(snapshot, 'scripts/build.mjs')], { cwd: snapshot });
-    for (const site of ['zero', 'seraphic-systems']) {
+    for (const site of ['seraphic-systems']) {
       const built = path.join(snapshot, 'dist', site);
       await writeFile(path.join(built, 'release.json'), JSON.stringify({ revision, committed_at: committedAt }, null, 2) + '\n');
     }
-    // Copy only completed builds, leaving the local internal workspace alone.
-    for (const site of ['zero', 'seraphic-systems', 'cloudflare']) {
+    // Copy only the accepted public site. Legacy output is never deployed.
+    for (const site of ['seraphic-systems']) {
       const output = path.join(root, 'dist', site);
       await rm(output, { recursive: true, force: true });
       await cp(path.join(snapshot, 'dist', site), output, { recursive: true });

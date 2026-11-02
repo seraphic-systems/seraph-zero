@@ -76,3 +76,15 @@ test('an empty journal still renders a navigable index', async t => {
   assert.equal(await buildJournal(source, output), 0);
   assert.match(await readFile(path.join(output, 'index.html'), 'utf8'), /first entry is taking shape/);
 });
+
+test('review preview includes visibly marked drafts while the default public build excludes their assets', async t => {
+  const { source, output, entry } = await fixture(t);
+  const folder = await entry('review', 'title: Review\ndescription: A draft\ndraft: true', 'Review prose.');
+  await mkdir(path.join(folder, 'assets'));
+  await writeFile(path.join(folder, 'assets/private-draft.txt'), 'Review asset');
+  assert.equal(await buildJournal(source, output, { includeDrafts: true }), 1);
+  assert.match(await readFile(path.join(output, 'review/index.html'), 'utf8'), /Review draft/);
+  const publicOutput = path.join(output, 'public');
+  assert.equal(await buildJournal(source, publicOutput), 0);
+  await assert.rejects(access(path.join(publicOutput, 'review')));
+});
