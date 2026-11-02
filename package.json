@@ -10,7 +10,7 @@
     "deploy:production": "node scripts/deploy-cloudflare.mjs production",
     "deploy:preview": "node scripts/deploy-cloudflare.mjs preview",
     "test": "node --test",
-    "create:record": "node scripts/create-internal-record.mjs"
+    "create:record": "node scripts/create-record.mjs"
   },
   "engines": {
     "node": ">=22.12"

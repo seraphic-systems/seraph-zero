@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import matter from 'gray-matter';
 import { readHorizons, publicCatalog, modelSchema } from '../scripts/model.mjs';
-import { createInternalRecord } from '../scripts/create-internal-record.mjs';
+import { createRecord } from '../scripts/create-record.mjs';
 import { buildOrb } from '../scripts/orb.mjs';
 import { createContentSource } from '../apps/seraphic-systems/orb/content.js';
 import { resolveRoute, horizonRoute } from '../apps/seraphic-systems/orb/routes.js';
@@ -36,18 +36,18 @@ test('Horizon contracts reject invalid shape, timestamps and duplicate permanent
 
 test('creation is private by default, preserves supplied dates, and refuses IDs even after filename changes', async t => {
   const directory = await fixture(t);
-  const file = await createInternalRecord('Horizon', metadata, directory);
+  const file = await createRecord('Horizon', metadata, directory);
   const before = await readFile(file, 'utf8');
   const data = matter(before).data;
   assert.equal(data.visibility, 'private');
   assert.equal(data.created_at, metadata.created_at);
   assert.deepEqual(publicCatalog(await readHorizons(directory)), { records: [] });
-  await assert.rejects(createInternalRecord('Horizon', metadata, directory), /already exists/);
+  await assert.rejects(createRecord('Horizon', metadata, directory), /already exists/);
   assert.equal(await readFile(file, 'utf8'), before);
   await writeFile(path.join(directory, 'another-filename.md'), before);
   await rm(file);
-  await assert.rejects(createInternalRecord('Horizon', metadata, directory), /already exists/);
-  await assert.rejects(createInternalRecord('Song', metadata, directory), /Horizon records only/);
+  await assert.rejects(createRecord('Horizon', metadata, directory), /already exists/);
+  await assert.rejects(createRecord('Song', metadata, directory), /Horizon records only/);
 });
 
 test('public Orb includes only public Horizons, with complete HTML and no private routes or catalog bodies', async t => {

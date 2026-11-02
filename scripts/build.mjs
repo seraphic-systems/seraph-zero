@@ -11,7 +11,7 @@ if (args.some(arg => arg !== '--drafts') || args.length > 1) throw new Error('Us
 const output = path.join(root, 'dist/seraphic-systems');
 const source = path.join(root, 'apps/seraphic-systems');
 // Read and validate before replacing output; local media and private folders are never traversed.
-const catalog = publicCatalog(await readHorizons(path.join(root, 'apps/internal/data/horizons')));
+const catalog = publicCatalog(await readHorizons(path.join(root, 'content/horizons')));
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 for (const name of ['index.html', 'seraphic.css', 'geometry.js']) {

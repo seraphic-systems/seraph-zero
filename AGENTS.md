@@ -9,8 +9,8 @@ in Orb. The full earlier project is preserved in tag
 Bring back ideas deliberately through focused PRs, not a whole-lab merge.
 
 - `apps/seraphic-systems/`: landing, Journal, and Orb source.
-- `apps/internal/data/horizons/`: persistent Markdown Horizon records.
-- `apps/internal/model/schema.json`: active record contracts.
+- `content/horizons/`: persistent Markdown Horizon records.
+- `schema/records.json`: active record contracts.
 - `shared/`: public tokens, styles, icons, and assets.
 - `scripts/`: validation, creation, build, deployment.
 - `tests/`: active Node tests.

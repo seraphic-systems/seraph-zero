@@ -4,7 +4,7 @@ import path from 'node:path';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 
-export const modelSchema = JSON.parse(await readFile(new URL('../apps/internal/model/schema.json', import.meta.url), 'utf8'));
+export const modelSchema = JSON.parse(await readFile(new URL('../schema/records.json', import.meta.url), 'utf8'));
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 ajv.addSchema(modelSchema, 'foundation');

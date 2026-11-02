@@ -20,7 +20,7 @@ export async function buildProduction(root = repository) {
     const snapshot = path.join(temporary, 'source');
     await mkdir(snapshot);
     await git('archive', '--format=tar', `--output=${archive}`, revision,
-      'apps', 'shared', 'scripts', 'package.json', 'package-lock.json');
+      'apps', 'content', 'schema', 'shared', 'scripts', 'package.json', 'package-lock.json');
     await exec('tar', ['-xf', archive, '-C', snapshot]);
     for (const file of ['package.json', 'package-lock.json']) {
       if (!(await readFile(path.join(root, file))).equals(await readFile(path.join(snapshot, file)))) {

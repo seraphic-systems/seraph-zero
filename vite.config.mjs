@@ -16,7 +16,7 @@ export default defineConfig(async () => {
     plugins: [{
       name: 'rebuild-foundation',
       configureServer(server) {
-        const sources = ['apps/seraphic-systems', 'apps/internal/data/horizons', 'apps/internal/model', 'shared', 'scripts'].map(name => path.join(root, name));
+        const sources = ['apps/seraphic-systems', 'content/horizons', 'schema', 'shared', 'scripts'].map(name => path.join(root, name));
         server.watcher.add(sources);
         let timer, building = false, pending = false;
         async function rebuild() {
