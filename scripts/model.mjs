@@ -15,6 +15,32 @@ const sharedDefaults = Object.fromEntries(Object.entries(modelSchema.definitions
   .map(([key, field]) => [key, field.default]));
 const validators = new Map(Object.keys(modelSchema.definitions).map((type) => [type, ajv.compile({ $ref: `internal#/definitions/${type}` })]));
 
+export function defaultVisibility(type) {
+  return modelSchema.definitions[type].properties?.visibility?.default ?? sharedDefaults.visibility;
+}
+
+// A public projection must not retain private IDs in front matter, embedded
+// reports, diagnostics, or routes. Withhold dependants to preserve valid records.
+export function publicCatalog(catalog) {
+  const visible = new Set(catalog.records.filter((row) => row.data.visibility === 'public').map((row) => row.key));
+  let changed;
+  do {
+    changed = false;
+    for (const edge of catalog.edges) {
+      if (visible.has(edge.source) && !visible.has(edge.target)) {
+        visible.delete(edge.source);
+        changed = true;
+      }
+    }
+  } while (changed);
+  return { ...catalog,
+    records: catalog.records.filter((row) => visible.has(row.key)),
+    edges: catalog.edges.filter((edge) => visible.has(edge.source) && visible.has(edge.target)),
+    // Diagnostics may quote unpublished paths or records; keep them internal.
+    unresolved: [], lint: [],
+  };
+}
+
 export function validateRecord(type, data, context) {
   const validate = validators.get(type);
   if (!validate(data)) throw new Error(`${context}: ${type} ${ajv.errorsText(validate.errors, { dataVar: 'record' })}`);
@@ -57,7 +83,7 @@ export async function buildCatalog(source, audioMixes = []) {
   function add(type, id, data, file) {
     const hasCreatedAt = Object.hasOwn(data, 'created_at');
     // JSON Schema defaults are annotations; materialize shared defaults explicitly.
-    data = { ...structuredClone(sharedDefaults), ...data };
+    data = { ...structuredClone(sharedDefaults), visibility: defaultVisibility(type), ...data };
     if (!hasCreatedAt && type === 'Snapshot') data.created_at = data.analyzed_at ?? null;
     if (!hasCreatedAt && type === 'LiveSet') data.created_at = data.branched_at ?? null;
     validateRecord(type, data, file);
@@ -68,12 +94,14 @@ export async function buildCatalog(source, audioMixes = []) {
     byKey.set(key, record);
     return record;
   }
-  for (const [type, directory] of [['Member', 'members'], ['Horizon', 'horizons'], ['Policy', 'policies'], ['Album', 'albums'], ['AlbumTrack', 'album-tracks'], ['Song', 'songs'], ['Idea', 'ideas'], ['MusicFragment', 'music-fragments'], ['Mix', 'mixes'], ['StemExport', 'stems'], ['Project', 'projects']]) {
+  for (const [type, directory] of [['Member', 'members'], ['Horizon', 'horizons'], ['Policy', 'policies'], ['Album', 'albums'], ['AlbumTrack', 'album-tracks'], ['Song', 'songs'], ['Idea', 'ideas'], ['Note', 'notes'], ['MusicFragment', 'music-fragments'], ['Mix', 'mixes'], ['StemExport', 'stems'], ['Project', 'projects']]) {
     for (const name of await files(path.join(source, 'data', directory), '.md', type === 'StemExport')) {
       const file = `data/${directory}/${name}`;
-      const data = normalize(matter(await readFile(path.join(source, file), 'utf8')).data);
+      const parsed = matter(await readFile(path.join(source, file), 'utf8'));
+      const data = normalize(parsed.data);
       const id = type === 'Mix' ? `${data.song}-${data.date}` : data.id;
-      add(type, id, data, file);
+      const record = add(type, id, data, file);
+      if (type === 'Note') record.content = parsed.content;
     }
   }
   for (const audio of audioMixes) {

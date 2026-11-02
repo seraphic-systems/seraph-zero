@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { buildCatalog, validateRecord, modelSchema } from '../scripts/model.mjs';
+import { buildCatalog, validateRecord, modelSchema, publicCatalog } from '../scripts/model.mjs';
 import { createInternalRecord } from '../scripts/create-internal-record.mjs';
 
 const parent = '11111111-1111-4111-8111-111111111111';
@@ -292,4 +292,40 @@ test('Idea records need no title and preserve explicit Song and set references',
   assert.ok(!catalog.edges.some((edge) => edge.source === 'Idea:historical-idea'));
   await record('ideas/idea.md', { id: 'idea-20261030-abc', set_id: parent, song: 'missing' });
   await assert.rejects(buildCatalog(source), /unknown Song missing/);
+});
+
+test('notes preserve writing, default private, and resolve links and backlinks', async (t) => {
+  const { source, record } = await fixture(t);
+  const file = await createInternalRecord('Note', { id: 'first', title: 'First thought' }, { source });
+  await writeFile(file, (await readFile(file, 'utf8')) + '\nA **written** thought.\n');
+  await record('notes/second.md', { id: 'second', title: 'Second thought', related_notes: ['first'] });
+  const catalog = await buildCatalog(source);
+  assert.match(catalog.records.find((r) => r.key === 'Note:first').content, /A \*\*written\*\* thought/);
+  assert.ok(catalog.records.filter((r) => r.type === 'Note').every((r) => r.data.visibility === 'private'));
+  assert.deepEqual(catalog.edges.filter((e) => e.target === 'Note:first'), [
+    { source: 'Note:second', target: 'Note:first', relation: 'note-note' },
+  ]);
+  await record('notes/second.md', { id: 'second', title: 'Second', related_notes: ['missing'] });
+  await assert.rejects(buildCatalog(source), /unknown Note missing/);
+  for (const fields of [{ title: ' ' }, { related_notes: ['first', 'first'] }, { visibility: 'unlisted' }, { visibility: null }]) {
+    assert.throws(() => validateRecord('Note', { id: 'test', title: 'Test', ...fields }, 'note.md'), /note.md/);
+  }
+});
+
+test('publication withholds private records, transitive dependants and diagnostics', async (t) => {
+  const { source, record } = await fixture(t);
+  await record('notes/secret.md', { id: 'secret', title: 'Secret' });
+  await record('notes/linked.md', { id: 'linked', title: 'Linked', visibility: 'public', related_notes: ['secret'] });
+  await record('notes/transitive.md', { id: 'transitive', title: 'Transitive', visibility: 'public', related_notes: ['linked'] });
+  await record('notes/published.md', { id: 'published', title: 'Published', visibility: 'public' });
+  const full = await buildCatalog(source);
+  const published = publicCatalog({ ...full, lint: [{ record: 'Note:secret', message: 'Secret' }], unresolved: [{ record: 'Note:secret' }] });
+  assert.deepEqual(published.records.map((r) => r.key), ['Song:work', 'Note:published']);
+  assert.deepEqual(published.edges, []);
+  assert.deepEqual(published.lint, []);
+  assert.deepEqual(published.unresolved, []);
+  assert.equal(full.records.length, 5);
+  assert.equal(full.records.find((r) => r.type === 'Song').data.visibility, 'public');
+  const file = await createInternalRecord('Song', { id: 'new', title: 'New' }, { source });
+  assert.match(await readFile(file, 'utf8'), /visibility: private/);
 });

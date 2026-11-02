@@ -4,14 +4,14 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import matter from 'gray-matter';
 import { validateRecord } from './model.mjs';
 
-const directories = { Member: 'members', Horizon: 'horizons', Policy: 'policies', Album: 'albums', AlbumTrack: 'album-tracks', Song: 'songs', Idea: 'ideas', MusicFragment: 'music-fragments', Mix: 'mixes', StemExport: 'stems', Project: 'projects' };
+const directories = { Member: 'members', Horizon: 'horizons', Policy: 'policies', Album: 'albums', AlbumTrack: 'album-tracks', Song: 'songs', Idea: 'ideas', Note: 'notes', MusicFragment: 'music-fragments', Mix: 'mixes', StemExport: 'stems', Project: 'projects' };
 const defaultSource = fileURLToPath(new URL('../apps/internal/', import.meta.url));
 
 // The creation boundary stamps once. Loading, editing and rebuilding never stamp.
 export async function createInternalRecord(type, metadata, { source = defaultSource } = {}) {
   if (!Object.hasOwn(directories, type)) throw new Error(`Choose a Markdown record type: ${Object.keys(directories).join(', ')}`);
   if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) throw new Error('Front matter must be a JSON object.');
-  const data = { ...metadata, created_at: metadata.created_at ?? new Date().toISOString() };
+  const data = { visibility: 'private', ...metadata, created_at: metadata.created_at ?? new Date().toISOString() };
   validateRecord(type, data, 'New record');
   const id = type === 'Mix' ? `${data.song}-${data.date}` : data.id;
   const stage = type === 'StemExport' ? data.folder.split('/')[2] : '';
