@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Seraph internal model",
   "description": "Source record contracts. x-model and x-relations are documentation annotations used by the local Model viewer.",
-  "x-version": 16,
+  "x-version": 17,
   "definitions": {
     "Policy": {
       "title": "Policy",
@@ -1317,6 +1317,47 @@
         "position": [
           1,
           4
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "Page": {
+      "title": "Page",
+      "description": "A standalone general document, such as a checklist, reference sheet, draft, or instructions. Markdown body holds the document. Private unless explicitly made public.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "public",
+            "private"
+          ],
+          "default": "private"
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/pages/**/*.md",
+        "identity": "Permanent id",
+        "position": [
+          2,
+          5
         ]
       },
       "allOf": [

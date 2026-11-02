@@ -126,6 +126,11 @@ try {
     container.replaceChildren();
     if (!record) { container.append(el('p', 'No records yet.', 'muted')); return; }
     container.append(el('p', record.source, 'example-source'));
+    if (record.type === 'Page') {
+      const link = el('a', 'Read page →');
+      link.href = `pages.html?page=${encodeURIComponent(record.id)}`;
+      container.append(link);
+    }
     const links = el('div', null, 'example-edges');
     for (const edge of catalog.edges.filter((edge) => edge.source === record.key || edge.target === record.key)) {
       const relation = relations.find((r) => r.id === edge.relation);

@@ -400,3 +400,26 @@ test('Note provenance requires explicit uncertainty and valid passage locations'
     assert.throws(() => validateRecord('Note', { ...base, ...fields }, 'note.md'), /note.md/);
   }
 });
+
+test('Pages support blank creation, nested documents, stable identities and private defaults', async (t) => {
+  const { source, record } = await fixture(t);
+  const file = await createInternalRecord('Page', undefined, { source });
+  await createInternalRecord('Page', undefined, { source });
+  await record('pages/reference/checklist.md', { id: 'checklist', title: 'Checklist' });
+  const nested = path.join(source, 'data/pages/reference/checklist.md');
+  await writeFile(nested, (await readFile(nested, 'utf8')) + '\n## Related notes\n\nKeep this section.');
+  let catalog = await buildCatalog(source);
+  const pages = catalog.records.filter(row => row.type === 'Page');
+  assert.equal(pages.length, 3);
+  assert.ok(pages.every(row => row.data.visibility === 'private'));
+  assert.ok(pages.filter(row => row.title === 'Untitled page').every(row => row.data.created_at && row.id.startsWith('page-')));
+  assert.match(catalog.records.find(row => row.key === 'Page:checklist').content, /Keep this section/);
+  assert.equal(publicCatalog(catalog).records.filter(row => row.type === 'Page').length, 0);
+  await record('pages/public.md', { id: 'public', title: 'Public', visibility: 'public' });
+  catalog = await buildCatalog(source);
+  assert.deepEqual(publicCatalog(catalog).records.filter(row => row.type === 'Page').map(row => row.id), ['public']);
+  await assert.rejects(createInternalRecord('Page', { id: path.basename(file, '.md'), title: 'Replacement' }, { source }), /EEXIST/);
+  for (const fields of [{ title: ' ' }, { id: '../bad' }, { visibility: 'unlisted' }]) {
+    assert.throws(() => validateRecord('Page', { id: 'test', title: 'Test', ...fields }, 'page.md'), /page.md/);
+  }
+});

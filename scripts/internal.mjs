@@ -112,6 +112,7 @@ export async function buildInternal(source, output, {
   if (!publicOrb) {
     await cp(path.join(source, 'dashboard'), output, { recursive: true });
     await writeFile(path.join(output, 'notes.json'), JSON.stringify(noteContent(catalog.records)));
+    await writeFile(path.join(output, 'pages.json'), JSON.stringify(noteContent(catalog.records, 'Page')));
   }
   await cp(orbSource, path.join(output, 'orb'), { recursive: true });
   // Materialize route entry points so deep links also work on a plain static server.

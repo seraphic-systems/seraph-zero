@@ -1,0 +1,8 @@
+.pages-page .notes-workspace { grid-template-columns: 270px minmax(0, 1fr); }
+.pages-page .note-reader { min-width: 0; }
+.pages-page .note-row { display: block; }
+.pages-page .note-row strong { display: block; }
+@media (max-width: 760px) {
+  .pages-page .notes-workspace { grid-template-columns: minmax(0, 1fr); }
+  .pages-page .note-library { position: static; padding: 20px 0; }
+}

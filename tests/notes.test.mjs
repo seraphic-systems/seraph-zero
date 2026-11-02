@@ -55,3 +55,16 @@ test('reading HTML supports Markdown and Note links while rejecting executable m
   ]);
   assert.match(nested[0].html, /data-note-id="a"/);
 });
+
+test('Page rendering preserves full documents and resolves nested page links safely', () => {
+  const pages = noteContent([
+    { type: 'Page', id: 'a', source: 'data/pages/a.md', content: '## Related notes\n\nKeep this. [Next](nested/b.md) <script>alert(1)</script> ![image](https://example.com/x.png) [bad](javascript:alert(1))' },
+    { type: 'Page', id: 'b', source: 'data/pages/nested/b.md', content: '[Back](../a.md)' },
+  ], 'Page');
+  assert.equal(pages.length, 2);
+  assert.match(pages[0].html, /Related notes/);
+  assert.match(pages[0].html, /Keep this/);
+  assert.match(pages[0].html, /href="pages.html\?page=b" data-page-id="b"/);
+  assert.match(pages[1].html, /href="pages.html\?page=a"/);
+  assert.doesNotMatch(pages[0].html, /<script|<img|href="javascript:/);
+});
