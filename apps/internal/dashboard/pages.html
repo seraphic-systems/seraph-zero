@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pages · Seraph</title>
+  <link rel="icon" href="shared/favicon.ico">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="notes.css">
+  <link rel="stylesheet" href="pages.css">
+  <script src="pages.js" type="module"></script>
+</head>
+<body class="notes-page pages-page">
+  <a class="skip-link" href="#page-title">Skip to the page</a>
+  <main class="notes-main">
+    <nav aria-label="Workspace"><a href="./">Songs</a><a href="sets.html">Live Sets</a><a href="fragments.html">Fragments</a><a href="notes.html">Notes</a><a href="pages.html" aria-current="page">Pages</a><a href="model.html">Model</a></nav>
+    <header class="notes-heading"><div><p class="eyebrow">The workspace</p><h1>Pages<span aria-hidden="true">.</span></h1><p class="notes-intro">Reference sheets, checklists, drafts, and room for everything else.</p></div></header>
+    <p id="pages-status" class="notes-status" role="status" aria-live="polite">Loading pages…</p>
+    <div class="notes-workspace" id="pages-workspace" hidden>
+      <section class="note-library" aria-label="Page library">
+        <div class="library-tools"><div class="library-title"><h2>Library</h2><span class="key-hint" aria-hidden="true">/ to search</span></div><label class="search-box" for="page-search"><span class="visually-hidden">Search pages</span><input type="search" id="page-search" placeholder="Find a page…" autocomplete="off"></label><p id="result-count" role="status" aria-live="polite"></p></div>
+        <div id="page-list" class="note-list"></div>
+      </section>
+      <article class="note-reader" aria-labelledby="page-title">
+        <h2 id="page-title" tabindex="-1">Choose a page</h2>
+        <p id="page-byline" class="note-byline"></p>
+        <div id="page-prose" class="note-prose"></div>
+        <details class="note-about" id="page-about" hidden><summary>About this page</summary><dl id="page-metadata"></dl></details>
+      </article>
+    </div>
+  </main>
+</body>
+</html>

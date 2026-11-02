@@ -4,8 +4,11 @@ import { readingBody } from '../apps/internal/dashboard/notes-model.mjs';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
-export function noteContent(records) {
-  const notes = records.filter(record => record.type === 'Note');
+export function noteContent(records, type = 'Note') {
+  const isPage = type === 'Page';
+  const route = isPage ? 'pages.html?page' : 'notes.html?note';
+  const attribute = isPage ? 'data-page-id' : 'data-note-id';
+  const notes = records.filter(record => record.type === type);
   const bySource = new Map(notes.map(note => [note.source, note]));
   return notes.map(note => {
     const renderer = new marked.Renderer();
@@ -14,13 +17,13 @@ export function noteContent(records) {
     renderer.link = function ({ href, tokens }) {
       const label = this.parser.parseInline(tokens);
       const target = bySource.get(path.posix.normalize(path.posix.join(path.posix.dirname(note.source), href.split(/[?#]/)[0])));
-      if (target) return `<a href="notes.html?note=${encodeURIComponent(target.id)}" data-note-id="${escape(target.id)}">${label}</a>`;
+      if (target) return `<a href="${route}=${encodeURIComponent(target.id)}" ${attribute}="${escape(target.id)}">${label}</a>`;
       try {
         const url = new URL(href);
         if (['https:', 'http:', 'mailto:'].includes(url.protocol)) return `<a href="${escape(url.href)}" rel="noreferrer">${label}</a>`;
       } catch { /* Unresolved local source references remain readable text. */ }
       return label;
     };
-    return { ...note, html: marked.parse(readingBody(note.content), { renderer, gfm: true }) };
+    return { ...note, html: marked.parse(isPage ? note.content : readingBody(note.content), { renderer, gfm: true }) };
   });
 }

@@ -958,7 +958,7 @@ Unresolved associations and relationships not yet modeled are labeled explicitly
 [`apps/internal/model/schema.json`](apps/internal/model/schema.json) is the
 canonical JSON Schema (draft 7) collection for source records. Validate a record
 against `#/definitions/<Type>`. Catalog entities include Member, Horizon, Policy,
-Album, AlbumTrack, Song, Idea, Note, MusicFragment, Mix, MixFile, StemExport, Project,
+Album, AlbumTrack, Song, Idea, Note, Page, MusicFragment, Mix, MixFile, StemExport, Project,
 LiveSet, and Snapshot. SetAnalysis and
 PluginUsage are embedded values; SetRegistry describes the registry envelope.
 Markdown contracts cover front matter, not Markdown bodies. Unknown fields are
@@ -1094,7 +1094,7 @@ Legacy schema-1 snapshot reports remain readable but have no inferred set-ID lin
 
 `npm run build:internal` generates `model-schema.json` and `catalog.json` alongside
 the dashboard. The Seraphic Systems build also publishes these files for Orb.
-The internal catalog contains front matter, Note bodies, derived set registry
+The internal catalog contains front matter, Note and Page bodies, derived set registry
 records, and analysis reports; the public catalog includes only publishable records
 under the visibility rules below. Raw source records, registry
 files, snapshots, and local audio are not copied into public output. The Python analyzer retains its existing registry and
@@ -1191,7 +1191,7 @@ their own private backup; neither Git nor a public deployment preserves them.
 
 Every catalog entity inherits `visibility: public | private` from `RecordBase`.
 The creation helper writes `private` by default for all new records; pass
-`"visibility":"public"` to publish intentionally. Handwritten Notes also default
+`"visibility":"public"` to publish intentionally. Handwritten Notes and Pages also default
 to private. Other record types with no field retain the legacy public default,
 including generated media records and historical registry/snapshot records. Use an
 explicit `visibility: private` on any existing record to withhold it.
@@ -1211,6 +1211,34 @@ for private information. Review the entire content of a record before making it
 public. Changing visibility takes effect on the next build/deployment; previously
 published copies are not recalled. A private link target must still exist and
 validate in the full internal model.
+
+### General pages
+
+`Page` holds standalone documents such as checklists, reference sheets, drafts,
+and instructions. Keep connected thoughts in `Note` and use the more specific
+record types for catalog entities. Pages live in `apps/internal/data/pages/**/*.md`
+and require a permanent `id` and `title`; the Markdown body holds the document.
+They inherit `created_at` and default to private, including handwritten records.
+The catalog retains their full body as `record.content`.
+
+```sh
+npm run create:internal -- Page
+npm run create:internal -- Page '{"id":"studio-checklist","title":"Studio checklist"}'
+```
+
+The first command creates a private `Untitled page` with a unique permanent ID
+and creation timestamp. Edit the generated file to set its title and body; keep
+its ID when renaming it. Subdirectories are supported without changing identity.
+Choose **Pages** in the internal dashboard (`pages.html`) to search titles and
+bodies and read documents in title order. `/` focuses search, Escape clears it,
+and browser Back/Forward restores selection and search. Editing uses Markdown
+files; there is no page editor. The Model viewer also links to the page reader.
+
+The internal-only `pages.json` feed uses the Notes reader's restricted Markdown
+renderer, preserves the entire Page body, and resolves relative links between
+Page source files. Raw HTML, executable links, and remote images are not rendered.
+Public catalogs include only Pages explicitly marked `visibility: public`, under
+the same publication rules as other records; the reader and feed stay internal.
 
 ### Shared record creation time
 
@@ -1238,7 +1266,7 @@ npm run create:internal -- Song '{"id":"new-song","title":"New Song"}'
 npm run create:internal -- Mix '{"song":"new-song","date":"2026-10-30"}'
 ```
 
-The helper supports Member, Horizon, Policy, Song, Idea, Note, MusicFragment, Mix,
+The helper supports Member, Horizon, Policy, Song, Idea, Note, Page, MusicFragment, Mix,
 StemExport, Project, Album, and AlbumTrack. Supply
 the type's required front matter (shown on the Model page); it stamps `created_at`
 once, validates the record shape, and refuses to overwrite existing files.

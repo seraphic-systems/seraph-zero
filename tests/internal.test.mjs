@@ -286,8 +286,17 @@ test('the note reader feed is internal-only and follows catalog visibility bound
   assert.equal(feed.length, 1);
   assert.match(feed[0].html, /<strong>private<\/strong>/);
   assert.equal(feed[0].data.visibility, 'private');
+  await mkdir(path.join(source, 'data/pages'), { recursive: true });
+  await writeFile(path.join(source, 'data/pages/private.md'), '---\nid: private-page\ntitle: Private document\n---\nA **private** document.');
+  await buildInternal(source, output);
+  const pages = JSON.parse(await readFile(path.join(output, 'pages.json'), 'utf8'));
+  assert.equal(pages.length, 1);
+  assert.match(pages[0].html, /<strong>private<\/strong>/);
+  assert.equal(pages[0].data.visibility, 'private');
   const published = path.join(output, 'public');
   await buildInternal(source, published, { publicOrb: true });
   await assert.rejects(access(path.join(published, 'notes.json')));
+  await assert.rejects(access(path.join(published, 'pages.json')));
+  assert.doesNotMatch(await readFile(path.join(published, 'catalog.json'), 'utf8'), /Private document/);
   assert.doesNotMatch(await readFile(path.join(published, 'catalog.json'), 'utf8'), /Private thought/);
 });

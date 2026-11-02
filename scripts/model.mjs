@@ -94,14 +94,14 @@ export async function buildCatalog(source, audioMixes = []) {
     byKey.set(key, record);
     return record;
   }
-  for (const [type, directory] of [['Member', 'members'], ['Horizon', 'horizons'], ['Policy', 'policies'], ['Album', 'albums'], ['AlbumTrack', 'album-tracks'], ['Song', 'songs'], ['Idea', 'ideas'], ['Note', 'notes'], ['MusicFragment', 'music-fragments'], ['Mix', 'mixes'], ['StemExport', 'stems'], ['Project', 'projects']]) {
-    for (const name of await files(path.join(source, 'data', directory), '.md', ['StemExport', 'Note'].includes(type))) {
+  for (const [type, directory] of [['Member', 'members'], ['Horizon', 'horizons'], ['Policy', 'policies'], ['Album', 'albums'], ['AlbumTrack', 'album-tracks'], ['Song', 'songs'], ['Idea', 'ideas'], ['Note', 'notes'], ['Page', 'pages'], ['MusicFragment', 'music-fragments'], ['Mix', 'mixes'], ['StemExport', 'stems'], ['Project', 'projects']]) {
+    for (const name of await files(path.join(source, 'data', directory), '.md', ['StemExport', 'Note', 'Page'].includes(type))) {
       const file = `data/${directory}/${name}`;
       const parsed = matter(await readFile(path.join(source, file), 'utf8'));
       const data = normalize(parsed.data);
       const id = type === 'Mix' ? `${data.song}-${data.date}` : data.id;
       const record = add(type, id, data, file);
-      if (type === 'Note') record.content = parsed.content;
+      if (['Note', 'Page'].includes(type)) record.content = parsed.content;
     }
   }
   for (const audio of audioMixes) {
