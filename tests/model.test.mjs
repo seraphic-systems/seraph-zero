@@ -357,3 +357,46 @@ test('blank Note creation generates unique private files ready to fill in', asyn
   assert.equal(edited.data.created_at, before.created_at);
   assert.match(edited.content, /My writing/);
 });
+
+test('historical local notes preserve uncertain dates and source provenance without publishing them', async (t) => {
+  const { source, record } = await fixture(t);
+  const metadata = {
+    id: 'historical-thought', title: 'Historical thought', visibility: 'private',
+    created_at: '2026-11-02T14:00:00Z',
+    written_when: { label: 'Approximately January 2026', certainty: 'estimated', precision: 'month', basis: 'Estimated from surrounding entry headings.' },
+    sources: [{ file: '/private/example-inbox.md', sha256: 'a'.repeat(64), section: 'Early notes', start_line: 10, end_line: 12, kind: 'inbox' }],
+  };
+  await record('notes/local/historical-thought.md', metadata);
+  await record('notes/response.md', { id: 'response', title: 'Response', related_notes: ['historical-thought'] });
+  const full = await buildCatalog(source);
+  const row = full.records.find((r) => r.key === 'Note:historical-thought');
+  assert.equal(row.source, 'data/notes/local/historical-thought.md');
+  assert.equal(row.data.created_at, metadata.created_at);
+  assert.deepEqual(row.data.written_when, metadata.written_when);
+  assert.deepEqual(row.data.sources, metadata.sources);
+  assert.ok(full.edges.some((edge) => edge.source === 'Note:response' && edge.target === row.key));
+  assert.doesNotMatch(JSON.stringify(publicCatalog(full)), /historical-thought|private\/example-inbox/);
+  await record('notes/local/historical-thought.md', { ...metadata, sources: [{ ...metadata.sources[0], start_line: 13 }] });
+  await assert.rejects(buildCatalog(source), /end_line must not precede start_line/);
+});
+
+test('Note provenance requires explicit uncertainty and valid passage locations', () => {
+  const base = { id: 'historical', title: 'Historical' };
+  const provenance = { file: '/private/example.md', sha256: 'a'.repeat(64), section: 'Undated', start_line: 1, end_line: 2, kind: 'inbox' };
+  for (const certainty of ['recorded', 'estimated', 'unknown']) {
+    validateRecord('Note', { ...base, written_when: { label: 'Source label', certainty, basis: 'Preserved from the source.' }, sources: [provenance] }, 'note.md');
+  }
+  for (const fields of [
+    { written_when: '2020-01-01' },
+    { written_when: { label: '2020', certainty: 'estimated' } },
+    { written_when: { label: ' ', certainty: 'unknown', basis: 'Source' } },
+    { written_when: { label: '2020', certainty: 'certain', basis: 'Source' } },
+    { written_when: { label: '2020', certainty: 'estimated', basis: 'Source', precision: 'year' } },
+    { sources: [] },
+    { sources: [{ ...provenance, sha256: 'invalid' }] },
+    { sources: [{ ...provenance, start_line: 0 }] },
+    { sources: [{ ...provenance, kind: 'verified-author' }] },
+  ]) {
+    assert.throws(() => validateRecord('Note', { ...base, ...fields }, 'note.md'), /note.md/);
+  }
+});

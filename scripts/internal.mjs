@@ -7,6 +7,7 @@ import { marked } from 'marked';
 import { readMixes } from './mix-media.mjs';
 import { readStems } from './stems.mjs';
 import { buildCatalog, modelSchema, publicCatalog } from './model.mjs';
+import { noteContent } from './note-content.mjs';
 import { createContentSource, indexTree } from '../apps/seraphic-systems/orb/content.js';
 
 function dateString(value, context) {
@@ -110,6 +111,7 @@ export async function buildInternal(source, output, {
   await mkdir(output, { recursive: true });
   if (!publicOrb) {
     await cp(path.join(source, 'dashboard'), output, { recursive: true });
+    await writeFile(path.join(output, 'notes.json'), JSON.stringify(noteContent(catalog.records)));
   }
   await cp(orbSource, path.join(output, 'orb'), { recursive: true });
   // Materialize route entry points so deep links also work on a plain static server.

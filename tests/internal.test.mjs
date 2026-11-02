@@ -275,3 +275,19 @@ test('public builds filter private music and notes from every data output and Or
   await access(path.join(publicOutput, 'orb/music/songs/song-open/index.html'));
   await assert.rejects(access(path.join(publicOutput, 'orb/music/songs/song-hidden/index.html')));
 });
+
+test('the note reader feed is internal-only and follows catalog visibility boundaries', async (t) => {
+  const { source, output, song } = await fixture(t);
+  await song('work', 'work');
+  await mkdir(path.join(source, 'data/notes'), { recursive: true });
+  await writeFile(path.join(source, 'data/notes/private.md'), '---\nid: private\ntitle: Private thought\nvisibility: private\n---\nA **private** thought.');
+  await buildInternal(source, output);
+  const feed = JSON.parse(await readFile(path.join(output, 'notes.json'), 'utf8'));
+  assert.equal(feed.length, 1);
+  assert.match(feed[0].html, /<strong>private<\/strong>/);
+  assert.equal(feed[0].data.visibility, 'private');
+  const published = path.join(output, 'public');
+  await buildInternal(source, published, { publicOrb: true });
+  await assert.rejects(access(path.join(published, 'notes.json')));
+  assert.doesNotMatch(await readFile(path.join(published, 'catalog.json'), 'utf8'), /Private thought/);
+});
