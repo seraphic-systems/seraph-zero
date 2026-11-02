@@ -37,6 +37,7 @@ test('journal supports Markdown and bespoke HTML, optional dates, and only publi
   assert.ok(index.indexOf('/journal/custom/') < index.indexOf('/journal/older/'));
   assert.ok(index.indexOf('/journal/older/') < index.indexOf('/journal/undated/'));
   assert.match(index, /A &lt;world&gt;/);
+  assert.match(index, /src="\/journal\/custom\/thumbnail.svg" alt="" width="480" height="320"/);
   assert.doesNotMatch(index, /Secret|\/draft\//);
   const markdown = await readFile(path.join(output, 'undated/index.html'), 'utf8');
   assert.match(markdown, /<h2>Begin<\/h2>/);
@@ -49,6 +50,10 @@ test('journal supports Markdown and bespoke HTML, optional dates, and only publi
   assert.match(html, /src="\.\/script.js"/);
   assert.match(html, /November 1, 2026/);
   await access(path.join(output, 'custom/assets/art.svg'));
+  const thumbnail = await readFile(path.join(output, 'custom/thumbnail.svg'), 'utf8');
+  assert.match(thumbnail, /^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
+  await buildJournal(source, output);
+  assert.equal(await readFile(path.join(output, 'custom/thumbnail.svg'), 'utf8'), thumbnail);
   for (const file of ['draft', 'entries', 'templates', 'custom/index.md', 'custom/private-notes.md']) {
     await assert.rejects(access(path.join(output, file)));
   }

@@ -3,9 +3,16 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import { marked } from 'marked';
 import { escapeHtml, render } from './zero.mjs';
+import { journalThumbnail } from './journal-art.mjs';
 
 // Entries share a document frame, but own their body and optional assets.
 export async function buildJournal(source, output) {
+  const tokens = await readFile(new URL('../shared/tokens.css', import.meta.url), 'utf8');
+  const colors = Object.fromEntries(['background', 'accent'].map(name => {
+    const value = tokens.match(new RegExp(`--color-${name}:\\s*(#[a-fA-F0-9]{3,8})\\s*;`))?.[1];
+    if (!value) throw new Error(`Journal artwork needs --color-${name} in shared/tokens.css`);
+    return [name, value];
+  }));
   const entries = [];
   const entriesRoot = path.join(source, 'entries');
   for (const directory of await readdir(entriesRoot, { withFileTypes: true })) {
@@ -45,8 +52,11 @@ export async function buildJournal(source, output) {
   await mkdir(output, { recursive: true });
   await cp(path.join(source, 'journal.css'), path.join(output, 'journal.css'));
   const listing = entries.map(entry => `<li><a class="entry-link" href="/journal/${entry.slug}/">
+    <img class="entry-thumbnail" src="/journal/${entry.slug}/thumbnail.svg" alt="" width="480" height="320" loading="lazy">
+    <div class="entry-summary">
     <div class="entry-meta">${dateHtml(entry) || '<span>Journal</span>'}</div>
     <div><h2>${escapeHtml(entry.title)}</h2><p>${escapeHtml(entry.description)}</p></div>
+    </div>
     <span class="entry-arrow" aria-hidden="true">↗</span>
   </a></li>`).join('\n');
   await writeFile(path.join(output, 'index.html'), page({ title: 'Journal',
@@ -55,6 +65,7 @@ export async function buildJournal(source, output) {
   for (const entry of entries) {
     const target = path.join(output, entry.slug);
     await mkdir(target, { recursive: true });
+    await writeFile(path.join(target, 'thumbnail.svg'), journalThumbnail(entry.slug, entry.content, colors));
     // Only an explicit public assets directory and the page's style/module ship.
     for (const file of await readdir(entry.folder)) {
       if (['assets', 'style.css', 'script.js'].includes(file)) {
