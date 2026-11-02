@@ -95,7 +95,7 @@ export async function buildCatalog(source, audioMixes = []) {
     return record;
   }
   for (const [type, directory] of [['Member', 'members'], ['Horizon', 'horizons'], ['Policy', 'policies'], ['Album', 'albums'], ['AlbumTrack', 'album-tracks'], ['Song', 'songs'], ['Idea', 'ideas'], ['Note', 'notes'], ['MusicFragment', 'music-fragments'], ['Mix', 'mixes'], ['StemExport', 'stems'], ['Project', 'projects']]) {
-    for (const name of await files(path.join(source, 'data', directory), '.md', type === 'StemExport')) {
+    for (const name of await files(path.join(source, 'data', directory), '.md', ['StemExport', 'Note'].includes(type))) {
       const file = `data/${directory}/${name}`;
       const parsed = matter(await readFile(path.join(source, file), 'utf8'));
       const data = normalize(parsed.data);
@@ -154,6 +154,11 @@ export async function buildCatalog(source, audioMixes = []) {
   // Additional invariants span fields and cannot be expressed as simple references.
   const albumPositions = new Set();
   for (const row of records) {
+    if (row.type === 'Note') {
+      for (const source of row.data.sources || []) {
+        if (source.end_line < source.start_line) throw new Error(`${row.source}: source end_line must not precede start_line`);
+      }
+    }
     if (row.type === 'StemExport') {
       for (const id of row.data.mixes) if (byKey.get(`Mix:${id}`).data.song !== row.data.song) throw new Error(`${row.source}: linked mix ${id} must belong to the same song`);
     }

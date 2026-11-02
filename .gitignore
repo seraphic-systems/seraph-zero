@@ -10,3 +10,7 @@ __pycache__/
 .wrangler/
 .dev.vars
 .dev.vars.*
+
+# Local notes and import review material must not enter the public repository.
+/apps/internal/data/notes/local/
+/apps/internal/private/

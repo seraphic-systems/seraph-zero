@@ -1113,6 +1113,22 @@ body as `record.content`; front matter remains in `record.data`. The Model viewe
 exposes the Note type, metadata, and outgoing/incoming relationships. Writing is
 currently done in Markdown files; there is no dedicated note editor yet.
 
+Choose **Notes** in the internal dashboard, or open
+`http://127.0.0.1:5175/notes.html` during `npm run dev:internal`. The reader combines
+a searchable library, the note text, and a neighborhood map of explicit incoming
+and outgoing connections. All connections are listed below the map, which shows
+up to eight neighbors to stay legible. Follow a connection to continue reading;
+the recent trail and browser Back/Forward let you retrace your path. **Another
+thought** opens a different note. Search matches words across titles and bodies;
+sort by connection count or title, or filter for unlinked notes. Press `/` to search,
+Escape to clear it, and use arrow keys within the library followed by Enter to read.
+On small screens the library becomes a horizontally scrollable shelf above the
+reader. **About this note** holds writing-date evidence and source references.
+
+The build emits `notes.json` with restricted Markdown rendering for this internal
+reader only. It is not part of either public site; raw HTML and executable links
+are not rendered, and reading a note does not load remote Markdown images.
+
 ```sh
 npm run create:internal -- Note
 ```
@@ -1135,6 +1151,43 @@ related_notes: []
 ---
 Limiting the available tools can make it easier to explore a thought deeply.
 ```
+
+Historical Notes can optionally record `written_when` separately from `created_at`:
+
+```yaml
+written_when:
+  label: Approximately January 2026
+  certainty: estimated
+  precision: month
+  basis: Estimated from the surrounding entry headings; no exact date is known.
+```
+
+`label`, `certainty`, and `basis` are required when `written_when` is supplied.
+Certainty is `recorded` (an explicit source entry date, not independent verification),
+`estimated` (an inference with its basis), or `unknown`. Optional precision is
+`day`, `week`, `month`, `range`, or `unknown`. Preserve approximate periods as labels;
+do not invent a day to fit a date field. Source-file modification dates, compilation
+dates, and later annotations do not establish original writing dates.
+
+Optional `sources` preserves source passages as objects with `file`, `sha256`
+(the entire source file at extraction), `section`, inclusive one-based `start_line`
+and `end_line`, and `kind` (`inbox`, `later_annotation`, or `quoted_material`).
+Preserve source wording separately from editorial summaries and proposed links.
+Do not attribute a pasted response or later annotation to the original writer.
+
+The initial collection contains 83 regular Note records directly in
+`apps/internal/data/notes/`, with explicit connections, original-date evidence, and
+source references. These are version-controlled source data, like other Markdown
+records. Their `visibility: private` excludes them from the public website; it
+does not exclude them from the repository. Note bodies contain the main ideas and
+related-note links; import review material stays outside the data directory.
+
+Notes can also live in subdirectories. `data/notes/local/` and `apps/internal/private/`
+are ignored by Git for local notes and import review material. Keep review documents
+outside `data/notes/`, where every Markdown file is loaded as a Note record.
+Local notes should explicitly remain `visibility: private`. Internal builds include
+them, while committed production builds omit ignored files. These local files need
+their own private backup; neither Git nor a public deployment preserves them.
 
 Every catalog entity inherits `visibility: public | private` from `RecordBase`.
 The creation helper writes `private` by default for all new records; pass

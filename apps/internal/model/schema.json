@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Seraph internal model",
   "description": "Source record contracts. x-model and x-relations are documentation annotations used by the local Model viewer.",
-  "x-version": 15,
+  "x-version": 16,
   "definitions": {
     "Policy": {
       "title": "Policy",
@@ -1215,6 +1215,95 @@
             "private"
           ],
           "default": "private"
+        },
+        "written_when": {
+          "type": "object",
+          "description": "When the source thought was written, independent of this workspace record creation time. Preserve uncertain labels; file modification dates are not writing dates.",
+          "properties": {
+            "label": {
+              "type": "string",
+              "pattern": "\\S",
+              "description": "Human-readable original date or approximate period, or an explicit unknown label."
+            },
+            "certainty": {
+              "type": "string",
+              "enum": [
+                "recorded",
+                "estimated",
+                "unknown"
+              ],
+              "description": "recorded means the entry explicitly carries a writing-date label, not independently verified authorship or dating. estimated is an inference with stated basis; unknown asserts no writing date."
+            },
+            "precision": {
+              "type": "string",
+              "enum": [
+                "day",
+                "week",
+                "month",
+                "range",
+                "unknown"
+              ]
+            },
+            "basis": {
+              "type": "string",
+              "pattern": "\\S",
+              "description": "Evidence and qualifications behind the label, including whether a date only labels the source file."
+            }
+          },
+          "required": [
+            "label",
+            "certainty",
+            "basis"
+          ],
+          "additionalProperties": false
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Traceable source passages. Later annotations and quoted material must remain distinct from original inbox text. Source paths and excerpts may be private.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$",
+                "description": "Hash of the complete source file at extraction time."
+              },
+              "section": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "start_line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "end_line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "inbox",
+                  "later_annotation",
+                  "quoted_material"
+                ]
+              }
+            },
+            "required": [
+              "file",
+              "sha256",
+              "section",
+              "start_line",
+              "end_line",
+              "kind"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -1223,7 +1312,7 @@
       ],
       "additionalProperties": true,
       "x-model": {
-        "source": "data/notes/*.md",
+        "source": "data/notes/**/*.md",
         "identity": "Permanent id",
         "position": [
           1,
