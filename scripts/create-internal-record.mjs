@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import matter from 'gray-matter';
@@ -10,6 +11,9 @@ const defaultSource = fileURLToPath(new URL('../apps/internal/', import.meta.url
 // The creation boundary stamps once. Loading, editing and rebuilding never stamp.
 export async function createInternalRecord(type, metadata, { source = defaultSource } = {}) {
   if (!Object.hasOwn(directories, type)) throw new Error(`Choose a Markdown record type: ${Object.keys(directories).join(', ')}`);
+  if (type === 'Note' && metadata === undefined) {
+    metadata = { id: `note-${randomUUID()}`, title: 'Untitled note', related_notes: [] };
+  }
   if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) throw new Error('Front matter must be a JSON object.');
   const data = { visibility: 'private', ...metadata, created_at: metadata.created_at ?? new Date().toISOString() };
   validateRecord(type, data, 'New record');
@@ -25,8 +29,8 @@ export async function createInternalRecord(type, metadata, { source = defaultSou
 if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) {
   try {
     const [type, json, ...extra] = process.argv.slice(2);
-    if (!type || !json || extra.length) throw new Error('Usage: npm run create:internal -- <Type> \'<JSON front matter>\'');
-    console.log(`Created ${await createInternalRecord(type, JSON.parse(json))}`);
+    if (!type || (json === undefined && type !== 'Note') || extra.length) throw new Error('Usage: npm run create:internal -- Note OR npm run create:internal -- <Type> \'<JSON front matter>\'');
+    console.log(`Created ${await createInternalRecord(type, json === undefined ? undefined : JSON.parse(json))}`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

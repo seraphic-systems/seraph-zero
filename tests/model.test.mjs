@@ -329,3 +329,31 @@ test('publication withholds private records, transitive dependants and diagnosti
   const file = await createInternalRecord('Song', { id: 'new', title: 'New' }, { source });
   assert.match(await readFile(file, 'utf8'), /visibility: private/);
 });
+
+test('blank Note creation generates unique private files ready to fill in', async (t) => {
+  const { source } = await fixture(t);
+  const first = await createInternalRecord('Note', undefined, { source });
+  const second = await createInternalRecord('Note', undefined, { source });
+  assert.notEqual(first, second);
+  assert.equal(path.dirname(first), path.join(source, 'data/notes'));
+  const catalog = await buildCatalog(source);
+  const notes = catalog.records.filter((row) => row.type === 'Note');
+  assert.equal(notes.length, 2);
+  for (const row of notes) {
+    assert.match(row.id, /^note-[a-f0-9-]{36}$/);
+    assert.equal(row.data.title, 'Untitled note');
+    assert.equal(row.data.visibility, 'private');
+    assert.deepEqual(row.data.related_notes, []);
+    assert.ok(Number.isFinite(Date.parse(row.data.created_at)));
+    assert.equal(row.content.trim(), '');
+  }
+  assert.equal(publicCatalog(catalog).records.filter((row) => row.type === 'Note').length, 0);
+  await assert.rejects(createInternalRecord('Song', undefined, { source }), /Front matter must be a JSON object/);
+  await assert.rejects(createInternalRecord('Note', null, { source }), /Front matter must be a JSON object/);
+  const before = notes.find((row) => row.source.endsWith(path.basename(first))).data;
+  await writeFile(first, (await readFile(first, 'utf8')).replace('Untitled note', 'A thought') + '\nMy writing.\n');
+  const edited = (await buildCatalog(source)).records.find((row) => row.id === before.id);
+  assert.equal(edited.data.title, 'A thought');
+  assert.equal(edited.data.created_at, before.created_at);
+  assert.match(edited.content, /My writing/);
+});
