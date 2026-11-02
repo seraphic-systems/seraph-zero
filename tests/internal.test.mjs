@@ -242,3 +242,36 @@ test('Orb deep links use a content-versioned stylesheet after every CSS change',
   await buildInternal(source, output, { orbSource });
   assert.equal(await hrefFor('orb'), next);
 });
+
+test('public builds filter private music and notes from every data output and Orb routes', async (t) => {
+  const { source, output, song, mix } = await fixture(t);
+  await song('open', 'open');
+  await song('hidden', 'hidden');
+  const hiddenFile = path.join(source, 'data/songs/hidden.md');
+  await writeFile(hiddenFile, (await readFile(hiddenFile, 'utf8')).replace('title:', 'visibility: private\ntitle:'));
+  for (const file of ['open-2026-01-01.wav', 'open-2026-02-01.wav', 'hidden-2026-01-01.wav']) await mix(file);
+  for (const directory of ['data/mixes', 'data/notes', 'data/stems/raw']) await mkdir(path.join(source, directory), { recursive: true });
+  await writeFile(path.join(source, 'data/mixes/open-2026-02-01.md'), '---\nsong: open\ndate: "2026-02-01"\nvisibility: private\n---\nSECRET MIX TEXT');
+  await writeFile(path.join(source, 'data/notes/secret.md'), '---\nid: secret-note\ntitle: Secret note\n---\nSECRET NOTE TEXT');
+  await writeFile(path.join(source, 'data/notes/public.md'), '---\nid: public-note\ntitle: Public note\nvisibility: public\n---\nPUBLISHED NOTE TEXT');
+  await writeFile(path.join(source, 'data/stems/raw/hidden-stem.md'), '---\nid: hidden-stem\ntitle: Hidden stem\nsong: open\nvisibility: private\nfolder: media/stems/raw/hidden-stem\nmaster: master.wav\nmixes: [open-2026-01-01]\n---\nSECRET STEM TEXT');
+  await buildInternal(source, output);
+  const internal = await readFile(path.join(output, 'catalog.json'), 'utf8');
+  assert.match(internal, /SECRET NOTE TEXT/);
+  assert.match(await readFile(path.join(output, 'songs.json'), 'utf8'), /SECRET MIX TEXT/);
+  const publicOutput = path.join(output, 'public');
+  await buildInternal(source, publicOutput, { publicOrb: true });
+  for (const file of ['catalog.json', 'songs.json', 'stems.json']) {
+    const bytes = await readFile(path.join(publicOutput, file), 'utf8');
+    assert.doesNotMatch(bytes, /SECRET|hidden|secret-note|open-2026-02-01/);
+  }
+  const catalog = JSON.parse(await readFile(path.join(publicOutput, 'catalog.json'), 'utf8'));
+  assert.match(JSON.stringify(catalog), /PUBLISHED NOTE TEXT/);
+  const songs = JSON.parse(await readFile(path.join(publicOutput, 'songs.json'), 'utf8'));
+  assert.deepEqual(songs.map((s) => s.id), ['open']);
+  assert.deepEqual(songs[0].mixes.map((m) => m.file), ['open-2026-01-01.wav']);
+  assert.deepEqual(songs[0].stems, []);
+  assert.deepEqual(songs[0].mixes[0].stems, []);
+  await access(path.join(publicOutput, 'orb/music/songs/song-open/index.html'));
+  await assert.rejects(access(path.join(publicOutput, 'orb/music/songs/song-hidden/index.html')));
+});

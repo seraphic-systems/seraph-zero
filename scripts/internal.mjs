@@ -6,7 +6,7 @@ import matter from 'gray-matter';
 import { marked } from 'marked';
 import { readMixes } from './mix-media.mjs';
 import { readStems } from './stems.mjs';
-import { buildCatalog, modelSchema } from './model.mjs';
+import { buildCatalog, modelSchema, publicCatalog } from './model.mjs';
 import { createContentSource, indexTree } from '../apps/seraphic-systems/orb/content.js';
 
 function dateString(value, context) {
@@ -23,7 +23,7 @@ export async function buildInternal(source, output, {
   includeLocalMedia = true,
   orbSource = fileURLToPath(new URL('../apps/seraphic-systems/orb/', import.meta.url)),
 } = {}) {
-  const songs = [];
+  let songs = [];
   const ids = new Set();
   const mixes = await readMixes(source, { includeLocalMedia });
   for (const entry of await readdir(path.join(source, 'data/songs'), { withFileTypes: true })) {
@@ -80,14 +80,26 @@ export async function buildInternal(source, output, {
       mix.key = data.key?.trim() ?? null;
     }
   }
-  const stems = await readStems(source, songs, mixSongs);
+  let stems = await readStems(source, songs, mixSongs);
   for (const song of songs) {
     song.stems = stems.filter((stem) => stem.song === song.id).map((stem) => stem.id);
     for (const mix of song.mixes) {
       mix.stems = stems.filter((stem) => stem.mixes.includes(`${song.id}-${mix.date}`)).map((stem) => stem.id);
     }
   }
-  const catalog = await buildCatalog(source, mixes);
+  const fullCatalog = await buildCatalog(source, mixes);
+  const catalog = publicOrb ? publicCatalog(fullCatalog) : fullCatalog;
+  if (publicOrb) {
+    const visible = new Set(catalog.records.map((row) => row.key));
+    stems = stems.filter((stem) => visible.has(`StemExport:${stem.id}`));
+    const stemIds = new Set(stems.map((stem) => stem.id));
+    songs = songs.filter((song) => visible.has(`Song:${song.id}`));
+    for (const song of songs) {
+      song.stems = song.stems.filter((id) => stemIds.has(id));
+      song.mixes = song.mixes.filter((mix) => visible.has(`Mix:${song.id}-${mix.date}`) && visible.has(`MixFile:${mix.file}`));
+      for (const mix of song.mixes) mix.stems = mix.stems.filter((id) => stemIds.has(id));
+    }
+  }
   const creationTimes = new Map(catalog.records.map((record) => [record.key, record.data.created_at]));
   for (const song of songs) {
     song.created_at = creationTimes.get(`Song:${song.id}`);

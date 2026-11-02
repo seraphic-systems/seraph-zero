@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Seraph internal model",
   "description": "Source record contracts. x-model and x-relations are documentation annotations used by the local Model viewer.",
-  "x-version": 14,
+  "x-version": 15,
   "definitions": {
     "Policy": {
       "title": "Policy",
@@ -861,6 +861,15 @@
           "format": "date-time",
           "default": null,
           "description": "Shared field. Timestamp when this record was created in the workspace, with a timezone. Null when unknown; never inferred from names, media dates, filesystem timestamps, or rebuild time."
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "public",
+            "private"
+          ],
+          "default": "public",
+          "description": "Publication visibility. Omitted values on existing types remain public for compatibility; Notes default to private. New records created by the helper explicitly default to private. Private records and records referencing them are excluded from public builds, not internal builds."
         }
       }
     },
@@ -1176,6 +1185,56 @@
           "$ref": "#/definitions/RecordBase"
         }
       ]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "A written thought or observation, connected to other notes by explicit references. Independent of musical Ideas. Markdown body holds the writing. Private unless explicitly made public.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "related_notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "uniqueItems": true,
+          "description": "Stable Note IDs of related thoughts. Incoming connections are derived."
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "public",
+            "private"
+          ],
+          "default": "private"
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": true,
+      "x-model": {
+        "source": "data/notes/*.md",
+        "identity": "Permanent id",
+        "position": [
+          1,
+          4
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
     }
   },
   "x-relations": [
@@ -1377,6 +1436,16 @@
       "label": "starts with",
       "cardinality": "Idea → 0…1 LiveSet; LiveSet → 0…many ideas",
       "description": "Recorded association; preserved after linking the idea to a song.",
+      "kind": "reference"
+    },
+    {
+      "id": "note-note",
+      "source": "Note",
+      "target": "Note",
+      "field": "related_notes",
+      "label": "connects to",
+      "cardinality": "Note → 0…many Notes; Note ← 0…many Notes",
+      "description": "Explicit connections between written thoughts; incoming links are derived.",
       "kind": "reference"
     }
   ],

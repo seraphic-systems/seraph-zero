@@ -958,7 +958,7 @@ Unresolved associations and relationships not yet modeled are labeled explicitly
 [`apps/internal/model/schema.json`](apps/internal/model/schema.json) is the
 canonical JSON Schema (draft 7) collection for source records. Validate a record
 against `#/definitions/<Type>`. Catalog entities include Member, Horizon, Policy,
-Album, AlbumTrack, Song, Idea, MusicFragment, Mix, MixFile, StemExport, Project,
+Album, AlbumTrack, Song, Idea, Note, MusicFragment, Mix, MixFile, StemExport, Project,
 LiveSet, and Snapshot. SetAnalysis and
 PluginUsage are embedded values; SetRegistry describes the registry envelope.
 Markdown contracts cover front matter, not Markdown bodies. Unknown fields are
@@ -1094,13 +1094,64 @@ Legacy schema-1 snapshot reports remain readable but have no inferred set-ID lin
 
 `npm run build:internal` generates `model-schema.json` and `catalog.json` alongside
 the dashboard. The Seraphic Systems build also publishes these files for Orb.
-The catalog contains front matter, derived set registry records, and analysis
-reports; the current catalog is intentionally public. Raw source records, registry
+The internal catalog contains front matter, Note bodies, derived set registry
+records, and analysis reports; the public catalog includes only publishable records
+under the visibility rules below. Raw source records, registry
 files, snapshots, and local audio are not copied into public output. The Python analyzer retains its existing registry and
 snapshot formats; this model does not rewrite history. The viewer reflects the
 last build; after scanning or branching, rebuild/restart the internal server to
 refresh it. Schema and Markdown edits already trigger development rebuilds.
 
+
+### Connected notes and visibility
+
+`Note` records live in `apps/internal/data/notes/*.md`. They hold general thoughts
+and observations; `Idea` continues to mean a musical idea. A Note requires a stable
+`id` and `title`. Write its text in the Markdown body and connect it to other Notes
+with an optional `related_notes` array of permanent IDs. The catalog retains the
+body as `record.content`; front matter remains in `record.data`. The Model viewer
+exposes the Note type, metadata, and outgoing/incoming relationships. Writing is
+currently done in Markdown files; there is no dedicated note editor yet.
+
+```sh
+npm run create:internal -- Note '{"id":"constraints-and-creativity","title":"Constraints can encourage creativity"}'
+```
+
+Then edit the generated file, for example:
+
+```yaml
+---
+id: constraints-and-creativity
+title: Constraints can encourage creativity
+created_at: "2026-11-02T10:00:00-05:00"
+visibility: private
+related_notes: []
+---
+Limiting the available tools can make it easier to explore a thought deeply.
+```
+
+Every catalog entity inherits `visibility: public | private` from `RecordBase`.
+The creation helper writes `private` by default for all new records; pass
+`"visibility":"public"` to publish intentionally. Handwritten Notes also default
+to private. Other record types with no field retain the legacy public default,
+including generated media records and historical registry/snapshot records. Use an
+explicit `visibility: private` on any existing record to withhold it.
+
+Internal builds retain all records. Public Seraphic Systems builds exclude private
+records and transitively withhold any record referencing an excluded record,
+including optional references. For example, a public Note linking a private Note
+is withheld in full; a private Song also withholds its mixes and audio routes.
+This keeps private IDs out of published front matter and embedded reports. Public
+catalog diagnostics are omitted. The same projection filters `songs.json`,
+`stems.json`, Orb routes, and the hosted audio allowlist. Local media discovery
+does not bypass visibility.
+
+Visibility controls generated publication, not Git access: committed Markdown
+remains in the repository. Free text and arbitrary extra metadata are not scanned
+for private information. Review the entire content of a record before making it
+public. Changing visibility takes effect on the next build/deployment; previously
+published copies are not recalled. A private link target must still exist and
+validate in the full internal model.
 
 ### Shared record creation time
 
@@ -1128,7 +1179,8 @@ npm run create:internal -- Song '{"id":"new-song","title":"New Song"}'
 npm run create:internal -- Mix '{"song":"new-song","date":"2026-10-30"}'
 ```
 
-The helper supports Member, Song, Mix, StemExport, Project, Album, and AlbumTrack. Supply
+The helper supports Member, Horizon, Policy, Song, Idea, Note, MusicFragment, Mix,
+StemExport, Project, Album, and AlbumTrack. Supply
 the type's required front matter (shown on the Model page); it stamps `created_at`
 once, validates the record shape, and refuses to overwrite existing files.
 The internal build then checks all cross-record references. For hand-authored
