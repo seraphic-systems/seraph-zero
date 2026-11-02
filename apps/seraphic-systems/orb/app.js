@@ -3,11 +3,13 @@ import '/shared/components/audio-player/audio-player.js';
 import { createContentSource, indexTree, horizonLevels } from './content.js';
 import { layout, arrangements } from './engine.js';
 import { presentations } from './presentations.js';
-import { availableViews, defaultView, resolveFilter, viewPanelHeight, hasFindControls, isFindActive, viewConfiguration } from './views.js';
+import { availableViews, defaultView, viewPanelHeight, hasFindControls, isFindActive, viewConfiguration } from './views.js';
 import { createPlayback } from './playback.js';
+import { initialPanelState, transitionPanels, panelToDismiss } from './panels.js';
 import { createPresentationTransition, changesContentView } from './transitions.js';
 import { playbackControls, presentationViews, songFor } from './presentation-views.js';
-import { readRoute, routeFor, routeToNode, base } from './routes.js';
+import { routeToNode, base } from './routes.js';
+import { readNavigation, transitionNavigation } from './navigation.js';
 
 const $ = selector => document.querySelector(selector);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -44,7 +46,8 @@ try {
   if (responses.some(response => !response.ok)) throw new Error('Library unavailable');
   const [songs, catalog, schema] = await Promise.all(responses.map(response => response.json()));
   const source = createContentSource(songs, catalog, schema), tree = source.getRoot(), index = indexTree(tree);
-  let state = { ...readRoute(tree, new URL(location.href)), navOpen: false, viewOpen: false, findOpen: false };
+  let state = readNavigation(tree, new URL(location.href));
+  let panels = initialPanelState;
   let current, detailId, focusTimer, wheelAt = 0, touchY = null;
   const mounted = new Map();
   const audio = el('seraph-audio-player');
@@ -63,10 +66,14 @@ try {
   });
   let disposeDetail = () => {};
   const playerToggle = $('#player-toggle'), playerContent = $('#player-content');
-  let playerExpanded = false, playerContentAnimation;
-  function playerOpen(open) {
-    if (open === playerExpanded) return;
-    playerExpanded = open;
+  let playerContentAnimation;
+  function sendPanel(event) {
+    const previous = panels;
+    panels = transitionPanels(panels, event);
+    if (panels.player !== previous.player) renderPlayer();
+  }
+  function renderPlayer() {
+    const open = panels.player === 'open';
     const opacity = getComputedStyle(playerContent).opacity;
     playerContentAnimation?.cancel();
     playerContent.hidden = false;
@@ -83,24 +90,23 @@ try {
     playerContentAnimation = animation;
     animation.finished.then(() => {
       if (playerContentAnimation !== animation) return;
-      playerContent.hidden = !playerExpanded;
+      playerContent.hidden = panels.player !== 'open';
       animation.cancel();
       playerContentAnimation = null;
     }).catch(() => {});
   }
-  playerToggle.addEventListener('click', () => playerOpen(!playerExpanded));
-  $('#player-close').addEventListener('click', () => { playerOpen(false); playerToggle.focus(); });
+  playerToggle.addEventListener('click', () => sendPanel('togglePlayer'));
+  $('#player-close').addEventListener('click', () => { sendPanel('closePlayer'); playerToggle.focus(); });
   playback.subscribe(() => {
     const selection = playback.selection;
     $('#player-title').textContent = selection ? selection.song.title : 'Nothing playing yet';
     $('#player-mix').textContent = selection ? [selection.mix.label || selection.mix.date, selection.mix.format].filter(Boolean).join(' · ') : 'Choose Play on a song or fragment to start.';
     playerToggle.textContent = playback.playing ? 'Ⅱ' : '♪';
-    playerToggle.setAttribute('aria-label', `${playerExpanded ? 'Close' : 'Open'} player${selection ? ` · ${selection.song.title}` : ''}`);
+    playerToggle.setAttribute('aria-label', `${panels.player === 'open' ? 'Close' : 'Open'} player${selection ? ` · ${selection.song.title}` : ''}`);
     $('#player-lens').classList.toggle('playing', playback.playing);
     $('#player-error').textContent = playback.error;
     if (selection) audio.setAttribute('label', `${selection.song.title} audio player`);
   });
-  const urlFor = (path, detail, arrangement, filter = '') => routeFor(path, detail, arrangement, filter, state.view?.[path.at(-1)], path.join('/') === state.path.join('/') ? state.selection : null);
   const lens = $('#lens'), toggle = $('#nav-toggle');
   const trailLinks = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   trailLinks.classList.add('trail-links');
@@ -151,27 +157,29 @@ try {
     animate(trailLinks, [{ opacity: 0 }, { opacity: 1 }], { delay: reduced.matches ? 0 : 650, duration: reduced.matches ? 100 : 450 });
   }
 
+  function sendNavigation(event, preserveControls = false) {
+    const result = transitionNavigation(tree, state, event);
+    if (result.state === state) return false;
+    state = result.state;
+    if (result.history === 'push') history.pushState(null, '', result.url);
+    else if (result.history === 'replace') history.replaceState(null, '', result.url);
+    if (result.resetPanels) {
+      sendPanel('navigate');
+      if (current?.container.id !== state.path.at(-1)) window.scrollTo(0, 0);
+    }
+    render(result.resetPanels, preserveControls);
+    return true;
+  }
   function navigate(url, push = true) {
-    if (push) history.pushState(null, '', url);
-    const route = readRoute(tree, new URL(url, location.href));
-    state = { ...state, ...route, view: { ...state.view, ...route.view }, arrangement: { ...state.arrangement, ...route.arrangement } };
-    // The query is authoritative for the current container, including Back to its default.
-    if (!route.arrangement[state.path.at(-1)]) delete state.arrangement[state.path.at(-1)];
-    state.navOpen = false;
-    state.viewOpen = false;
-    state.findOpen = false;
-    if (current?.container.id !== route.path.at(-1)) window.scrollTo(0, 0);
-    render(true);
+    sendNavigation({ type: push ? 'visit' : 'restore', url: new URL(url, location.href) });
   }
   function dispatch(action) {
     if (!action) return;
-    if (action.type === 'select') { selectNode(action.id); return; }
-    const path = action.type === 'navigate' ? action.path : state.path;
-    navigate(routeFor(path, action.type === 'openDetail' ? action.id : null, state.arrangement[path.at(-1)], path.join('/') === state.path.join('/') ? state.filter : '', state.view?.[path.at(-1)], null));
+    if (action.type === 'select') selectNode(action.id);
+    else sendNavigation(action);
   }
   function selectNode(id) {
-    const url = routeFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter, current.view.id, id);
-    navigate(url);
+    if (!sendNavigation({ type: 'select', id })) return;
     if (id) {
       $('#selection h1')?.focus({ preventScroll: true });
       if (innerWidth < 900) $('#selection').scrollIntoView({ block: 'start' });
@@ -180,11 +188,8 @@ try {
       mounted.get(current.container.id)?.focus({ preventScroll: true });
     }
   }
-  function closeDetail() { navigate(urlFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter)); }
-  function step(direction) {
-    const id = current.detail?.[direction];
-    if (id) dispatch({ type: 'openDetail', id });
-  }
+  function closeDetail() { sendNavigation({ type: 'dismiss' }); }
+  function step(direction) { sendNavigation({ type: 'step', direction }); }
   function orb(circle) {
     const button = el('button', null, 'orb');
     button.type = 'button';
@@ -194,7 +199,7 @@ try {
   }
   function move(button, circle, entering) {
     const old = button.circle;
-    const viewReflow = $('#view-lens').classList.contains('open') !== !!state.viewOpen;
+    const viewReflow = $('#view-lens').classList.contains('open') !== (panels.panel === 'view');
     const changed = entering || !old || ['x', 'y', 'r', 'labelPlacement', 'role'].some(key => old[key] !== circle[key]);
     button.circle = circle;
     button.classList.toggle('current', circle.isCurrent);
@@ -311,12 +316,12 @@ try {
     lens.style.transform = transform(nav);
     lens.style.setProperty('--inverse', 50 / nav.r);
     lens.style.setProperty('--content-width', `${Math.min(420, nav.r * 1.65)}px`);
-    lens.classList.toggle('open', state.navOpen);
+    lens.classList.toggle('open', panels.panel === 'nav');
     animate(lens, [{ transform: reduced.matches ? transform(nav) : from }, { transform: transform(nav) }]);
-    toggle.setAttribute('aria-expanded', String(state.navOpen));
-    toggle.setAttribute('aria-label', state.navOpen ? 'Close your space' : 'Open your space');
-    toggle.firstChild.textContent = state.navOpen ? '×' : '✳';
-    $('#nav-content').hidden = !state.navOpen;
+    toggle.setAttribute('aria-expanded', String(panels.panel === 'nav'));
+    toggle.setAttribute('aria-label', panels.panel === 'nav' ? 'Close your space' : 'Open your space');
+    toggle.firstChild.textContent = panels.panel === 'nav' ? '×' : '✳';
+    $('#nav-content').hidden = panels.panel !== 'nav';
   }
   const configDialog = el('dialog', null, 'view-config');
   configDialog.setAttribute('aria-labelledby', 'view-config-title');
@@ -338,13 +343,13 @@ try {
     const available = !current.detail && options.length > 1;
     view.style.setProperty('--view-panel-height', `${viewPanelHeight(current.container)}px`);
     view.hidden = !available;
-    view.inert = state.navOpen;
-    view.classList.toggle('open', state.viewOpen);
+    view.inert = panels.panel === 'nav';
+    view.classList.toggle('open', panels.panel === 'view');
     view.classList.toggle('active', current.view.id !== defaultView(current.container).id);
-    button.setAttribute('aria-expanded', String(state.viewOpen));
-    button.setAttribute('aria-label', `${state.viewOpen ? 'Close' : 'Open'} view options for ${current.container.label}`);
-    button.textContent = state.viewOpen ? '×' : 'View';
-    panelOpen(content, state.viewOpen && available);
+    button.setAttribute('aria-expanded', String(panels.panel === 'view'));
+    button.setAttribute('aria-label', `${panels.panel === 'view' ? 'Close' : 'Open'} view options for ${current.container.label}`);
+    button.textContent = panels.panel === 'view' ? '×' : 'View';
+    panelOpen(content, panels.panel === 'view' && available);
     if (preserveControls) return;
     content.replaceChildren(el('h2', `${current.container.label} · View`));
     const presentationChoices = el('div', null, 'view-presets');
@@ -357,11 +362,7 @@ try {
       if (option.description) button.append(el('small', option.description, 'preset-description'));
       button.setAttribute('aria-pressed', String(current.view.id === option.id));
       button.addEventListener('click', () => {
-        state.view = { ...state.view, [current.container.id]: option.id };
-        delete state.arrangement[current.container.id];
-        state.filter = resolveFilter(option, state.filter);
-        history.pushState(null, '', urlFor(state.path, state.detail, state.arrangement[current.container.id], state.filter));
-        render(false);
+        sendNavigation({ type: 'setView', id: option.id });
         $('#presentation-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
       });
       const inspect = el('button', '{}', 'view-config-button'); inspect.type = 'button';
@@ -380,17 +381,17 @@ try {
     const controls = current.view.controls || {};
     const available = !current.detail && hasFindControls(current.view);
     find.hidden = !available;
-    find.inert = state.navOpen;
+    find.inert = panels.panel === 'nav';
     find.classList.toggle('beside-view', !$('#view-lens').hidden);
-    find.classList.toggle('view-open', state.viewOpen && !$('#view-lens').hidden);
+    find.classList.toggle('view-open', panels.panel === 'view' && !$('#view-lens').hidden);
     find.style.setProperty('--view-panel-height', `${viewPanelHeight(current.container)}px`);
-    find.classList.toggle('open', state.findOpen && available);
+    find.classList.toggle('open', panels.panel === 'find' && available);
     const active = isFindActive(current.view, state, current.container.id);
     find.classList.toggle('active', active);
-    button.setAttribute('aria-expanded', String(state.findOpen && available));
-    button.setAttribute('aria-label', `${state.findOpen ? 'Close' : 'Open'} Find for ${current.container.label}${active ? ' · Search or custom sort active' : ''}`);
-    button.textContent = state.findOpen ? '×' : 'Find';
-    panelOpen(content, state.findOpen && available);
+    button.setAttribute('aria-expanded', String(panels.panel === 'find' && available));
+    button.setAttribute('aria-label', `${panels.panel === 'find' ? 'Close' : 'Open'} Find for ${current.container.label}${active ? ' · Search or custom sort active' : ''}`);
+    button.textContent = panels.panel === 'find' ? '×' : 'Find';
+    panelOpen(content, panels.panel === 'find' && available);
     if (preserveControls) {
       if ($('#find-count')) $('#find-count').textContent = `${current.count} of ${current.container.children.length} items`;
       return;
@@ -406,9 +407,7 @@ try {
       }
       select.value = current.active;
       select.addEventListener('change', () => {
-        state.arrangement[current.container.id] = select.value;
-        history.pushState(null, '', urlFor(state.path, state.detail, select.value, state.filter));
-        render(false); $('#find-sort')?.focus({ preventScroll: true });
+        sendNavigation({ type: 'setArrangement', id: select.value }); $('#find-sort')?.focus({ preventScroll: true });
       });
       label.append(select); content.append(label);
     }
@@ -417,9 +416,7 @@ try {
       label.append(el('span', current.presentation === 'samples' ? 'Search fragments' : 'Search titles', 'sr-only'));
       const input = el('input'); input.type = 'search'; input.value = state.filter || ''; input.placeholder = current.presentation === 'samples' ? 'Title, key, tags, notes…' : 'Type a title…';
       input.addEventListener('input', () => {
-        state.filter = input.value; state.detail = null;
-        history.replaceState(null, '', urlFor(state.path, null, state.arrangement[state.path.at(-1)], state.filter));
-        render(false, true);
+        sendNavigation({ type: 'setFilter', value: input.value }, true);
       });
       label.append(input); content.insertBefore(label, content.querySelector('.find-sort'));
     }
@@ -428,7 +425,7 @@ try {
 
   }
   function render(focus, preserveNavControls = false) {
-    const next = layout(tree, state, { width: innerWidth, height: innerHeight, scrollY: window.scrollY });
+    const next = layout(tree, { ...state, panel: panels.panel }, { width: innerWidth, height: innerHeight, scrollY: window.scrollY });
     presentationTransition.cancel();
     const switching = changesContentView(current, next);
     if (switching) {
@@ -442,9 +439,9 @@ try {
   function renderScene(next, focus, preserveNavControls) {
     $('#world').classList.toggle('has-selection-map', !!next.container.selection);
     $('#world').style.minHeight = `${next.height}px`;
-    $('#world').classList.toggle('nav-open', state.navOpen);
-    document.body.classList.toggle('nav-open', state.navOpen);
-    for (const node of document.querySelectorAll('.masthead, #circles, #cards, #detail, #selection, #player-lens, footer')) node.inert = state.navOpen;
+    $('#world').classList.toggle('nav-open', panels.panel === 'nav');
+    document.body.classList.toggle('nav-open', panels.panel === 'nav');
+    for (const node of document.querySelectorAll('.masthead, #circles, #cards, #detail, #selection, #player-lens, footer')) node.inert = panels.panel === 'nav';
     const visible = next.circles.filter(circle => circle.visible !== false);
     $('#circles').querySelectorAll('.orb-group-heading').forEach(heading => heading.remove());
     for (const group of next.groups) {
@@ -521,48 +518,53 @@ try {
     renderNav();
     renderView(preserveNavControls);
     renderFind(preserveNavControls);
-    if (switchingPresentation && state.viewOpen) $('#presentation-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
+    if (switchingPresentation && panels.panel === 'view') $('#presentation-choices [aria-pressed="true"]')?.focus({ preventScroll: true });
     clearTimeout(focusTimer);
     if (focus && !current.selection) focusTimer = setTimeout(() => (state.detail ? $('#detail h1') : mounted.get(current.container.id))?.focus({ preventScroll: true }), duration() + 100);
   }
-  toggle.addEventListener('click', () => { state.navOpen = !state.navOpen; playerOpen(false); state.viewOpen = false; state.findOpen = false; render(false); toggle.focus({ preventScroll: true }); });
-  $('#view-toggle').addEventListener('click', () => { state.viewOpen = !state.viewOpen; state.findOpen = false; render(false); $('#view-toggle').focus({ preventScroll: true }); });
+  toggle.addEventListener('click', () => { sendPanel('toggleNav'); render(false); toggle.focus({ preventScroll: true }); });
+  $('#view-toggle').addEventListener('click', () => { sendPanel('toggleView'); render(false); $('#view-toggle').focus({ preventScroll: true }); });
   $('#find-toggle').addEventListener('click', () => {
-    state.findOpen = !state.findOpen; state.viewOpen = false;
+    sendPanel('toggleFind');
     render(false);
-    (state.findOpen ? ($('#find-content input') || $('#find-content select')) : $('#find-toggle'))?.focus({ preventScroll: true });
+    (panels.panel === 'find' ? ($('#find-content input') || $('#find-content select')) : $('#find-toggle'))?.focus({ preventScroll: true });
   });
   document.addEventListener('pointerdown', event => {
-    if (!state.findOpen || event.target.closest('#find-lens')) return;
-    state.findOpen = false; renderFind();
+    if (panels.panel !== 'find' || event.target.closest('#find-lens')) return;
+    sendPanel('outsideFind'); renderFind();
   });
   $('#home-link').addEventListener('click', event => { event.preventDefault(); navigate(base); });
   $('#world').addEventListener('click', event => { if (state.detail && (event.target === $('#world') || event.target === $('#circles'))) closeDetail(); });
   $('#world').addEventListener('keydown', event => {
     if (event.key === 'Escape') {
-      if (state.findOpen) { state.findOpen = false; renderFind(); $('#find-toggle').focus({ preventScroll: true }); event.preventDefault(); return; }
-      if (playerExpanded) { playerOpen(false); playerToggle.focus(); return; }
-      if (state.navOpen) { state.navOpen = false; render(false); toggle.focus(); }
-      else if (state.viewOpen) { state.viewOpen = false; render(false); $('#view-toggle').focus({ preventScroll: true }); }
-      else if (state.detail) closeDetail();
-      else if (current.selection) selectNode(null);
+      const dismissed = panelToDismiss(panels);
+      if (dismissed) {
+        sendPanel('escape');
+        if (dismissed === 'find') renderFind();
+        else if (dismissed !== 'player') render(false);
+        $({ find: '#find-toggle', player: '#player-toggle', nav: '#nav-toggle', view: '#view-toggle' }[dismissed]).focus({ preventScroll: true });
+        event.preventDefault();
+        return;
+      }
+      if (state.status === 'detail') closeDetail();
+      else if (state.status === 'selection') selectNode(null);
     }
     if (event.target.closest('#player-lens,select,input,textarea,seraph-audio-player') || event.target.isContentEditable) return;
-    if (!state.navOpen && state.detail && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); step(event.key === 'ArrowDown' ? 'next' : 'prev'); }
+    if (panels.panel !== 'nav' && state.detail && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); step(event.key === 'ArrowDown' ? 'next' : 'prev'); }
   });
   const canScroll = (target, delta) => {
     const section = target.closest('#detail');
     return section && (delta > 0 ? section.scrollTop + section.clientHeight < section.scrollHeight - 2 : section.scrollTop > 0);
   };
   $('#world').addEventListener('wheel', event => {
-    if (!state.detail || state.navOpen || event.target.closest('#player-lens,select,seraph-audio-player') || canScroll(event.target, event.deltaY)) return;
+    if (!state.detail || panels.panel === 'nav' || event.target.closest('#player-lens,select,seraph-audio-player') || canScroll(event.target, event.deltaY)) return;
     event.preventDefault();
     if (Math.abs(event.deltaY) < 15 || Date.now() - wheelAt < duration()) return;
     wheelAt = Date.now(); step(event.deltaY > 0 ? 'next' : 'prev');
   }, { passive: false });
   $('#world').addEventListener('touchstart', event => { touchY = event.touches[0].clientY; }, { passive: true });
   $('#world').addEventListener('touchend', event => {
-    if (touchY == null || !state.detail || state.navOpen) return;
+    if (touchY == null || !state.detail || panels.panel === 'nav') return;
     const delta = touchY - event.changedTouches[0].clientY; touchY = null;
     if (Math.abs(delta) > 60 && !event.target.closest('#detail,#player-lens,select,seraph-audio-player')) step(delta > 0 ? 'next' : 'prev');
   }, { passive: true });
