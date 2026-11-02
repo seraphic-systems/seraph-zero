@@ -13,7 +13,7 @@ const repository = fileURLToPath(new URL('../', import.meta.url));
 async function fixture(t) {
   const root = await mkdtemp(path.join(tmpdir(), 'seraph-production-test-'));
   t.after(() => rm(root, { recursive: true, force: true }));
-  for (const file of ['apps', 'shared', 'scripts', 'package.json', 'package-lock.json', '.gitignore']) {
+  for (const file of ['apps', 'content', 'schema', 'shared', 'scripts', 'package.json', 'package-lock.json', '.gitignore']) {
     await cp(path.join(repository, file), path.join(root, file), {
       recursive: true,
       filter: file => !file.split(path.sep).some(part => ['media', 'private', '.DS_Store', '__pycache__'].includes(part)),
@@ -54,7 +54,7 @@ test('production builds only committed public Horizons and reviewed Journal cont
   await writeFile(path.join(root, 'apps/internal/media/private.wav'), 'PRIVATE_AUDIO');
   await mkdir(path.join(root, 'dist/internal'), { recursive: true });
   await writeFile(path.join(root, 'dist/internal/local.txt'), 'Local workspace');
-  const horizon = 'apps/internal/data/horizons/new-direction.md';
+  const horizon = 'content/horizons/new-direction.md';
   await writeFile(path.join(root, horizon), '---\nid: new-direction\ntitle: New direction\nlevel: 4\ndescription: A deliberate addition.\n---\n');
   await git('add', horizon);
   await writeFile(path.join(root, 'scripts/build.mjs'), 'throw new Error("Draft build");');

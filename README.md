@@ -52,11 +52,16 @@ follow to another checkout. Never copy local credentials or raw media into Git.
 ## Project map
 
 - `apps/seraphic-systems/`: landing page, Journal templates and entries, Orb UI.
-- `apps/internal/data/horizons/`: four preserved Markdown Horizon records.
-- `apps/internal/model/schema.json`: active `Horizon` and `RecordBase` contracts.
+- `content/horizons/`: four preserved Markdown Horizon records.
+- `schema/records.json`: active `Horizon` and `RecordBase` contracts.
 - `shared/`: public tokens, landing styles, icons, and assets.
 - `scripts/`: validation, record creation, static build, and committed deployment.
 - `tests/`: Node tests for the active foundation.
+
+The records and their schema live outside the site source so they remain independent
+of their presentation. Journal entries stay with the site as authored pages.
+Ignored local media and private folders retain their existing paths under
+`apps/internal/`; they are not part of the active application source.
 
 Music records, the broader schema, Zero's separate blog, connected Notes/Pages,
 internal dashboards, Ableton tooling, resampling, and hosted audio live in the

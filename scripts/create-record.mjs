@@ -4,8 +4,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import matter from 'gray-matter';
 import { readHorizons, validateRecord } from './model.mjs';
 
-const source = fileURLToPath(new URL('../apps/internal', import.meta.url));
-export async function createInternalRecord(type, metadata, directory = path.join(source, 'data/horizons')) {
+const source = fileURLToPath(new URL('../content', import.meta.url));
+export async function createRecord(type, metadata, directory = path.join(source, 'horizons')) {
   if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) throw new Error('Front matter must be a JSON object.');
   const data = { visibility: 'private', ...metadata, created_at: metadata.created_at ?? new Date().toISOString() };
   validateRecord(type, data, 'New record');
@@ -20,7 +20,7 @@ if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === imp
   try {
     const [type, json, ...extra] = process.argv.slice(2);
     if (!type || !json || extra.length) throw new Error('Usage: npm run create:record -- Horizon \'<JSON front matter>\'');
-    console.log(`Created ${await createInternalRecord(type, JSON.parse(json))}`);
+    console.log(`Created ${await createRecord(type, JSON.parse(json))}`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;
