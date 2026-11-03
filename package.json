@@ -5,12 +5,13 @@
   "scripts": {
     "dev": "vite",
     "dev:seraphic": "vite",
-    "build": "node scripts/build.mjs",
-    "build:production": "node scripts/build-production.mjs",
-    "deploy:production": "node scripts/deploy-cloudflare.mjs production",
-    "deploy:preview": "node scripts/deploy-cloudflare.mjs preview",
-    "test": "node --test",
-    "create:record": "node scripts/create-record.mjs"
+    "build": "npm run typecheck && node --experimental-strip-types scripts/build.ts",
+    "build:production": "node --experimental-strip-types scripts/build-production.ts",
+    "deploy:production": "node --experimental-strip-types scripts/deploy-cloudflare.ts production",
+    "deploy:preview": "node --experimental-strip-types scripts/deploy-cloudflare.ts preview",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "create:record": "node --experimental-strip-types scripts/create-record.ts",
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
     "node": ">=22.12"
@@ -22,6 +23,8 @@
     "marked": "^18.1.2"
   },
   "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^6.0.3",
     "vite": "^8.3.5",
     "wrangler": "4.156.0"
   }

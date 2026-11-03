@@ -2,12 +2,13 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import matter from 'gray-matter';
-import { readHorizons, validateRecord } from './model.mjs';
+import { readHorizons, validateRecord } from './model.ts';
 
 const source = fileURLToPath(new URL('../content', import.meta.url));
-export async function createRecord(type, metadata, directory = path.join(source, 'horizons')) {
+export async function createRecord(type: string, metadata: unknown, directory = path.join(source, 'horizons')) {
   if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) throw new Error('Front matter must be a JSON object.');
-  const data = { visibility: 'private', ...metadata, created_at: metadata.created_at ?? new Date().toISOString() };
+  const fields = metadata as Record<string, unknown>;
+  const data = { visibility: 'private', ...fields, created_at: fields.created_at ?? new Date().toISOString() };
   validateRecord(type, data, 'New record');
   await mkdir(directory, { recursive: true });
   if ((await readHorizons(directory)).some(record => record.data.id === data.id)) throw new Error(`Horizon id ${data.id} already exists.`);
@@ -22,7 +23,7 @@ if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === imp
     if (!type || !json || extra.length) throw new Error('Usage: npm run create:record -- Horizon \'<JSON front matter>\'');
     console.log(`Created ${await createRecord(type, JSON.parse(json))}`);
   } catch (error) {
-    console.error(error.message);
+    console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
   }
 }

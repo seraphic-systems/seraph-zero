@@ -11,7 +11,7 @@ const repository = fileURLToPath(new URL('../', import.meta.url));
 // Build an immutable source snapshot, never the index or working directory.
 // A PR checkout builds its candidate commit; only master should deploy publicly.
 export async function buildProduction(root = repository) {
-  const git = async (...args) => (await exec('git', ['-C', root, ...args])).stdout.trim();
+  const git = async (...args: string[]) => (await exec('git', ['-C', root, ...args])).stdout.trim();
   const revision = await git('rev-parse', '--verify', 'HEAD^{commit}');
   const committedAt = await git('show', '-s', '--format=%cI', revision);
   const temporary = await mkdtemp(path.join(tmpdir(), 'seraph-release-'));
@@ -20,7 +20,7 @@ export async function buildProduction(root = repository) {
     const snapshot = path.join(temporary, 'source');
     await mkdir(snapshot);
     await git('archive', '--format=tar', `--output=${archive}`, revision,
-      'apps', 'content', 'schema', 'shared', 'scripts', 'package.json', 'package-lock.json');
+      'apps', 'content', 'schema', 'shared', 'scripts', 'package.json', 'package-lock.json', 'tsconfig.json');
     await exec('tar', ['-xf', archive, '-C', snapshot]);
     for (const file of ['package.json', 'package-lock.json']) {
       if (!(await readFile(path.join(root, file))).equals(await readFile(path.join(snapshot, file)))) {
@@ -28,7 +28,8 @@ export async function buildProduction(root = repository) {
       }
     }
     await symlink(path.join(root, 'node_modules'), path.join(snapshot, 'node_modules'), 'dir');
-    const { stdout } = await exec(process.execPath, [path.join(snapshot, 'scripts/build.mjs')], { cwd: snapshot });
+    await exec(process.execPath, [path.join(snapshot, 'node_modules/typescript/bin/tsc'), '--noEmit', '--project', path.join(snapshot, 'tsconfig.json')], { cwd: snapshot });
+    const { stdout } = await exec(process.execPath, ['--experimental-strip-types', path.join(snapshot, 'scripts/build.ts')], { cwd: snapshot });
     for (const site of ['seraphic-systems']) {
       const built = path.join(snapshot, 'dist', site);
       await writeFile(path.join(built, 'release.json'), JSON.stringify({ revision, committed_at: committedAt }, null, 2) + '\n');

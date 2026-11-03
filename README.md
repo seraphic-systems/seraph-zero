@@ -83,11 +83,21 @@ Source changes rebuild and reload the site. Private Horizons remain excluded eve
 in preview. There are no local management or audio APIs.
 
 ```sh
+npm run typecheck
 npm test
 npm run build
 # Local static review output, including Journal drafts; do not deploy this output:
 npm run build -- --drafts
 ```
+
+Application modules, Node scripts, tests, and Vite configuration use TypeScript
+with strict checking. `npm run typecheck` checks all active source; `npm run build`
+checks types before building. Node commands use built-in type stripping (including
+on Node 22.12); types must remain erasable. The static build uses the TypeScript 6
+compiler API to emit browser ES modules at their existing `.js` URLs. No framework,
+bundler, TypeScript source, or source maps are added to the public output.
+The JSON schema remains the runtime authority for front matter; TypeScript shapes
+in `orb/types.ts` describe the validated data used by the application.
 
 The only publish directory is **`dist/seraphic-systems`**. The build copies a
 specific set of landing files, public shared assets, rendered Journal pages, Orb
@@ -170,8 +180,8 @@ npm run deploy:preview
 npm run deploy:production
 ```
 
-These retain the committed-source build and production revision guard. Dependency
-files must match HEAD and dependencies must be installed. `/release.json` identifies
+These retain the committed-source build and production revision guard. The archived
+source is type-checked before building. Dependency files must match HEAD and dependencies must be installed. `/release.json` identifies
 the source commit and commit time, not content publication time.
 
 `wrangler.json` retains the existing Worker identity and production Custom Domain,
@@ -181,7 +191,8 @@ or R2 binding. No hosting changes occur until deployment. Legacy audio routes wo
 stop serving from this site if this reduction is deployed; remote objects remain
 untouched in their private buckets. Review this behavior before accepting deployment.
 
-CI runs `npm ci`, Node tests, the committed production build, and a Wrangler dry run.
+CI runs `npm ci`, strict type checking, Node tests, the committed production build,
+and a Wrangler dry run.
 `.github/branch-protection.json` describes the intended PR and Repository validation
 requirements, but does not enable GitHub protections by itself. Actual protection
 settings and Cloudflare preview authentication have not been verified here.

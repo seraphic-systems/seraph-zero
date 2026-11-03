@@ -2,23 +2,23 @@ import { cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import matter from 'gray-matter';
 import { marked } from 'marked';
-import { escapeHtml, render } from './html.mjs';
-import { journalThumbnail } from './journal-art.mjs';
+import { escapeHtml, render } from './html.ts';
+import { journalThumbnail } from './journal-art.ts';
 
 // Entries share a document frame, but own their body and optional assets.
-export async function buildJournal(source, output, { includeDrafts = false } = {}) {
+export async function buildJournal(source: string, output: string, { includeDrafts = false } = {}) {
   const tokens = await readFile(new URL('../shared/tokens.css', import.meta.url), 'utf8');
   const colors = Object.fromEntries(['background', 'accent'].map(name => {
     const value = tokens.match(new RegExp(`--color-${name}:\\s*(#[a-fA-F0-9]{3,8})\\s*;`))?.[1];
     if (!value) throw new Error(`Journal artwork needs --color-${name} in shared/tokens.css`);
     return [name, value];
   }));
-  const entries = [];
+  const entries: { slug: string; folder: string; draft: boolean; title: string; description: string; date?: string; content: string; styles: string; scripts: string }[] = [];
   const entriesRoot = path.join(source, 'entries');
   for (const directory of await readdir(entriesRoot, { withFileTypes: true })) {
     if (!directory.isDirectory()) continue;
     const slug = directory.name;
-    const fail = message => { throw new Error(`journal/${slug}: ${message}`); };
+    const fail = (message: string) => { throw new Error(`journal/${slug}: ${message}`); };
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) fail('use a lowercase, hyphen-separated directory name');
     const folder = path.join(entriesRoot, slug);
     const files = await readdir(folder);
@@ -36,7 +36,7 @@ export async function buildJournal(source, output, { includeDrafts = false } = {
       fail('date must be a quoted, real YYYY-MM-DD date, or omitted');
     }
     entries.push({ slug, folder, draft: data.draft === true, title: data.title, description: data.description, date,
-      content: bodies[0].endsWith('.md') ? marked.parse(content) : content,
+      content: bodies[0].endsWith('.md') ? marked.parse(content, { async: false }) : content,
       styles: files.includes('style.css') ? '<link rel="stylesheet" href="./style.css">' : '',
       scripts: files.includes('script.js') ? '<script type="module" src="./script.js"></script>' : '',
     });
@@ -45,10 +45,10 @@ export async function buildJournal(source, output, { includeDrafts = false } = {
   const layout = await readFile(path.join(source, 'templates/layout.html'), 'utf8');
   const index = await readFile(path.join(source, 'templates/index.html'), 'utf8');
   const entryTemplate = await readFile(path.join(source, 'templates/entry.html'), 'utf8');
-  const dateHtml = entry => entry.date ? `<time datetime="${entry.date}">${new Intl.DateTimeFormat('en-US', {
+  const dateHtml = (entry: { date?: string }) => entry.date ? `<time datetime="${entry.date}">${new Intl.DateTimeFormat('en-US', {
     dateStyle: 'long', timeZone: 'UTC',
   }).format(new Date(entry.date))}</time>` : '';
-  const page = (values, content) => render(layout, { styles: '', scripts: '', entry: '', current: values.entry ? 'location' : 'page', ...values, content });
+  const page = (values: Record<string, unknown>, content: string) => render(layout, { styles: '', scripts: '', entry: '', current: values.entry ? 'location' : 'page', ...values, content });
   await mkdir(output, { recursive: true });
   await cp(path.join(source, 'journal.css'), path.join(output, 'journal.css'));
   const listing = entries.map(entry => `<li><a class="entry-link" href="/journal/${entry.slug}/">
@@ -65,7 +65,7 @@ export async function buildJournal(source, output, { includeDrafts = false } = {
   for (const entry of entries) {
     const target = path.join(output, entry.slug);
     await mkdir(target, { recursive: true });
-    await writeFile(path.join(target, 'thumbnail.svg'), journalThumbnail(entry.slug, entry.content, colors));
+    await writeFile(path.join(target, 'thumbnail.svg'), journalThumbnail(entry.slug, entry.content, { background: colors.background!, accent: colors.accent! }));
     // Only an explicit public assets directory and the page's style/module ship.
     for (const file of await readdir(entry.folder)) {
       if (['assets', 'style.css', 'script.js'].includes(file)) {

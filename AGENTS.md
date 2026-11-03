@@ -24,22 +24,24 @@ Use Node.js >=22.12 and `npm ci` with the committed lockfile.
 | Local preview, including marked Journal drafts | `npm run dev` |
 | Public build, excluding drafts | `npm run build` |
 | Committed public release build | `npm run build:production` |
+| Strict type checking | `npm run typecheck` |
 | Node tests | `npm test` |
 | New Horizon | `npm run create:record -- Horizon '<JSON front matter>'` |
 | Committed branch preview deployment | `npm run deploy:preview` |
 | Accepted production deployment | `npm run deploy:production` |
 
-Run Node tests for JS/build changes and the affected build for template/schema/content
-changes. Inspect UI changes in a browser at desktop and narrow widths, including
+Run strict type checking and Node tests for TypeScript/build changes, and the
+affected build for template/schema/content changes. Inspect UI changes in a browser at desktop and narrow widths, including
 keyboard navigation. Report checks and limits. Documentation-only edits need no
 application tests. Never deploy as part of an unapproved review task.
 
 ## Implementation
 
-- Keep ES modules, plain HTML/CSS, Vite previews, and the static Node build.
+- Keep strict TypeScript with erasable types, ES modules, plain HTML/CSS, Vite
+  previews, and the static Node build.
 - Edit source, never generated `dist/` output. Only `dist/seraphic-systems` ships.
-- Keep content policy (`content.js`), pure layout (`engine.js`), URL routing
-  (`routes.js`), presentation (`presentations.js`), and DOM coordination (`app.js`)
+- Keep content policy (`content.ts`), pure layout (`engine.ts`), URL routing
+  (`routes.ts`), presentation (`presentations.ts`), and DOM coordination (`app.ts`)
   separate. Add controls only when the active scope needs them.
 - Use semantic tokens from `shared/tokens.css`. Keep application layout in the app.
 - The landing copy stays HTML. Journal entries remain authored documents, not

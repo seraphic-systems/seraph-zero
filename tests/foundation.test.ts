@@ -1,22 +1,24 @@
+import type { Catalog, HorizonData } from '../apps/seraphic-systems/orb/types.ts';
+import type { TestContext } from 'node:test';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile, rm, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import matter from 'gray-matter';
-import { readHorizons, publicCatalog, modelSchema } from '../scripts/model.mjs';
-import { createRecord } from '../scripts/create-record.mjs';
-import { buildOrb } from '../scripts/orb.mjs';
-import { createContentSource } from '../apps/seraphic-systems/orb/content.js';
-import { resolveRoute, horizonRoute } from '../apps/seraphic-systems/orb/routes.js';
-import { layout } from '../apps/seraphic-systems/orb/engine.js';
+import { readHorizons, publicCatalog, modelSchema } from '../scripts/model.ts';
+import { createRecord } from '../scripts/create-record.ts';
+import { buildOrb } from '../scripts/orb.ts';
+import { createContentSource } from '../apps/seraphic-systems/orb/content.ts';
+import { resolveRoute, horizonRoute } from '../apps/seraphic-systems/orb/routes.ts';
+import { layout } from '../apps/seraphic-systems/orb/engine.ts';
 
-async function fixture(t) {
+async function fixture(t: TestContext) {
   const directory = await mkdtemp(path.join(tmpdir(), 'seraph-foundation-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   return directory;
 }
-const metadata = { id: 'creation', title: 'Creation', level: 1, description: 'Giving form.', created_at: '2026-10-30T23:33:11.000Z' };
+const metadata: HorizonData = { id: 'creation', title: 'Creation', level: 1, description: 'Giving form.', created_at: '2026-10-30T23:33:11.000Z' };
 
 test('Horizon contracts reject invalid shape, timestamps and duplicate permanent identities', async t => {
   const directory = await fixture(t);
@@ -59,6 +61,11 @@ test('public Orb includes only public Horizons, with complete HTML and no privat
   await writeFile(path.join(source, 'private.md'), matter.stringify('PRIVATE_BODY', { ...metadata, id: 'secret-horizon', title: 'PRIVATE_TITLE', visibility: 'private' }));
   const catalog = publicCatalog(await readHorizons(source));
   await buildOrb(new URL('../apps/seraphic-systems/orb', import.meta.url).pathname, output, catalog);
+  const modules = await readdir(path.join(output, 'orb'));
+  assert.equal(modules.some(name => name.endsWith('.ts') || name.endsWith('.map')), false);
+  const app = await readFile(path.join(output, 'orb/app.js'), 'utf8');
+  assert.match(app, /from ['"]\.\/content\.js['"]/);
+  assert.doesNotMatch(app, /from ['"][^'"]+\.ts['"]/);
   const exported = await readFile(path.join(output, 'catalog.json'), 'utf8');
   assert.doesNotMatch(exported, /PRIVATE|secret-horizon/);
   assert.equal(JSON.parse(exported).records.length, 1);
@@ -75,7 +82,7 @@ test('public Orb includes only public Horizons, with complete HTML and no privat
 });
 
 test('one layout groups by the meaning of Horizon levels without mutating source order', () => {
-  const catalog = { records: [
+  const catalog: Catalog = { records: [
     { type: 'Horizon', data: { ...metadata, id: 'goal', level: 4 } },
     { type: 'Horizon', data: metadata },
   ] };

@@ -1,24 +1,24 @@
 import { createHash } from 'node:crypto';
 
-const number = value => Number(value.toFixed(2));
+const number = (value: number) => Number(value.toFixed(2));
 
 // Geometry depends on document structure, never on raw prose embedded in SVG.
 // Quantized lengths keep small edits from rearranging the composition.
-export function journalThumbnail(slug, html, colors) {
+export function journalThumbnail(slug: string, html: string, colors: { background: string; accent: string }) {
   const clean = html.replace(/<!--[\s\S]*?-->|<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, '');
-  const length = text => text.replace(/<[^>]*>/g, ' ').replace(/&[^;\s]+;/g, 'x').trim().split(/\s+/).filter(Boolean).length;
+  const length = (text: string) => text.replace(/<[^>]*>/g, ' ').replace(/&[^;\s]+;/g, 'x').trim().split(/\s+/).filter(Boolean).length;
   const blocks = [...clean.matchAll(/<(h[1-6]|p|li|blockquote|pre)\b[^>]*>([\s\S]*?)<\/\1\s*>/gi)]
     .map(([, tag, body]) => ({ heading: /^h/i.test(tag), words: length(body) }));
   if (!blocks.length) blocks.push({ heading: false, words: length(clean) });
   const seed = createHash('sha256').update(slug).digest();
-  const random = index => seed[index % seed.length] / 255;
+  const random = (index: number) => seed[index % seed.length] / 255;
   const total = blocks.reduce((sum, block) => sum + block.words, 0);
   const density = Math.min(1, Math.log2(1 + total) / 12);
   const rotation = number(random(0) * 180);
   const centerX = number(210 + random(1) * 60);
   const centerY = number(145 + random(2) * 30);
   const parts = [];
-  const ellipse = (rx, ry, angle, opacity) => `<ellipse cx="${centerX}" cy="${centerY}" rx="${rx}" ry="${ry}" transform="rotate(${angle} ${centerX} ${centerY})" opacity="${opacity}"/>`;
+  const ellipse = (rx: number, ry: number, angle: number, opacity: number) => `<ellipse cx="${centerX}" cy="${centerY}" rx="${rx}" ry="${ry}" transform="rotate(${angle} ${centerX} ${centerY})" opacity="${opacity}"/>`;
   // A shared orbital skeleton holds together both sparse and dense entries.
   parts.push(ellipse(123, 123, 0, .35));
   parts.push(ellipse(123, number(38 + random(3) * 28), rotation, .65));
