@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="title">
+  <title id="title">Seraph — six wings surrounding an eye</title>
+  <ellipse cx="20" cy="4" rx="4" ry="1.5" />
+  <path d="M18 18C10 17 7 11 8 4C15 6 19 11 18 18Z
+           M22 18C30 17 33 11 32 4C25 6 21 11 22 18Z
+           M15 21C8 24 3 20 2 13C9 13 13 16 15 21Z
+           M25 21C32 24 37 20 38 13C31 13 27 16 25 21Z
+           M18 25C10 24 7 29 10 37C17 34 19 30 18 25Z
+           M22 25C30 24 33 29 30 37C23 34 21 30 22 25Z" />
+  <path d="M10 7Q11 13 18 18M30 7Q29 13 22 18
+           M5 15Q8 20 15 21M35 15Q32 20 25 21
+           M11 34Q11 28 18 25M29 34Q29 28 22 25" />
+  <path d="M14 21Q20 15 26 21Q20 27 14 21Z" />
+  <circle cx="20" cy="21" r="1.7" />
+</svg>
