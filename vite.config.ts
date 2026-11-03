@@ -2,12 +2,12 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig, type UserConfig } from 'vite';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const exec = promisify(execFile);
-export default defineConfig(async () => {
-  const build = () => exec(process.execPath, [path.join(root, 'scripts/build.mjs'), '--drafts']);
+export default defineConfig(async (): Promise<UserConfig> => {
+  const build = () => exec(process.execPath, ['--experimental-strip-types', path.join(root, 'scripts/build.ts'), '--drafts']);
   await build();
   return {
     root: path.join(root, 'dist/seraphic-systems'),
@@ -18,7 +18,7 @@ export default defineConfig(async () => {
       configureServer(server) {
         const sources = ['apps/seraphic-systems', 'content/horizons', 'schema', 'shared', 'scripts'].map(name => path.join(root, name));
         server.watcher.add(sources);
-        let timer, building = false, pending = false;
+        let timer: ReturnType<typeof setTimeout> | undefined, building = false, pending = false;
         async function rebuild() {
           if (building) return;
           building = true;
@@ -27,14 +27,15 @@ export default defineConfig(async () => {
             server.moduleGraph.invalidateAll();
             server.ws.send({ type: 'full-reload' });
           } catch (error) {
-            server.config.logger.error(error.stderr || error.message);
-            server.ws.send({ type: 'error', err: { message: error.stderr || error.message, stack: '' } });
+            const message = error instanceof Error ? ('stderr' in error ? String(error.stderr) : error.message) : String(error);
+            server.config.logger.error(message);
+            server.ws.send({ type: 'error', err: { message, stack: '' } });
           } finally {
             building = false;
             if (pending) timer = setTimeout(rebuild, 100);
           }
         }
-        function onChange(event, file) {
+        function onChange(event: string, file: string) {
           if (path.basename(file) === '.DS_Store' || !sources.some(source => file.startsWith(source + path.sep))) return;
           pending = true; clearTimeout(timer); timer = setTimeout(rebuild, 100);
         }

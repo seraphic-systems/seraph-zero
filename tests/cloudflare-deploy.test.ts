@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { deploymentArgs } from '../scripts/deploy-cloudflare.mjs';
+import { deploymentArgs } from '../scripts/deploy-cloudflare.ts';
 
 test('production can only deploy the accepted remote master revision', () => {
   assert.deepEqual(deploymentArgs('production', 'accepted', 'accepted'), ['deploy']);

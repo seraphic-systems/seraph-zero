@@ -1,9 +1,9 @@
 // One continuous figure: orbital circles open into six wings and a golden spiral.
 // Geometry follows the reading position, with no perpetual animation loop.
-const svg = document.querySelector('#celestial-geometry');
-const wings = document.querySelector('#wings');
-const thread = document.querySelector('#golden-thread');
-const chapters = [...document.querySelectorAll('header, main section')];
+const svg = document.querySelector<SVGSVGElement>('#celestial-geometry')!;
+const wings = document.querySelector<SVGGElement>('#wings')!;
+const thread = document.querySelector<SVGPathElement>('#golden-thread')!;
+const chapters = [...document.querySelectorAll<HTMLElement>('header, main section')];
 const motion = matchMedia('(prefers-reduced-motion: reduce)');
 const phi = (1 + Math.sqrt(5)) / 2;
 const ns = 'http://www.w3.org/2000/svg';
@@ -23,9 +23,9 @@ const forms = [
   [0.3, 140, 1.2, 1.9],
   [0.12, 150, 1.4, 1.5],
 ];
-let anchors = [];
+let anchors: number[] = [];
 let scheduled = false;
-const mix = (a, b, t) => a + (b - a) * t;
+const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 function measure() {
   anchors = chapters.map(el => el.getBoundingClientRect().top + window.scrollY + el.offsetHeight * .4);
 }

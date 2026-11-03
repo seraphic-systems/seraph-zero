@@ -1,11 +1,12 @@
+import type { TestContext } from 'node:test';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, cp, writeFile, readFile, access, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { buildJournal } from '../scripts/journal.mjs';
+import { buildJournal } from '../scripts/journal.ts';
 
-async function fixture(t) {
+async function fixture(t: TestContext) {
   const directory = await mkdtemp(path.join(tmpdir(), 'seraph-journal-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   const source = path.join(directory, 'source');
@@ -13,7 +14,7 @@ async function fixture(t) {
   await cp(new URL('../apps/seraphic-systems/journal', import.meta.url), source, { recursive: true });
   await rm(path.join(source, 'entries'), { recursive: true });
   await mkdir(path.join(source, 'entries'));
-  const entry = async (slug, metadata, body = '', format = 'md') => {
+  const entry = async (slug: string, metadata: string, body = '', format = 'md') => {
     const folder = path.join(source, 'entries', slug);
     await mkdir(folder, { recursive: true });
     await writeFile(path.join(folder, `index.${format}`), `---\n${metadata}\n---\n${body}`);

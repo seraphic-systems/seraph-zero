@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { journalThumbnail } from '../scripts/journal-art.mjs';
+import { journalThumbnail } from '../scripts/journal-art.ts';
 
 const colors = { background: '#faf9f6', accent: '#456456' };
-const art = (slug, html) => journalThumbnail(slug, html, colors);
+const art = (slug: string, html: string) => journalThumbnail(slug, html, colors);
 
 test('artwork is deterministic, slug-specific, and responds to document structure', () => {
   const body = '<p>A small beginning.</p>';
