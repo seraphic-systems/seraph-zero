@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="title">
+  <title id="title">Throne — intersecting wheels encircled by eyes</title>
+  <circle cx="20" cy="20" r="17" />
+  <circle cx="20" cy="20" r="12" />
+  <ellipse cx="20" cy="20" rx="7" ry="17" transform="rotate(45 20 20)" />
+  <ellipse cx="20" cy="20" rx="7" ry="17" transform="rotate(-45 20 20)" />
+  <path d="M16 20Q20 16 24 20Q20 24 16 20Z" />
+  <circle cx="20" cy="20" r="1.3" />
+  <g id="rim-eye">
+    <path d="M17.5 5.5Q20 2.5 22.5 5.5Q20 8.5 17.5 5.5Z" />
+    <circle cx="20" cy="5.5" r=".65" />
+  </g>
+  <use href="#rim-eye" transform="rotate(45 20 20)" />
+  <use href="#rim-eye" transform="rotate(90 20 20)" />
+  <use href="#rim-eye" transform="rotate(135 20 20)" />
+  <use href="#rim-eye" transform="rotate(180 20 20)" />
+  <use href="#rim-eye" transform="rotate(225 20 20)" />
+  <use href="#rim-eye" transform="rotate(270 20 20)" />
+  <use href="#rim-eye" transform="rotate(315 20 20)" />
+</svg>
