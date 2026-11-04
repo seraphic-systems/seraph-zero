@@ -21,6 +21,15 @@ async function fixture(t: TestContext) {
       filter: file => !file.split(path.sep).some(part => ['media', 'private', '.DS_Store', '__pycache__'].includes(part)),
     });
   }
+  // Publication coverage uses controlled entries, independent of real Journal content.
+  const entries = path.join(root, 'apps/seraphic-systems/journal/entries');
+  await rm(entries, { recursive: true, force: true });
+  for (const [slug, draft] of [['published-fixture', false], ['draft-fixture', true]] as const) {
+    const folder = path.join(entries, slug);
+    await mkdir(path.join(folder, 'assets'), { recursive: true });
+    await writeFile(path.join(folder, 'index.md'), `---\ntitle: ${slug}\ndescription: Publication fixture\ndraft: ${draft}\n---\n${slug} body.\n`);
+    await writeFile(path.join(folder, 'assets/example.txt'), `${slug} asset`);
+  }
   const git = async (...args: string[]) => (await exec('git', ['-C', root, ...args])).stdout.trim();
   await git('init'); await git('add', '.');
   const commit = (message: string) => git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', '-c', 'commit.gpgsign=false', 'commit', '-m', message);
@@ -46,11 +55,16 @@ test('production builds only committed public Horizons and reviewed Journal cont
   const catalog = JSON.parse(await readFile(path.join(site, 'catalog.json'), 'utf8'));
   assert.equal(catalog.records.length, 4);
   assert.ok(catalog.records.every((record: HorizonRecord) => record.type === 'Horizon'));
-  assert.match(await readFile(path.join(site, 'journal/index.html'), 'utf8'), /first entry is taking shape/);
-  for (const file of ['songs.json', 'stems.json', 'notes.json', 'pages.json', 'model-schema.json', 'orb/music', 'orb/model', 'orb/operations', 'journal/a-foundation-to-trust', 'api', 'shared/components/audio-player']) {
+  const journal = await readFile(path.join(site, 'journal/index.html'), 'utf8');
+  assert.match(journal, /href="\/journal\/published-fixture\/"/);
+  assert.doesNotMatch(journal, /draft-fixture/);
+  assert.match(await readFile(path.join(site, 'journal/published-fixture/index.html'), 'utf8'), /published-fixture body\./);
+  assert.equal(await readFile(path.join(site, 'journal/published-fixture/assets/example.txt'), 'utf8'), 'published-fixture asset');
+  for (const file of ['songs.json', 'stems.json', 'notes.json', 'pages.json', 'model-schema.json', 'orb/music', 'orb/model', 'orb/operations', 'journal/draft-fixture', 'api', 'shared/components/audio-player']) {
     assert.equal(Object.keys(official).some(name => name === file || name.startsWith(`${file}/`)), false, `unexpected public path: ${file}`);
   }
   await writeFile(path.join(root, 'apps/seraphic-systems/index.html'), '<h1>Unstaged draft</h1>');
+  await writeFile(path.join(root, 'apps/seraphic-systems/journal/entries/published-fixture/index.md'), 'Uncommitted Journal edit');
   await writeFile(path.join(root, 'shared/untracked.txt'), 'Not official');
   await mkdir(path.join(root, 'apps/internal/media'), { recursive: true });
   await writeFile(path.join(root, 'apps/internal/media/private.wav'), 'PRIVATE_AUDIO');
