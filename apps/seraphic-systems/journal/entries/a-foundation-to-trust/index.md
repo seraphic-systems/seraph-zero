@@ -1,43 +1,35 @@
 ---
-title: A foundation to trust
-description: Making room for exploration by choosing what to build on.
-draft: true
+title: Foundation
+description: Exploring the project foundations.
+draft: false
 ---
 
-It has become easy to turn an idea into working software. I can follow a thought, build an interface, and discover something I would not have reached by planning alone. I want to keep that freedom.
+Hello, and welcome to the first post. This blog is a place to talk about the Seraph Zero project as it grows, and to explore the why and the meaning behind its decisions. As it becomes easier to actually create things, I think it becomes more important to take the time to think about their purpose. Each post will get into concrete details, technical or otherwise, and how they relate to that purpose. That covers the project as a whole, not just its software. Still, the software foundation is where the project begins, so that is where we'll start.
 
-But the project can grow faster than my understanding of it. Features accumulate. Experiments become assumptions. Eventually I have something substantial that I can no longer hold clearly in mind.
+## Schema first
 
-This is an attempt to begin again without throwing that work away.
+The foundation of the project is to be "schema first." A **schema** is a structured framework, mental model, or plan that helps organize information, guide perception, and make sense of complex ideas. The schema needs to be the foundation because it is essentially what makes the project what it is. It gives the project structure and meaning, and it gives everyone involved a way to relate to each other through a shared understanding of reality.
 
-## Something I can return to
+To keep things simple, the schema starts with only one type: a "Horizon." A Horizon is defined as "a value, guiding principle, long-term vision, or near-term goal for the practice. Levels progress from foundational purpose toward concrete action. Level measures the role of a horizon, not its importance or how far in the future it lies." There are four levels: values, guiding principles, long-term vision, and near-term goals. It is important to start with this type because it establishes a future and a purpose for the project.
 
-I want an underlying structure I can understand independently of the interface. What kinds of things exist here? What do they mean? Which connections have I actually made?
+The three level 1 Horizons, the enduring values of the project, are contemplation, creation, and communion. There are countless ways these values can be realized, and the project will of course show certain preferences for how that is done, both through how it evolves in practice and through the more specific Horizons that get encoded over time. At its core, though, these three values define its identity:
 
-A schema makes some of those commitments explicit. Entries give them substance. Neither needs to describe everything I might eventually do. The structure can grow as using it teaches me what is missing.
+- **Contemplation:** Attending to what is true, beautiful, and worth loving.
+- **Creation:** Giving form to what you discover and offering it to the world.
+- **Communion:** Building relationships in which people are known and committed to one another.
 
-For now, I am starting with [Horizons](/orb/): the values and directions that guide the practice. They are few enough to read together and important enough to revisit.
+With the schema-first principle set, and the most basic types and records in place, the next step is to think about the user interface.
 
-## Three ways in
+## Three layers
 
-The landing page offers an introduction: a compressed account of what this project is and why someone might enter.
+Following from the schema-first foundation, the user interface is designed in three layers.
 
-The Journal makes room for authored encounters. An entry can develop a thought, present a work, or compose an experience in its own way.
+The first layer is essentially a slightly more opinionated admin panel. The idea is to give a kind of "base level" view of the schema and the data, while still making it something anyone can understand. Any graphical interface is an abstraction. Even the files that hold the data are an abstraction over bytes, and the bytes are an abstraction over physical states, like electric charge trapped in a memory chip, which is about as close to "just electrons" as it gets. The goal here is to land on the right level of abstraction: one that lets you inspect and understand the things that make up the project pretty comprehensively, while still communicating meaning aesthetically. This is also a public-facing layer, so more operational needs can be served by other tools.
 
-Orb sits closer to the underlying records. It is a place to explore what is there, with enough form to make that exploration pleasant.
+An inspiration here is something like Notion, where views are configurable. I still want to provide sensible defaults, and to expose more customization in the future where it makes sense. For now the schema is quite simple, so there is no need to over-engineer for situations that aren't relevant yet. It is still important to start communicating the idea through the UI. You should feel like you're looking "under the hood" without being overwhelmed. As complexity grows, the goal is to keep it tucked away and let you reveal more, progressively and naturally, as you choose.
 
-These experiences do not have to repeat the same information. They need to remain understandable in relation to one another.
+The second layer sits one level of abstraction up. It is meant for more bespoke, curated views over the underlying data, though for now the idea is to evolve toward that rather than start there. At the moment this layer is essentially a blog, like this one, explaining the meaning behind things. Eventually the two layers might converge, with blog content becoming data and posts evolving into more complex, dynamic pages. For now, it is a place to explain things as we get there.
 
-## Trust takes practice
+The third layer is the landing page. This can definitely evolve as time goes on too, but the idea is for it to be the most compressed form of the underlying data that can still convey its meaning. The plan is for the project to grow, evolve, and change, ideally into a large, dynamic system. Whatever happens, this page should compress that complexity into the smallest meaningful piece, so it can quickly communicate what the project is.
 
-A valid entry is not necessarily an accurate or current one. Trust also requires reading what is here, noticing what has changed, and deciding whether it still expresses what I mean.
-
-The foundation should make that possible. Identities should endure. Changes should be visible. Earlier versions should be recoverable. Reviewing the contents should be simple enough that I actually do it.
-
-## Keeping room to explore
-
-The larger project is preserved in a separate lab. Music, production tools, and other experiments can continue there without every discovery becoming part of the accepted foundation.
-
-Bringing an idea back will be a deliberate choice: what does it make possible, and what is the smallest form that belongs here?
-
-The first step is small: an introduction, this entry, and a few Horizons. I want to understand those well enough to build on them.
+That's it for the first post. Thanks for reading, and stay tuned for the next one!
