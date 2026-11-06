@@ -136,6 +136,19 @@ only public records and their routes. Changing a title or filename does not chan
 identity. Do not infer creation dates, invent relationships, or renumber levels
 based on deadlines. No relationships are needed by this initial collection.
 
+### Public Horizons feed
+
+Fetch `/api/v1/horizons.json` with a plain, unauthenticated GET. The static build
+generates the feed from the same validated public Horizons as Orb. On Cloudflare,
+the feed allows cross-origin browser reads. For local development, run
+`npm run dev` and use `http://127.0.0.1:5174/api/v1/horizons.json`.
+
+The response is an object with a `horizons` array sorted by level, then by ID.
+Each item has `id`, `title`, `level` (1–4), `description`, `created_at`
+(a timestamp or `null` if unknown), and `content` (Markdown, or an empty
+string when the record has no body). Use `id` as the stable identifier.
+The feed updates with each site release.
+
 ## Journal
 
 Entries live at `apps/seraphic-systems/journal/entries/<stable-slug>/index.md`:
