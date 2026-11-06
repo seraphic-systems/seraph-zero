@@ -23,8 +23,7 @@
             "public",
             "private"
           ],
-          "default": "public",
-          "description": "Public records may be published. Private records are validated but excluded from public catalogs and routes. Existing Horizons default to public; the creation helper writes private explicitly."
+          "description": "Public records may be published. Private records are excluded from public catalogs and routes."
         }
       }
     },
@@ -33,6 +32,10 @@
       "description": "A value, guiding principle, long-term vision, or near-term goal for the practice. Levels progress from foundational purpose toward concrete action. Level measures the role of a horizon, not its importance or how far in the future it lies.",
       "type": "object",
       "properties": {
+        "visibility": {
+          "default": "public",
+          "description": "Existing Horizons with no visibility field are public. The creation helper writes private explicitly."
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
@@ -62,6 +65,67 @@
         "title",
         "level",
         "description"
+      ],
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "OrganicMemory": {
+      "title": "Organic Memory",
+      "description": "An authored recollection of a lived experience that can be revisited. The recollection lives in the Markdown body.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Permanent identifier for the recollection."
+        },
+        "title": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "visibility"
+      ],
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/definitions/RecordBase"
+        }
+      ]
+    },
+    "Mix": {
+      "title": "Mix",
+      "description": "One dated version of a song with an object key for its audio file in private storage.",
+      "type": "object",
+      "properties": {
+        "song": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Stable identifier for the song."
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "Version date in YYYY-MM-DD. The song identifier and version date together identify the mix."
+        },
+        "audio_file": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-][A-Za-z0-9._-]*(?:/[A-Za-z0-9_-][A-Za-z0-9._-]*)*$",
+          "description": "Stable object key within the configured private audio bucket, for example mixes/coldness/2026-04-04.wav. Use slash-separated segments of ASCII letters, digits, underscores, hyphens and dots. Start each segment with a letter, digit, underscore or hyphen."
+        }
+      },
+      "required": [
+        "song",
+        "date",
+        "audio_file",
+        "visibility"
       ],
       "additionalProperties": true,
       "allOf": [

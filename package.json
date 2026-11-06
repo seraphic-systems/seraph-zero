@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:fixtures": "vite --mode fixtures",
     "dev:seraphic": "vite",
     "build": "npm run typecheck && node --experimental-strip-types scripts/build.ts",
     "build:production": "node --experimental-strip-types scripts/build-production.ts",

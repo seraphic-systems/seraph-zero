@@ -48,6 +48,32 @@ async function outputFiles(directory: string, prefix = '') {
   return result;
 }
 
+test('fixture preview uses separate Horizons and keeps them out of the public build', async t => {
+  const { root } = await fixture(t);
+  const fixtures = 'tests/fixtures/content/horizons';
+  await cp(path.join(repository, fixtures), path.join(root, fixtures), { recursive: true });
+  const build = (...args: string[]) => exec(process.execPath, ['--experimental-strip-types', 'scripts/build.ts', ...args], { cwd: root });
+  const site = path.join(root, 'dist/seraphic-systems');
+  const preview = path.join(root, 'dist/fixtures-preview');
+  const feed = 'api/v1/horizons.json';
+  const routes = 'orb/horizons';
+
+  await build('--fixtures');
+  const fixtureFeed = await readFile(path.join(preview, feed), 'utf8');
+  assert.match(fixtureFeed, /"id": "fixture-curiosity"/);
+  assert.doesNotMatch(fixtureFeed, /"id": "(creation|fixture-private-workshop-notes)"/);
+  assert.match(await readFile(path.join(preview, routes, 'fixture-curiosity/index.html'), 'utf8'), /Curiosity/);
+  await assert.rejects(readdir(site), { code: 'ENOENT' });
+
+  await build();
+  const publicFeed = await readFile(path.join(site, feed), 'utf8');
+  assert.match(publicFeed, /"id": "creation"/);
+  assert.doesNotMatch(publicFeed, /"id": "fixture-/);
+  assert.doesNotMatch(await readFile(path.join(site, 'catalog.json'), 'utf8'), /"id": "fixture-/);
+  assert.equal((await readdir(path.join(site, routes))).some(name => name.startsWith('fixture-')), false);
+  assert.equal(await readFile(path.join(preview, feed), 'utf8'), fixtureFeed);
+});
+
 test('production builds only committed public Horizons and reviewed Journal content, excluding every local edit', async t => {
   const { root, git, commit } = await fixture(t);
   const revision = await buildProduction(root);
