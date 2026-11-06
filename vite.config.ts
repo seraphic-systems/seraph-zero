@@ -6,17 +6,19 @@ import { defineConfig, type UserConfig } from 'vite';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const exec = promisify(execFile);
-export default defineConfig(async (): Promise<UserConfig> => {
-  const build = () => exec(process.execPath, ['--experimental-strip-types', path.join(root, 'scripts/build.ts'), '--drafts']);
+export default defineConfig(async ({ mode }): Promise<UserConfig> => {
+  const fixtures = mode === 'fixtures';
+  const build = () => exec(process.execPath, ['--experimental-strip-types', path.join(root, 'scripts/build.ts'), fixtures ? '--fixtures' : '--drafts']);
   await build();
   return {
-    root: path.join(root, 'dist/seraphic-systems'),
+    root: path.join(root, fixtures ? 'dist/fixtures-preview' : 'dist/seraphic-systems'),
     cacheDir: path.join(root, 'node_modules/.vite'), publicDir: false, appType: 'mpa',
     server: { host: '127.0.0.1', port: 5174, watch: { ignored: ['**/dist/**'] } },
     plugins: [{
       name: 'rebuild-foundation',
       configureServer(server) {
-        const sources = ['apps/seraphic-systems', 'content/horizons', 'schema', 'shared', 'scripts'].map(name => path.join(root, name));
+        const records = fixtures ? 'tests/fixtures/content' : 'content';
+        const sources = ['apps/seraphic-systems', records, 'schema', 'shared', 'scripts'].map(name => path.join(root, name));
         server.watcher.add(sources);
         let timer: ReturnType<typeof setTimeout> | undefined, building = false, pending = false;
         async function rebuild() {

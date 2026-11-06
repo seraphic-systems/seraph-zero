@@ -53,7 +53,8 @@ follow to another checkout. Never copy local credentials or raw media into Git.
 
 - `apps/seraphic-systems/`: landing page, Journal templates and entries, Orb UI.
 - `content/horizons/`: four preserved Markdown Horizon records.
-- `schema/records.json`: active `Horizon` and `RecordBase` contracts.
+- `tests/fixtures/content/`: synthetic Horizon records for local development.
+- `schema/records.json`: `Horizon`, `OrganicMemory`, and `Mix` front-matter contracts and shared record fields.
 - `shared/`: public tokens, landing styles, icons, and assets.
 - `scripts/`: validation, record creation, static build, and committed deployment.
 - `tests/`: Node tests for the active foundation.
@@ -117,6 +118,14 @@ search, model, operations, or playback panels.
 Unknown paths use `404.html`. The former music/model routes and audio endpoints
 are absent, not simply hidden in navigation. Tests verify the reduced build boundary.
 
+### Preview with fixture records
+
+Run `npm run dev:fixtures` to preview Orb with the Markdown records in
+`tests/fixtures/content/`. The preview rebuilds when those records change and
+writes to `dist/fixtures-preview`. Public fixture Horizons appear in Orb and its
+local feed. Private fixture records are validated and stay out of both. Regular
+preview and public builds read `content/`, and the fixture output is local only.
+
 ## Horizon records
 
 The schema is the source of truth for front matter; the agreement explains the
@@ -148,6 +157,28 @@ Each item has `id`, `title`, `level` (1–4), `description`, `created_at`
 (a timestamp or `null` if unknown), and `content` (Markdown, or an empty
 string when the record has no body). Use `id` as the stable identifier.
 The feed updates with each site release.
+
+## Visualizer input contracts
+
+`OrganicMemory` uses a permanent `id` and a `title`, with the recollection
+in the Markdown body. `Mix` keeps the lab's identity of `song` plus version
+`date` (YYYY-MM-DD). Both require explicit `visibility`. Use `private` for
+new inputs. The shared `created_at` is record creation time and can be null
+when unknown. A mix requires a stable object key in `audio_file`, such as
+`mixes/coldness/2026-04-04.wav`. The key is relative to the configured private
+audio bucket. Bucket settings and credentials belong in the renderer's
+configuration. The renderer checks object availability at render time.
+
+Use `npm run create:record -- Mix '<JSON front matter>'` to add a mix or
+`npm run create:record -- OrganicMemory '<JSON front matter>'` to start a
+memory, then write the recollection in its Markdown body. The helper defaults
+to private and preserves an explicit null creation time when importing an
+older record. The helper creates the appropriate directory under `content/`
+when needed. The fixture preview also validates any local Mix and OrganicMemory
+records in `tests/fixtures/content/mixes/` and
+`tests/fixtures/content/organic-memories/`. Keep personal recollections and
+private audio object keys out of the public repository. Public Orb pages and
+feeds are generated from Horizons only.
 
 ## Journal
 
