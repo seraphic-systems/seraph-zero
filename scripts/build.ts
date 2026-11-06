@@ -25,5 +25,17 @@ await emitBrowserModule(path.join(source, 'geometry.ts'), path.join(output, 'geo
 await cp(path.join(root, 'shared'), path.join(output, 'shared'), { recursive: true, filter: file => path.basename(file) !== '.DS_Store' });
 await buildJournal(path.join(source, 'journal'), path.join(output, 'journal'), { includeDrafts: args.includes('--drafts') });
 await buildOrb(path.join(source, 'orb'), output, catalog);
+const horizons = catalog.records.map(({ data, content }) => ({
+  id: data.id,
+  title: data.title,
+  level: data.level,
+  description: data.description,
+  created_at: data.created_at ?? null,
+  content: content ?? '',
+}));
+const horizonsFeed = 'api/v1/horizons.json';
+await mkdir(path.dirname(path.join(output, horizonsFeed)), { recursive: true });
+await writeFile(path.join(output, horizonsFeed), JSON.stringify({ horizons }, null, 2) + '\n');
+await writeFile(path.join(output, '_headers'), `/${horizonsFeed}\n  Access-Control-Allow-Origin: *\n`);
 await writeFile(path.join(output, '404.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Not found · Seraphic Systems</title><h1>Page not found</h1><p><a href="/">Home</a> · <a href="/journal/">Journal</a> · <a href="/orb/">Orb</a></p></html>\n');
 console.log(`Built dist/seraphic-systems${args.includes('--drafts') ? ' (includes review drafts; do not deploy)' : ''}`);
