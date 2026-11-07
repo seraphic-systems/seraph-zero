@@ -21,6 +21,6 @@ test('artwork handles empty and large documents without publishing source text o
   const large = art('first', '<p>Private prose &amp; more.</p>'.repeat(10000));
   assert.ok(large.length < 15000);
   assert.doesNotMatch(large, /Private|prose|NaN|Infinity|undefined/);
-  assert.match(large, /fill="#faf9f6"/);
+  assert.doesNotMatch(large, /<rect/);
   assert.match(large, /stroke="#456456"/);
 });
