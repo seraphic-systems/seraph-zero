@@ -179,7 +179,9 @@ a brief diagonal light streak, and increased chromatic separation. Reduced motio
 suppresses the animations while retaining the static contour treatment. Hover and
 keyboard focus strengthen the RGB split and halo. Clicking (or pressing Space or
 Enter) adds a brief artwork-only light pulse; both text lines remain unfiltered. Use **Button state** to preview ready, loading, and disabled states;
-ready presses only update a local counter. Loading keeps keyboard focus and ignores
+ready presses only update a local counter. Loading sends a slow light arc around
+the outer ring while the seal and text stay still; reduced motion keeps the arc static.
+Loading keeps keyboard focus and ignores
 activation; disabled uses the native button state. `createFatButton()` returns the
 button and `setState()`. Surface and reduced-motion controls also apply here.
 

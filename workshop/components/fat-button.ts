@@ -24,6 +24,7 @@ export function createFatButton({ label = 'Make it happen', loadingLabel = 'Maki
       <g class="fat-button__channel fat-button__channel--blue">${engravings.join('')}</g>
       <g class="fat-button__engraving">${engravings.map((lines, index) => `<g class="fat-button__engraving--${index}">${lines}</g>`).join('')}</g>
       <g class="fat-button__energy">${engravings.map((lines, index) => `<g style="--trace-delay: ${delays[index]}ms">${lines.replaceAll('/>', ' pathLength="1"/>')}</g>`).join('')}</g>
+      <circle class="fat-button__loading-orbit" cx="80" cy="80" r="54" pathLength="100"/>
       <path class="fat-button__satellites" d="m25 21 4 8-4 8-4-8Zm110 102 4 8-4 8-4-8Z"/>
     </svg>`;
   const streak = document.createElement('span');
