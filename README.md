@@ -185,6 +185,15 @@ Loading keeps keyboard focus and ignores
 activation; disabled uses the native button state. `createFatButton()` returns the
 button and `setState()`. Surface and reduced-motion controls also apply here.
 
+The pill button study is a compact companion to the fat button: a rounded dark
+face, crisp label, mint signal mark, and cyan/rose edges. Hover and keyboard focus
+light the contour; pressing changes the face without moving it. **Pill state**
+previews ready, loading, and native disabled states. Loading retains focus and
+ignores activation, replacing the star with a rotating ring. Reduced motion keeps
+the ring static, and Pause animation pauses it. Ready presses update a local counter
+only. `createPillButton()` accepts `label` and `loadingLabel`, and returns the native
+button as `element` plus `setState()`. Shared surface and motion controls apply.
+
 ### Preview with fixture records
 
 Run `npm run dev:fixtures` to preview Orb with the Markdown records in

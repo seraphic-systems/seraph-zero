@@ -68,3 +68,9 @@ footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10
   .controls button { margin-left: 0; }
   .stage { height: 145px; }
 }
+
+.pill-study__stage { display: grid; grid-template-columns: minmax(0, 1fr) 1fr; align-items: center; gap: 36px; padding: 48px 0 36px; }
+.pill-study__stage p { color: var(--color-text-secondary); font-size: .9rem; line-height: 1.8; margin: 0; }
+@media (max-width: 700px) {
+  .pill-study__stage { grid-template-columns: 1fr; gap: 24px; padding: 32px 0 24px; }
+}

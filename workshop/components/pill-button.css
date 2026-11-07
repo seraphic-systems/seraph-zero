@@ -1,0 +1,75 @@
+button.pill-button {
+  --pill-face: var(--color-night);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: 100%;
+  min-height: 48px;
+  margin: 0;
+  padding: 12px 24px 12px 18px;
+  border: 1px solid var(--color-light-cyan);
+  border-radius: 999px;
+  background: var(--pill-face);
+  color: var(--color-on-night);
+  box-shadow: -1px 0 0 var(--color-light-red), 1px 0 0 var(--color-light-blue);
+  font-family: var(--font-body);
+  font-size: .85rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: .025em;
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background var(--motion-feedback) ease, border-color var(--motion-feedback) ease;
+}
+.pill-button::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: -4px 0 18px color-mix(in srgb, var(--color-light-red) 35%, transparent), 4px 0 18px color-mix(in srgb, var(--color-light-blue) 45%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-hover) ease;
+}
+.pill-button__label { min-width: 0; overflow-wrap: anywhere; }
+.pill-button__mark { display: block; flex: 0 0 22px; width: 22px; height: 22px; color: var(--color-light-green); }
+.pill-button__mark svg { display: block; width: 100%; height: 100%; stroke: currentColor; stroke-width: 1.2; }
+.pill-button__ring { stroke: var(--color-light-cyan); opacity: .5; }
+body[data-surface="dark"] .pill-button { --pill-face: var(--color-night-deep); }
+@media (hover: hover) {
+  .pill-button[data-state="ready"]:hover { background: color-mix(in srgb, var(--pill-face) 90%, var(--color-light-blue)); border-color: var(--color-light-white); }
+  .pill-button[data-state="ready"]:hover::before { opacity: var(--effect-glow-opacity-interactive); }
+}
+.pill-button:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 5px; }
+.pill-button:focus-visible::before { opacity: var(--effect-glow-opacity-interactive); }
+.pill-button[data-state="ready"]:active { background: color-mix(in srgb, var(--pill-face) 78%, var(--color-light-blue)); }
+.pill-button[data-state="loading"] { cursor: progress; }
+.pill-button[data-state="loading"] .pill-button__star { display: none; }
+.pill-button[data-state="loading"] .pill-button__ring {
+  opacity: 1;
+  stroke-dasharray: 16 41;
+  transform-origin: 12px 12px;
+  animation: pill-button-orbit var(--motion-reveal) linear infinite;
+}
+@keyframes pill-button-orbit { to { transform: rotate(360deg); } }
+.pill-button:disabled { background: var(--color-surface-inset); color: var(--color-text-muted); border-color: var(--color-border); box-shadow: none; cursor: not-allowed; }
+.pill-button:disabled .pill-button__mark { color: inherit; }
+.pill-button:disabled .pill-button__ring { stroke: currentColor; }
+[data-reduced-motion] .pill-button, [data-reduced-motion] .pill-button::before { transition: none; }
+[data-reduced-motion] .pill-button .pill-button__ring, [data-paused] .pill-button .pill-button__ring { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  button.pill-button, .pill-button::before { transition: none; }
+  .pill-button .pill-button__ring { animation: none; }
+}
+@media (forced-colors: active) {
+  button.pill-button { border: 2px solid ButtonText; box-shadow: none; }
+  .pill-button::before { display: none; }
+  .pill-button__mark, .pill-button__ring { color: ButtonText; stroke: currentColor; }
+  .pill-button:focus-visible { outline-color: Highlight; }
+  .pill-button:disabled, .pill-button:disabled .pill-button__mark { color: GrayText; border-color: GrayText; }
+}
