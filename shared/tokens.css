@@ -11,6 +11,40 @@
   --color-accent: #456456;
   --color-border: #dedfd8;
   --color-border-section: #dde3d8;
+
+  /* Opt-in light palette. Existing site colors above retain their roles. */
+  --color-light-red: #ff3d6e;
+  --color-light-green: #5fffb0;
+  --color-light-blue: #4fd1ff;
+  --color-light-cyan: #9ae6ff;
+  --color-light-white: #f4ffff;
+  --color-on-night: #f2ead8;
+  --color-on-night-muted: #a7b5c5;
+  --color-night: #0b0f1e;
+  --color-night-deep: #020309;
+
+  /* Decorative edges and artwork only; keep text outside split/glow filters. */
+  --effect-rgb-split-rest: 1.7px;
+  --effect-rgb-split-interactive: 2.6px;
+  --effect-rgb-split-peak: 3.5px;
+  --effect-rgb-opacity-rest: .75;
+  --effect-rgb-opacity-interactive: .95;
+  --effect-glow-radius-rest: 2px;
+  --effect-glow-radius-interactive: 4px;
+  --effect-glow-radius-aura: 26px;
+  --effect-glow-opacity-interactive: .45;
+
+  /* Durations stay in milliseconds so script-driven effects can read them too.
+     Components remain responsible for reduced-motion and forced-color behavior. */
+  --motion-feedback: 180ms;
+  --motion-hover: 220ms;
+  --motion-pulse: 480ms;
+  --motion-unfold: 1100ms;
+  --motion-settle: 1400ms;
+  --motion-trace: 1500ms;
+  --motion-reveal: 1800ms;
+  --motion-awaken: 2800ms;
+
   --font-display: electrolize, Orbitron, Mulish, system-ui, sans-serif;
   --font-body: Mulish, system-ui, sans-serif;
   --font-heading: Electrolize, Mulish, system-ui, sans-serif;

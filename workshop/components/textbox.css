@@ -1,97 +1,85 @@
 .textbox {
   min-width: 0;
-  /* A brief Journal-like fringe resolves into a quiet, warm inscription frame. */
-  --color-focus-fringe-red: light-dark(rgb(181 42 72 / .42), rgb(255 91 125 / .6));
-  --color-focus-fringe-cyan: light-dark(rgb(0 105 135 / .42), rgb(75 214 238 / .6));
-  --color-seal-light: light-dark(#a1874c, #cfb778);
-  --color-inscription-highlight: light-dark(rgb(255 255 255 / .9), rgb(255 255 255 / .12));
-  --color-inscription-shadow: light-dark(rgb(37 43 50 / .18), rgb(0 0 0 / .65));
+  --textbox-face: var(--color-night);
+  --textbox-ink: var(--color-on-night);
+  --textbox-muted: var(--color-on-night-muted);
+  --textbox-red: var(--color-light-red);
+  --textbox-green: var(--color-light-green);
+  --textbox-blue: var(--color-light-blue);
 }
+body[data-surface="dark"] .textbox { --textbox-face: var(--color-night-deep); }
 .textbox__label { display: block; color: var(--color-text); font-size: .9rem; font-weight: 550; margin-bottom: 5px; }
 .textbox__hint { color: var(--color-text-muted); font-size: .8rem; margin: 0 0 15px; }
 .textbox__field { position: relative; }
 .textbox__seal {
-  display: none;
-  position: absolute;
-  right: 22px;
-  bottom: 20px;
-  width: clamp(88px, 22%, 132px);
-  aspect-ratio: 1;
-  color: var(--color-accent);
-  opacity: .18;
-  pointer-events: none;
+  display: none; position: absolute; right: 22px; bottom: 20px;
+  width: clamp(88px, 22%, 132px); aspect-ratio: 1;
+  color: var(--color-light-cyan); opacity: .2; pointer-events: none;
+  filter: drop-shadow(calc(-1 * var(--effect-rgb-split-rest) + .7px) 0 0 var(--textbox-red)) drop-shadow(calc(var(--effect-rgb-split-rest) - .7px) 0 0 var(--textbox-blue)) drop-shadow(0 0 calc(var(--effect-glow-radius-rest) + 1px) color-mix(in srgb, var(--color-light-blue) 40%, transparent));
+  transition: opacity var(--motion-hover) ease, filter var(--motion-hover) ease;
 }
 .textbox[data-watermark] .textbox__seal { display: block; }
 .textbox__seal svg { display: block; width: 100%; height: 100%; stroke: currentColor; stroke-width: .65; stroke-linecap: round; }
-.textbox__halo { stroke: var(--color-text-secondary); opacity: .65; transition: transform 1100ms cubic-bezier(.3,0,.2,1), opacity 1100ms ease; }
-.textbox__wings { transform-origin: 20px 21px; transition: transform 1100ms cubic-bezier(.3,0,.2,1); }
+.textbox__halo { stroke: var(--textbox-green); opacity: .65; transition: transform var(--motion-unfold) cubic-bezier(.3,0,.2,1), opacity var(--motion-unfold) ease; }
+.textbox__wings { transform-origin: 20px 21px; transition: transform var(--motion-unfold) cubic-bezier(.3,0,.2,1); }
 .textbox__wings--left { transform: translateX(4px) rotate(6deg) scaleX(.65); }
 .textbox__wings--right { transform: translateX(-4px) rotate(-6deg) scaleX(.65); }
-.textbox__seal-eye { stroke: var(--color-seal-light); }
+.textbox__seal-eye { stroke: var(--textbox-ink); }
 .textbox__field:focus-within .textbox__wings--left { transform: translateX(-6px) rotate(-14deg); }
 .textbox__field:focus-within .textbox__wings--right { transform: translateX(6px) rotate(14deg); }
-.textbox__field:focus-within .textbox__halo--left { transform: translateX(-8px); opacity: .4; }
-.textbox__field:focus-within .textbox__halo--right { transform: translateX(8px); opacity: .4; }
-.textbox__field:focus-within .textbox__seal { opacity: .085; animation: textbox-awaken 2.2s ease-in-out; }
-.textbox[data-sealing] .textbox__seal { animation: textbox-seal 2s ease-in-out; }
+.textbox__field:focus-within .textbox__halo--left { transform: translateX(-8px); opacity: .6; }
+.textbox__field:focus-within .textbox__halo--right { transform: translateX(8px); opacity: .6; }
+.textbox__field:focus-within .textbox__seal {
+  opacity: .14; animation: textbox-awaken var(--motion-reveal) ease-out;
+  filter: drop-shadow(calc(-1 * var(--effect-rgb-split-interactive) + .8px) 0 0 var(--textbox-red)) drop-shadow(calc(var(--effect-rgb-split-interactive) - .8px) 0 0 var(--textbox-blue)) drop-shadow(0 0 calc(var(--effect-glow-radius-interactive) + 1px) color-mix(in srgb, var(--color-light-blue) 60%, transparent));
+}
+.textbox[data-sealing] .textbox__seal { animation: textbox-seal var(--motion-settle) ease-out; }
 .textbox[data-state="disabled"] .textbox__seal { display: none; }
 .textbox__input {
+  color-scheme: dark;
   display: block; width: 100%; min-height: 180px; max-height: 65vh; resize: vertical;
-  padding: 20px; border: 1px solid var(--color-border); border-radius: 7px;
-  background: var(--color-background); color: var(--color-text);
+  padding: 20px; border: 1px solid color-mix(in srgb, var(--color-light-blue) 50%, transparent); border-radius: 0;
+  background: var(--textbox-face); color: var(--textbox-ink);
   font-family: var(--font-body); font-size: 1rem; line-height: 1.8;
-  caret-color: var(--color-accent); scrollbar-gutter: stable;
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-text) 7%, transparent);
-  transition: border-color 400ms ease, box-shadow 600ms ease;
+  caret-color: var(--textbox-green); scrollbar-gutter: stable;
+  /* Color belongs to the boundary; never filter, duplicate, or blur the writing. */
+  text-shadow: none; filter: none;
+  box-shadow: -1px 0 0 color-mix(in srgb, var(--color-light-red) 65%, transparent), 1px 0 0 color-mix(in srgb, var(--color-light-blue) 65%, transparent);
+  transition: border-color var(--motion-hover) ease, box-shadow var(--motion-hover) ease;
 }
-.textbox__input::placeholder { color: var(--color-text-muted); opacity: 1; }
-.textbox__input:not(:focus):not(:disabled):not(:placeholder-shown) {
-  /* Subpixel relief leaves the solid letterforms intact; no blur or opacity. */
-  text-shadow:
-    0 -.5px 0 var(--color-inscription-shadow),
-    0 .75px 0 var(--color-inscription-highlight);
+.textbox__input::placeholder { color: var(--textbox-muted); opacity: 1; }
+@media (hover: hover) {
+  .textbox__input:hover:not(:focus):not(:disabled):not([aria-invalid="true"]) {
+    border-color: var(--textbox-blue);
+    box-shadow: -2px 0 5px color-mix(in srgb, var(--color-light-red) 45%, transparent), 2px 0 5px color-mix(in srgb, var(--color-light-blue) 50%, transparent), 0 3px 12px color-mix(in srgb, var(--color-light-green) 12%, transparent);
+  }
+  .textbox__field:hover:not(:focus-within) .textbox__seal { opacity: .28; }
 }
-.textbox__input:hover:not(:disabled) { border-color: var(--color-text-secondary); }
 .textbox__input:focus {
-  border-color: var(--color-accent);
-  outline: none;
-  box-shadow: inset 0 1px 5px color-mix(in srgb, var(--color-text) 4%, transparent), 0 0 10px color-mix(in srgb, var(--color-seal-light) 12%, transparent);
-  animation: textbox-unlock 1.2s ease-out;
+  border-color: var(--textbox-blue); outline: 1px solid var(--textbox-blue); outline-offset: 2px;
+  box-shadow: -3px 0 12px color-mix(in srgb, var(--color-light-red) 45%, transparent), 3px 0 12px color-mix(in srgb, var(--color-light-blue) 55%, transparent), 0 5px 20px color-mix(in srgb, var(--color-light-green) 18%, transparent);
 }
-.textbox[data-sealing] .textbox__input:not(:focus) { animation: textbox-imprint 2s ease-out; }
-@keyframes textbox-unlock {
-  0% { box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-text) 10%, transparent); }
-  35% { box-shadow: -2px 0 6px var(--color-focus-fringe-red), 2px 0 6px var(--color-focus-fringe-cyan), 0 0 18px color-mix(in srgb, var(--color-seal-light) 22%, transparent); }
-  100% { box-shadow: inset 0 1px 5px color-mix(in srgb, var(--color-text) 4%, transparent), 0 0 10px color-mix(in srgb, var(--color-seal-light) 12%, transparent); }
-}
-/* Hold the angel in view until its wings finish moving, then retreat from the writing. */
 @keyframes textbox-awaken {
-  0% { opacity: .18; transform: scale(.96); }
-  20%, 50% { opacity: .65; transform: scale(1.08); }
-  100% { opacity: .085; transform: scale(1); }
+  0% { opacity: .2; }
+  25% { opacity: .5; }
+  100% { opacity: .14; }
 }
 @keyframes textbox-seal {
-  0% { opacity: .085; transform: scale(1); }
-  20%, 50% { opacity: .6; transform: scale(1.04); }
-  65% { opacity: .48; transform: scale(.97); }
-  100% { opacity: .18; transform: scale(1); }
+  0% { opacity: .14; }
+  25% { opacity: .38; }
+  100% { opacity: .2; }
 }
-@keyframes textbox-imprint {
-  0% { border-color: var(--color-accent); }
-  50%, 60% { border-color: var(--color-seal-light); box-shadow: inset 0 2px 8px color-mix(in srgb, var(--color-text) 13%, transparent); }
-  100% { border-color: var(--color-border); }
-}
-[data-paused] .textbox__input, [data-paused] .textbox__seal { animation-play-state: paused; }
+[data-paused] .textbox__seal { animation-play-state: paused; }
 [data-reduced-motion] .textbox__input, [data-reduced-motion] .textbox__seal { animation: none !important; transition: none; }
 [data-reduced-motion] .textbox__wings, [data-reduced-motion] .textbox__halo { transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .textbox__input, .textbox__seal { animation: none !important; transition: none; }
   .textbox__wings, .textbox__halo { transition: none; }
 }
-.textbox__input[aria-invalid="true"] { border-color: var(--textbox-error-color, #a04338); }
-.textbox[data-sealing] .textbox__input[aria-invalid="true"] { animation: none; }
-.textbox__input:disabled { background: var(--color-surface-inset); color: var(--color-text-muted); cursor: not-allowed; }
-.textbox__input:read-only:not(:disabled) { background: var(--color-surface-inset); }
+.textbox__input[aria-invalid="true"] { border-color: var(--textbox-red); box-shadow: 0 0 0 1px var(--textbox-red); }
+.textbox__input[aria-invalid="true"]:focus { outline-color: var(--textbox-red); }
+.textbox__input:disabled { background: var(--color-surface-inset); color: var(--color-text-muted); border-color: var(--color-border); box-shadow: none; transition: none; cursor: not-allowed; }
+.textbox__input:read-only:not(:disabled) { border-style: dashed; }
 .textbox__footer { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 12px; }
 .textbox__message, .textbox__count { font-size: .7rem; color: var(--color-text-muted); margin: 0; }
 .textbox__count { flex: none; margin-left: auto; font-variant-numeric: tabular-nums; }
@@ -109,7 +97,6 @@
 @media (forced-colors: active) {
   .textbox__seal { display: none !important; }
   .textbox__input { animation: none !important; box-shadow: none; }
-  .textbox__input:not(:focus):not(:disabled):not(:placeholder-shown) { text-shadow: none; }
   .textbox__input:focus { outline: 2px solid Highlight; outline-offset: 3px; box-shadow: none; animation: none; }
 }
 @media (max-width: 700px) {
