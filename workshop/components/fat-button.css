@@ -120,6 +120,24 @@ body[data-surface="dark"] .fat-button {
 .fat-button[data-state="ready"]:active { background: color-mix(in srgb, var(--fat-button-face) 84%, var(--fat-button-glow)); border-color: var(--fat-button-glow); }
 .fat-button:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 6px; }
 .fat-button[data-state="loading"] { cursor: progress; }
+/* A single light arc follows the outer ring while the seal stays still. */
+.fat-button__loading-orbit {
+  display: none;
+  color: var(--fat-button-energy);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 18 82;
+  transform-origin: 80px 80px;
+  filter: drop-shadow(0 0 var(--effect-glow-radius-rest) var(--fat-button-glow));
+}
+.fat-button[data-state="loading"] .fat-button__loading-orbit {
+  display: block;
+  animation: fat-button-orbit calc(var(--motion-awaken) * 2) linear infinite;
+}
+@keyframes fat-button-orbit {
+  from { transform: rotate(-90deg); }
+  to { transform: rotate(270deg); }
+}
 .fat-button:disabled { background: var(--color-surface-inset); border-color: var(--color-border); color: var(--color-text-muted); box-shadow: none; cursor: not-allowed; }
 .fat-button:disabled .fat-button__channel { display: none; }
 .fat-button:disabled .fat-button__engraving { filter: none; }
@@ -128,11 +146,13 @@ body[data-surface="dark"] .fat-button {
 .fat-button:disabled .fat-button__engraving > g { color: inherit; }
 .fat-button:disabled::before { border-color: var(--color-border); }
 [data-reduced-motion] .fat-button { transition: none; }
+[data-reduced-motion] .fat-button .fat-button__loading-orbit { animation: none; transform: rotate(-90deg); }
 [data-reduced-motion] .fat-button .fat-button__channel { animation: none; transition: none; }
 [data-reduced-motion] .fat-button .fat-button__streak::before { animation: none; opacity: 0; }
 [data-reduced-motion] .fat-button::after, [data-reduced-motion] .fat-button .fat-button__energy > g { animation: none; transition: none; opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   button.fat-button { transition: none; }
+  .fat-button .fat-button__loading-orbit { animation: none; transform: rotate(-90deg); }
   .fat-button .fat-button__channel { animation: none; transition: none; }
   .fat-button::after, .fat-button .fat-button__energy > g, .fat-button .fat-button__streak::before { animation: none; transition: none; opacity: 0; }
 }
