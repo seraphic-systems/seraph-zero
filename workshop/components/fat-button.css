@@ -1,0 +1,144 @@
+button.fat-button {
+  /* Dark fields and luminous contours echo memory-scene’s house style. */
+  color-scheme: dark;
+  --fat-button-face: var(--color-night);
+  --fat-button-ink: var(--color-on-night);
+  --fat-button-gold: var(--color-light-cyan);
+  --fat-button-glow: var(--color-light-blue);
+  --fat-button-energy: var(--color-light-white);
+  --fat-button-red: var(--color-light-red);
+  --fat-button-green: var(--color-light-green);
+  --fat-button-blue: var(--color-light-blue);
+  --fat-button-split: var(--effect-rgb-split-rest);
+  --fat-button-fringe-opacity: var(--effect-rgb-opacity-rest);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: min(100%, 240px);
+  aspect-ratio: 1;
+  margin: 0;
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--fat-button-blue) 60%, transparent);
+  border-radius: 0;
+  background: var(--fat-button-face);
+  color: var(--fat-button-ink);
+  box-shadow: -1px 0 0 color-mix(in srgb, var(--fat-button-red) 70%, transparent), 1px 0 0 color-mix(in srgb, var(--fat-button-blue) 70%, transparent);
+  font-family: var(--font-body);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color var(--motion-feedback) ease, background var(--motion-feedback) ease, color var(--motion-feedback) ease;
+}
+.fat-button::before {
+  content: ''; position: absolute; inset: 8px; pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--fat-button-gold) 20%, transparent);
+
+}
+.fat-button::after {
+  content: ''; position: absolute; inset: -1px; pointer-events: none;
+  border: 1px solid var(--fat-button-glow); opacity: 0;
+  box-shadow: -5px 0 var(--effect-glow-radius-aura) 3px color-mix(in srgb, var(--fat-button-red) 45%, transparent), 5px 0 var(--effect-glow-radius-aura) 3px color-mix(in srgb, var(--fat-button-blue) 55%, transparent), 0 6px 24px color-mix(in srgb, var(--fat-button-green) 35%, transparent);
+  transition: opacity var(--motion-hover) ease;
+}
+.fat-button__label { position: relative; max-width: 100%; overflow-wrap: anywhere; }
+.fat-button__mark { display: block; width: 148px; max-width: 100%; color: var(--fat-button-gold); position: relative; }
+.fat-button__mark svg { display: block; width: 100%; stroke: currentColor; stroke-width: 1; }
+.fat-button__inscription { display: block; margin-bottom: 4px; font-size: .48rem; font-weight: 650; letter-spacing: .16em; text-transform: uppercase; }
+.fat-button__engraving { filter: drop-shadow(0 0 var(--effect-glow-radius-rest) color-mix(in srgb, var(--color-light-blue) 45%, transparent)); }
+.fat-button__engraving--0, .fat-button__engraving--3 { color: var(--fat-button-ink); }
+.fat-button__engraving--2, .fat-button__satellites { color: var(--fat-button-green); }
+.fat-button__channel { stroke-width: 1; opacity: var(--fat-button-fringe-opacity); filter: drop-shadow(0 0 var(--effect-glow-radius-rest) currentColor); transition: transform var(--motion-hover) ease, opacity var(--motion-hover) ease, filter var(--motion-hover) ease; }
+.fat-button__channel--red { color: var(--fat-button-red); transform: translate(calc(-1 * var(--fat-button-split)), .5px); }
+.fat-button__channel--blue { color: var(--fat-button-blue); transform: translate(var(--fat-button-split), -.5px); }
+.fat-button[data-awakening] .fat-button__channel--red { animation: fat-button-split-red calc(var(--motion-awaken) - 200ms) ease-out; }
+.fat-button[data-awakening] .fat-button__channel--blue { animation: fat-button-split-blue calc(var(--motion-awaken) - 200ms) ease-out; }
+@keyframes fat-button-split-red {
+  0%, 100% { transform: translate(calc(-1 * var(--fat-button-split)), .5px); opacity: var(--fat-button-fringe-opacity); }
+  25% { transform: translate(calc(-1 * var(--effect-rgb-split-peak)), 1px); opacity: var(--effect-rgb-opacity-interactive); }
+}
+@keyframes fat-button-split-blue {
+  0%, 100% { transform: translate(var(--fat-button-split), -.5px); opacity: var(--fat-button-fringe-opacity); }
+  25% { transform: translate(var(--effect-rgb-split-peak), -1px); opacity: var(--effect-rgb-opacity-interactive); }
+}
+/* Keep the traveling streak inside the artwork, clear of both text lines. */
+.fat-button__streak { position: absolute; inset: 48px 0 62px; overflow: hidden; pointer-events: none; }
+.fat-button__streak::before {
+  content: ''; position: absolute; left: -40%; top: 50%; width: 180%; height: 1px;
+  background: linear-gradient(90deg, transparent 10%, var(--fat-button-red) 30%, var(--fat-button-energy) 50%, var(--fat-button-green) 65%, var(--fat-button-blue) 75%, transparent 90%);
+  box-shadow: 0 0 8px var(--fat-button-blue), 0 0 18px var(--fat-button-green);
+  transform: translateY(-180px) rotate(-24deg); opacity: 0;
+}
+.fat-button[data-awakening] .fat-button__streak::before { animation: fat-button-streak var(--motion-reveal) ease-in-out 250ms both; }
+@keyframes fat-button-streak {
+  0% { transform: translateY(-180px) rotate(-24deg); opacity: 0; }
+  20%, 75% { opacity: .65; }
+  100% { transform: translateY(180px) rotate(-24deg); opacity: 0; }
+}
+.fat-button__engraving--3 { stroke-width: 1.5; }
+.fat-button__energy { color: var(--fat-button-energy); stroke-width: 1.7; stroke-linecap: round; filter: drop-shadow(0 0 var(--effect-glow-radius-rest) var(--fat-button-glow)) drop-shadow(0 0 7px var(--fat-button-glow)); }
+.fat-button__energy > g { opacity: 0; }
+.fat-button__energy > g:nth-child(3n + 1) { color: var(--fat-button-red); }
+.fat-button__energy > g:nth-child(3n + 2) { color: var(--fat-button-blue); }
+.fat-button__energy > g:nth-child(3n) { color: var(--fat-button-green); }
+.fat-button[data-awakening] .fat-button__energy > g {
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: fat-button-trace var(--motion-trace) ease-in-out var(--trace-delay) both;
+}
+@keyframes fat-button-trace {
+  0% { opacity: 0; stroke-dashoffset: 1; }
+  12% { opacity: 1; }
+  65% { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: 0; stroke-dashoffset: 0; }
+}
+.fat-button[data-awakening]::after { animation: fat-button-awaken var(--motion-awaken) ease-out; }
+body[data-surface="dark"] .fat-button {
+  color-scheme: dark;
+  --fat-button-face: var(--color-night-deep);
+}
+@keyframes fat-button-awaken {
+  0% { opacity: 0; }
+  22% { opacity: 1; }
+  50% { opacity: .7; }
+  100% { opacity: 0; }
+}
+@media (hover: hover) {
+  .fat-button[data-state="ready"]:hover { --fat-button-split: var(--effect-rgb-split-interactive); --fat-button-fringe-opacity: var(--effect-rgb-opacity-interactive); background: color-mix(in srgb, var(--fat-button-face) 94%, var(--fat-button-ink)); border-color: var(--fat-button-ink); }
+  .fat-button[data-state="ready"]:hover::after { opacity: var(--effect-glow-opacity-interactive); }
+  .fat-button[data-state="ready"]:hover .fat-button__channel { filter: drop-shadow(0 0 var(--effect-glow-radius-interactive) currentColor); }
+}
+.fat-button[data-state="ready"]:focus-visible { --fat-button-split: var(--effect-rgb-split-interactive); --fat-button-fringe-opacity: var(--effect-rgb-opacity-interactive); }
+.fat-button[data-state="ready"]:focus-visible::after { opacity: var(--effect-glow-opacity-interactive); }
+.fat-button[data-state="ready"]:active { background: color-mix(in srgb, var(--fat-button-face) 84%, var(--fat-button-glow)); border-color: var(--fat-button-glow); }
+.fat-button:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 6px; }
+.fat-button[data-state="loading"] { cursor: progress; }
+.fat-button:disabled { background: var(--color-surface-inset); border-color: var(--color-border); color: var(--color-text-muted); box-shadow: none; cursor: not-allowed; }
+.fat-button:disabled .fat-button__channel { display: none; }
+.fat-button:disabled .fat-button__engraving { filter: none; }
+.fat-button:disabled .fat-button__mark { color: var(--color-text-muted); opacity: .5; }
+.fat-button:disabled .fat-button__engraving { color: var(--color-text-muted); }
+.fat-button:disabled .fat-button__engraving > g { color: inherit; }
+.fat-button:disabled::before { border-color: var(--color-border); }
+[data-reduced-motion] .fat-button { transition: none; }
+[data-reduced-motion] .fat-button .fat-button__channel { animation: none; transition: none; }
+[data-reduced-motion] .fat-button .fat-button__streak::before { animation: none; opacity: 0; }
+[data-reduced-motion] .fat-button::after, [data-reduced-motion] .fat-button .fat-button__energy > g { animation: none; transition: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  button.fat-button { transition: none; }
+  .fat-button .fat-button__channel { animation: none; transition: none; }
+  .fat-button::after, .fat-button .fat-button__energy > g, .fat-button .fat-button__streak::before { animation: none; transition: none; opacity: 0; }
+}
+@media (forced-colors: active) {
+  button.fat-button { border: 2px solid ButtonText; box-shadow: none; }
+  .fat-button::before, .fat-button::after, .fat-button__mark, .fat-button__streak { display: none; }
+  .fat-button:focus-visible { outline-color: Highlight; }
+  .fat-button:disabled { color: GrayText; border-color: GrayText; }
+}

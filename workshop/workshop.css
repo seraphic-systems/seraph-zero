@@ -50,7 +50,17 @@ code { display: block; font-size: .65rem; color: var(--color-text-muted); overfl
 .context-caption { color: var(--color-text-muted); letter-spacing: .12em; font-size: .6rem; }
 #context-loading { display: flex; min-height: 100px; align-items: center; justify-content: center; }
 footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--color-border); padding: 24px 0; font-size: .65rem; color: var(--color-text-muted); }
+.workshop-nav { flex-wrap: wrap; }
+.button-study { margin-bottom: 28px; padding: 28px; border: 1px solid var(--color-border); border-radius: 9px; background: var(--color-surface); scroll-margin-top: 20px; }
+.button-study__header { display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: 20px; }
+.button-study__header h2 { font-size: 1.4rem; letter-spacing: -.025em; }
+.button-study__header label { display: grid; gap: 5px; color: var(--color-text-secondary); font-size: .7rem; }
+.button-study__stage { display: grid; grid-template-columns: minmax(0, 1fr) 1fr; align-items: center; gap: 36px; padding: 52px 0 38px; }
+.button-study__stage p { color: var(--color-text-secondary); font-size: .9rem; line-height: 1.8; }
+.button-study__note { color: var(--color-text-muted); font-size: .7rem; margin: 0; }
 @media (max-width: 700px) {
+  .button-study { padding: 20px; }
+  .button-study__stage { grid-template-columns: 1fr; gap: 16px; padding: 32px 0 24px; }
   .gallery, .context { grid-template-columns: 1fr; }
   .intro { padding-top: 40px; }
   .masthead a span { display: block; margin-left: 0; }

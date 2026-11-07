@@ -1,6 +1,25 @@
 import { createLoadingIndicator, type LoadingKind } from './components/loading.ts';
 import { createAngelProgress } from './components/angel-progress.ts';
 import { createTextbox } from './components/textbox.ts';
+import { createFatButton } from './components/fat-button.ts';
+
+const fatButton = createFatButton();
+document.querySelector('#fat-button-example')!.append(fatButton.element);
+const buttonState = document.querySelector<HTMLSelectElement>('#button-state')!;
+const buttonFeedback = document.querySelector<HTMLElement>('#button-feedback')!;
+let presses = 0;
+fatButton.element.addEventListener('click', () => {
+  presses += 1;
+  buttonFeedback.textContent = `${presses} ${presses === 1 ? 'press' : 'presses'}. Nothing submitted; just trying the feel.`;
+});
+buttonState.addEventListener('change', () => {
+  const state = buttonState.value;
+  if (state !== 'ready' && state !== 'loading' && state !== 'disabled') return;
+  fatButton.setState(state);
+  buttonFeedback.textContent = state === 'loading' ? 'Loading preview. Further presses are ignored.'
+    : state === 'disabled' ? 'Disabled preview. The button is unavailable.'
+    : 'Ready. Try another press.';
+});
 
 const textbox = createTextbox({
   label: 'Your thoughts',

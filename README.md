@@ -126,6 +126,15 @@ refreshes as source changes, and uses the public shared design tokens. It does
 not build the site or read content records. Workshop files are outside the public
 build's inputs and are never copied to `dist/seraphic-systems`.
 
+The button and textbox opt into the shared light tokens in `shared/tokens.css`:
+`--color-light-*` defines the RGB/cyan/white palette, `--color-night*` and
+`--color-on-night*` define dark surfaces and readable text, `--effect-rgb-*` and
+`--effect-glow-*` control decorative intensity, and `--motion-*` defines durations.
+Durations use milliseconds, including the script-driven button pulse. Components
+keep their own layout, animation choreography, and accessibility rules. Apply split
+and glow to artwork and edges, keeping text crisp; respect reduced motion and forced
+colors. These tokens are opt-in and do not restyle the public site automatically.
+
 The first studies are loading indicators: ring, dots, and orbit. Preview controls
 change surface, size, tempo, pause state, and reduced motion. System reduced-motion
 preferences always disable animation. Each indicator includes a readable status
@@ -149,13 +158,30 @@ whitespace). Switch between editable, error, read-only, and disabled states with
 replacing the text, or insert sample copy. Text is held in the page only, with no
 storage or submission. `createTextbox()` exposes the textarea, value updates, and
 state changes. The surface selector previews both component families in light/dark.
-An optional seraph seal sits in the lower corner. Focusing opens its paired wings
-and divided halo with a brief chromatic glint, then settles into a quiet warm frame.
-Blurring folds the wings and briefly deepens the inset border, like an impression
-in stone. Reduced motion shows the resting/open states without animation. Toggle
-**Angel watermark** to compare it with the plain field. The decorative SVG adapts
-the site's existing seraph geometry and ignores pointer input. Sealing is visual:
-it does not save text, prevent editing, or imply successful validation.
+An optional seraph seal sits in the lower corner. The textbox shares the button's
+dark surface, cyan/rose split edges, mint accents, and luminous hover/focus frame.
+Focusing opens the paired wings and divided halo with a brief RGB glow, then settles
+into a quiet watermark. Blurring closes the seal. Text, labels, and helper messages
+remain unfiltered, without text shadows or simulated engraving. Error styling stays
+red; disabled fields lose the RGB effects. Reduced motion shows the resting/open
+states without animation. Toggle **Angel watermark** to compare it with the plain
+field. The decorative SVG adapts the site's seraph geometry and ignores pointer
+input. Sealing is visual: it does not save text, prevent editing, or imply successful
+validation.
+
+The fat button study explores a square digital seal with fine celestial linework,
+a flat dark surface, RGB contour separation, and luminous activation light,
+inspired by the memory-scene house style. Vector outlines supply the edge treatment;
+no image post-processing is needed. Hover and press change color
+without moving the button or simulating physical depth. Changing Disabled to Ready sends a brief light trace
+through the frame, orbital rings, rays, star, and central eye, with an RGB edge glow,
+a brief diagonal light streak, and increased chromatic separation. Reduced motion
+suppresses the animations while retaining the static contour treatment. Hover and
+keyboard focus strengthen the RGB split and halo. Clicking (or pressing Space or
+Enter) adds a brief artwork-only light pulse; both text lines remain unfiltered. Use **Button state** to preview ready, loading, and disabled states;
+ready presses only update a local counter. Loading keeps keyboard focus and ignores
+activation; disabled uses the native button state. `createFatButton()` returns the
+button and `setState()`. Surface and reduced-motion controls also apply here.
 
 ### Preview with fixture records
 
