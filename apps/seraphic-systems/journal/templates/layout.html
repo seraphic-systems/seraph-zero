@@ -8,6 +8,59 @@
     <meta property="og:title" content="{{ title }} · Seraphic Systems" />
     <meta property="og:description" content="{{ description }}" />
     <meta property="og:type" content="website" />
+    <script>
+      (() => {
+        const root = document.documentElement;
+        const key = 'journal-theme';
+        const systemTheme = matchMedia('(prefers-color-scheme: dark)');
+        const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+        function restoreTheme() {
+          try {
+            const saved = localStorage.getItem(key);
+            if (saved === 'light' || saved === 'dark') root.dataset.journalTheme = saved;
+            else delete root.dataset.journalTheme;
+          } catch {
+            // The toggle still works on the current page if storage is unavailable.
+          }
+        }
+
+        restoreTheme();
+        document.addEventListener('DOMContentLoaded', () => {
+          const toggle = document.querySelector('#journal-theme-toggle');
+          const isDark = () => (root.dataset.journalTheme ?? (systemTheme.matches ? 'dark' : 'light')) === 'dark';
+          const updateToggle = () => toggle.setAttribute('aria-pressed', String(isDark()));
+
+          function switchTheme() {
+            const theme = isDark() ? 'light' : 'dark';
+            root.dataset.journalTheme = theme;
+            try {
+              localStorage.setItem(key, theme);
+            } catch {
+              // Keep the current page's choice.
+            }
+            updateToggle();
+          }
+
+          toggle.addEventListener('click', () => {
+            if (reducedMotion.matches || typeof document.startViewTransition !== 'function') {
+              switchTheme();
+            } else {
+              document.startViewTransition(switchTheme);
+            }
+          });
+          systemTheme.addEventListener('change', updateToggle);
+          const syncTheme = () => {
+            restoreTheme();
+            updateToggle();
+          };
+          window.addEventListener('pageshow', syncTheme);
+          window.addEventListener('storage', syncTheme);
+          updateToggle();
+          toggle.hidden = false;
+        });
+      })();
+    </script>
     <link rel="icon" href="/shared/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,6 +79,22 @@
       <nav aria-label="Main navigation">
         <a href="/journal/" aria-current="{{ current }}">Journal</a>
         <a href="/orb/">Explore Orb <span aria-hidden="true">↗</span></a>
+        <button class="theme-toggle" id="journal-theme-toggle" type="button" aria-label="Dark mode" aria-pressed="false" hidden>
+          <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+            <g class="theme-moon">
+              <path d="M17 5.5a10.5 10.5 0 1 0 9.5 15.1A9.4 9.4 0 0 1 17 5.5Z" />
+              <path d="M24 6Q24.5 9.5 28 10Q24.5 10.5 24 14Q23.5 10.5 20 10Q23.5 9.5 24 6Z" />
+              <circle cx="28" cy="16" r=".75" fill="currentColor" stroke="none" />
+            </g>
+            <g class="theme-sun">
+              <circle cx="16" cy="16" r="10" stroke-dasharray="1 2.5" />
+              <circle cx="16" cy="16" r="7" />
+              <path d="M16 2v2m0 24v2M2 16h2m24 0h2M6.1 6.1l1.4 1.4m17 17 1.4 1.4m0-19.8-1.4 1.4m-17 17-1.4 1.4" />
+              <path d="M11.5 16Q16 11.5 20.5 16Q16 20.5 11.5 16Z" />
+              <circle cx="16" cy="16" r="1.15" fill="currentColor" stroke="none" />
+            </g>
+          </svg>
+        </button>
       </nav>
     </header>
     <main id="content" tabindex="-1">{{{ content }}}</main>
