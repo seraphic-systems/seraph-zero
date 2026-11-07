@@ -15,7 +15,7 @@ const repository = fileURLToPath(new URL('../', import.meta.url));
 async function fixture(t: TestContext) {
   const root = await mkdtemp(path.join(tmpdir(), 'seraph-production-test-'));
   t.after(() => rm(root, { recursive: true, force: true }));
-  for (const file of ['apps', 'content', 'schema', 'shared', 'scripts', 'package.json', 'package-lock.json', 'tsconfig.json', '.gitignore']) {
+  for (const file of ['apps', 'content', 'schema', 'shared', 'scripts', 'workshop', 'package.json', 'package-lock.json', 'tsconfig.json', '.gitignore']) {
     await cp(path.join(repository, file), path.join(root, file), {
       recursive: true,
       filter: file => !file.split(path.sep).some(part => ['media', 'private', '.DS_Store', '__pycache__'].includes(part)),
@@ -96,7 +96,7 @@ test('production builds only committed public Horizons and reviewed Journal cont
   assert.doesNotMatch(journal, /draft-fixture/);
   assert.match(await readFile(path.join(site, 'journal/published-fixture/index.html'), 'utf8'), /published-fixture body\./);
   assert.equal(await readFile(path.join(site, 'journal/published-fixture/assets/example.txt'), 'utf8'), 'published-fixture asset');
-  for (const file of ['songs.json', 'stems.json', 'notes.json', 'pages.json', 'model-schema.json', 'orb/music', 'orb/model', 'orb/operations', 'journal/draft-fixture', 'shared/components/audio-player']) {
+  for (const file of ['workshop', 'components', 'workshop.ts', 'workshop.css', 'songs.json', 'stems.json', 'notes.json', 'pages.json', 'model-schema.json', 'orb/music', 'orb/model', 'orb/operations', 'journal/draft-fixture', 'shared/components/audio-player']) {
     assert.equal(Object.keys(official).some(name => name === file || name.startsWith(`${file}/`)), false, `unexpected public path: ${file}`);
   }
   await writeFile(path.join(root, 'apps/seraphic-systems/index.html'), '<h1>Unstaged draft</h1>');

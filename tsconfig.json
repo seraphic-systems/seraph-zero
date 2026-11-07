@@ -12,5 +12,5 @@
     "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
-  "include": ["apps/seraphic-systems/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts", "vite.config.ts"]
+  "include": ["apps/seraphic-systems/**/*.ts", "workshop/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts", "vite*.config.ts"]
 }

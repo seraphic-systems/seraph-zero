@@ -118,6 +118,45 @@ search, model, operations, or playback panels.
 Unknown paths use `404.html`. The former music/model routes and audio endpoints
 are absent, not simply hidden in navigation. Tests verify the reduced build boundary.
 
+### Local component workshop
+
+Run `npm run dev:components` and open `http://127.0.0.1:5175` to develop UI
+pieces in isolation. This separate Vite preview serves `workshop/` directly,
+refreshes as source changes, and uses the public shared design tokens. It does
+not build the site or read content records. Workshop files are outside the public
+build's inputs and are never copied to `dist/seraphic-systems`.
+
+The first studies are loading indicators: ring, dots, and orbit. Preview controls
+change surface, size, tempo, pause state, and reduced motion. System reduced-motion
+preferences always disable animation. Each indicator includes a readable status
+label; animation is decorative. The context panel uses the same implementation.
+
+The angel procession study morphs from a point through seraph, cherub, and throne
+geometry while traveling back and forth. Its position is indeterminate, not a
+completion percentage. Use **Finish loading** to settle at the end, then
+**Restart loading** to replay. It respects the same preview controls; reduced
+motion shows a stationary form. `createAngelProgress()` exposes completion,
+restart, preview settings, and disposal for its animation loop.
+
+Reusable examples live in `workshop/components/`; `workshop.ts` mounts them and
+wires the preview controls, while `workshop.css` styles the surrounding workshop.
+Add future studies here and move components into application source when they
+are ready for integration. No component is added to the public UI automatically.
+
+The multiline textbox study includes a visible label, linked helper/error text,
+native vertical resizing, and word/character counts (words are separated by
+whitespace). Switch between editable, error, read-only, and disabled states without
+replacing the text, or insert sample copy. Text is held in the page only, with no
+storage or submission. `createTextbox()` exposes the textarea, value updates, and
+state changes. The surface selector previews both component families in light/dark.
+An optional seraph seal sits in the lower corner. Focusing opens its paired wings
+and divided halo with a brief chromatic glint, then settles into a quiet warm frame.
+Blurring folds the wings and briefly deepens the inset border, like an impression
+in stone. Reduced motion shows the resting/open states without animation. Toggle
+**Angel watermark** to compare it with the plain field. The decorative SVG adapts
+the site's existing seraph geometry and ignores pointer input. Sealing is visual:
+it does not save text, prevent editing, or imply successful validation.
+
 ### Preview with fixture records
 
 Run `npm run dev:fixtures` to preview Orb with the Markdown records in

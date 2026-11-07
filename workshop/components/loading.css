@@ -1,0 +1,39 @@
+.loading {
+  display: inline-flex;
+  align-items: center;
+  gap: .85rem;
+  color: var(--color-accent);
+  --loading-size: 36px;
+  --loading-duration: 1.4s;
+}
+.loading__label { color: var(--color-text-secondary); font-size: .85rem; }
+.loading__mark { display: inline-block; position: relative; flex: none; width: var(--loading-size); height: var(--loading-size); }
+.loading__mark--ring {
+  border: 2px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: loading-turn var(--loading-duration) linear infinite;
+}
+.loading__mark--dots { display: inline-flex; align-items: center; justify-content: space-between; }
+.loading__mark--dots span {
+  width: 20%; aspect-ratio: 1; border-radius: 50%; background: currentColor;
+  animation: loading-breathe var(--loading-duration) ease-in-out infinite;
+}
+.loading__mark--dots span:nth-child(2) { animation-delay: calc(var(--loading-duration) / -3); }
+.loading__mark--dots span:nth-child(3) { animation-delay: calc(var(--loading-duration) / -1.5); }
+.loading__mark--orbit svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 10; animation: loading-turn calc(var(--loading-duration) * 8) linear infinite; }
+.loading__orbit-circle { opacity: .3; }
+.loading__wings { opacity: .8; }
+.loading__wing { transform: translateX(114px) scaleY(.45); animation: loading-unfold calc(var(--loading-duration) * 4) ease-in-out infinite; }
+.loading__golden-thread { stroke: var(--loading-thread-color, #a1874c); stroke-width: 13; stroke-linecap: round; }
+[data-paused] .loading__mark, [data-paused] .loading__mark * { animation-play-state: paused; }
+[data-reduced-motion] .loading__mark, [data-reduced-motion] .loading__mark * { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .loading__mark, .loading__mark * { animation: none; }
+}
+@keyframes loading-turn { to { transform: rotate(360deg); } }
+@keyframes loading-breathe { 0%, 100% { opacity: .3; transform: scale(.7); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes loading-unfold {
+  0%, 100% { transform: translateX(114px) scaleY(.45); }
+  50% { transform: translateX(30px) scaleY(.9); }
+}

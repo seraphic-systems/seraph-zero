@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Component workshop · Seraphic Systems</title>
+  <link rel="stylesheet" href="./components/loading.css">
+  <link rel="stylesheet" href="./components/angel-progress.css">
+  <link rel="stylesheet" href="./components/textbox.css">
+  <link rel="stylesheet" href="./workshop.css">
+</head>
+<body>
+  <header class="masthead"><a href="/" aria-label="Component workshop home">Seraphic Systems <span>/ Workshop</span></a><span class="local-badge">Local preview</span></header>
+  <main>
+    <div class="intro"><p class="eyebrow">Seraphic Systems / UI studies</p><h1>Component workshop</h1><p class="lede">Small pieces, room to experiment.<br>Explore how things feel before they find their place.</p><nav class="workshop-nav" aria-label="Component studies"><a href="#textbox-study">Writing area</a><a href="#loading-controls">Loading indicators</a></nav></div>
+    <section class="textbox-study" id="textbox-study" aria-labelledby="textbox-title">
+      <div class="textbox-study__header"><div><p class="eyebrow">05 / Textbox</p><h2 id="textbox-title">A place to put a thought</h2></div><div class="textbox-study__controls"><label>Field state<select id="textbox-state"><option value="editable">Editable</option><option value="error">Error</option><option value="readonly">Read only</option><option value="disabled">Disabled</option></select></label><label class="textbox-study__watermark"><input id="textbox-watermark" type="checkbox" checked> Angel watermark</label><button id="textbox-sample" type="button">Insert sample</button></div></div>
+      <div id="textbox-example"></div>
+      <p class="textbox-study__note">Focus opens the angel; leaving the field closes the seal. Text remains editable. This is a visual study, with no storage; text resets on reload.</p>
+    </section>
+    <section class="controls" id="loading-controls" aria-label="Preview controls">
+      <label>Surface<select id="surface"><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <label>Size<select id="size"><option value="24">Small · 24</option><option value="36" selected>Medium · 36</option><option value="56">Large · 56</option></select></label>
+      <label>Tempo<select id="tempo"><option value="2.4">Slow</option><option value="1.4" selected>Steady</option><option value="0.8">Quick</option></select></label>
+      <label class="motion-control"><input id="reduced" type="checkbox"> Reduced motion</label>
+      <button id="pause" type="button" aria-pressed="false">Pause animation</button>
+    </section>
+    <p id="motion-note" class="motion-note">System reduced-motion preferences are always respected.</p>
+    <section class="angel-study" aria-labelledby="angel-title">
+      <div class="angel-study__heading"><div><p class="eyebrow">04 / Angel procession</p><h2 id="angel-title">From a point, into wings</h2></div><button id="finish-loading" type="button">Finish loading</button></div>
+      <div id="angel-progress"></div>
+      <p class="angel-study__note">Point → Seraph → Cherub → Throne, then back again. A repeating journey while we wait; the position does not represent a percentage.</p>
+    </section>
+    <section class="gallery" aria-label="Loading indicator examples">
+      <article class="study"><div class="study-heading"><h2>Ring</h2><span>01</span></div><div class="stage" data-kind="ring"></div><p>A familiar, continuous turn.</p><code>createLoadingIndicator('ring')</code></article>
+      <article class="study"><div class="study-heading"><h2>Dots</h2><span>02</span></div><div class="stage" data-kind="dots"></div><p>Three points, gently breathing.</p><code>createLoadingIndicator('dots')</code></article>
+      <article class="study"><div class="study-heading"><h2>Orbit</h2><span>03</span></div><div class="stage" data-kind="orbit"></div><p>Six wings unfold around a golden spiral.</p><code>createLoadingIndicator('orbit')</code></article>
+    </section>
+    <section class="context" aria-labelledby="context-title"><div><p class="eyebrow">In context</p><h2 id="context-title">A moment of anticipation</h2><p>The same component, inside a content panel.</p></div><div class="context-panel"><span class="context-caption">HORIZONS</span><div id="context-loading"></div></div></section>
+    <footer><span>Experiments in plain HTML, CSS & TypeScript.</span><span>Workshop examples stay out of public builds.</span></footer>
+  </main>
+  <script type="module" src="./workshop.ts"></script>
+</body>
+</html>
