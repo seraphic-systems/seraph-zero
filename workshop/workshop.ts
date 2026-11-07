@@ -2,6 +2,25 @@ import { createLoadingIndicator, type LoadingKind } from './components/loading.t
 import { createAngelProgress } from './components/angel-progress.ts';
 import { createTextbox } from './components/textbox.ts';
 import { createFatButton } from './components/fat-button.ts';
+import { createPillButton } from './components/pill-button.ts';
+
+const pillButton = createPillButton();
+document.querySelector('#pill-button-example')!.append(pillButton.element);
+const pillState = document.querySelector<HTMLSelectElement>('#pill-state')!;
+const pillFeedback = document.querySelector<HTMLElement>('#pill-feedback')!;
+let pillPresses = 0;
+pillButton.element.addEventListener('click', () => {
+  pillPresses += 1;
+  pillFeedback.textContent = `${pillPresses} ${pillPresses === 1 ? 'press' : 'presses'}. Nothing submitted; just trying the feel.`;
+});
+pillState.addEventListener('change', () => {
+  const state = pillState.value;
+  if (state !== 'ready' && state !== 'loading' && state !== 'disabled') return;
+  pillButton.setState(state);
+  pillFeedback.textContent = state === 'loading' ? 'Loading preview. Further presses are ignored.'
+    : state === 'disabled' ? 'Disabled preview. The pill is unavailable.'
+    : 'Ready. Try another press.';
+});
 
 const fatButton = createFatButton();
 document.querySelector('#fat-button-example')!.append(fatButton.element);

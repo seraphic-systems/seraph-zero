@@ -9,11 +9,17 @@
   <link rel="stylesheet" href="./components/textbox.css">
   <link rel="stylesheet" href="./workshop.css">
   <link rel="stylesheet" href="./components/fat-button.css">
+  <link rel="stylesheet" href="./components/pill-button.css">
 </head>
 <body>
   <header class="masthead"><a href="/" aria-label="Component workshop home">Seraphic Systems <span>/ Workshop</span></a><span class="local-badge">Local preview</span></header>
   <main>
-    <div class="intro"><p class="eyebrow">Seraphic Systems / UI studies</p><h1>Component workshop</h1><p class="lede">Small pieces, room to experiment.<br>Explore how things feel before they find their place.</p><nav class="workshop-nav" aria-label="Component studies"><a href="#button-study">Fat button</a><a href="#textbox-study">Writing area</a><a href="#loading-controls">Loading indicators</a></nav></div>
+    <div class="intro"><p class="eyebrow">Seraphic Systems / UI studies</p><h1>Component workshop</h1><p class="lede">Small pieces, room to experiment.<br>Explore how things feel before they find their place.</p><nav class="workshop-nav" aria-label="Component studies"><a href="#pill-study">Pill button</a><a href="#button-study">Fat button</a><a href="#textbox-study">Writing area</a><a href="#loading-controls">Loading indicators</a></nav></div>
+    <section class="button-study" id="pill-study" aria-labelledby="pill-title">
+      <div class="button-study__header"><div><p class="eyebrow">07 / Pill button</p><h2 id="pill-title">A small invitation</h2></div><label>Pill state<select id="pill-state"><option value="ready">Ready</option><option value="loading">Loading</option><option value="disabled">Disabled</option></select></label></div>
+      <div class="pill-study__stage"><div id="pill-button-example"></div><p>A quiet signal, a luminous edge.<br>Hover, press, or follow the ring while it waits.</p></div>
+      <p id="pill-feedback" class="button-study__note" role="status">Try a click, or Tab to the pill and press Space or Enter. This demo only counts presses.</p>
+    </section>
     <section class="button-study" id="button-study" aria-labelledby="button-title">
       <div class="button-study__header"><div><p class="eyebrow">06 / Fat button</p><h2 id="button-title">A signal, held sacred</h2></div><label>Button state<select id="button-state"><option value="ready">Ready</option><option value="loading">Loading</option><option value="disabled">Disabled</option></select></label></div>
       <div class="button-study__stage"><div id="fat-button-example"></div><p>A luminous digital seal.<br>RGB edges, a moment of ceremony.<br>Switch Disabled → Ready to send light through the seal.</p></div>
