@@ -10,6 +10,11 @@ nav ul { gap: clamp(1rem, 2.6vw, 2rem); }
 nav a { font-size: .75rem; font-weight: 400; letter-spacing: .025em; }
 .brand-mark { width: 40px; height: 40px; flex-shrink: 0; color: #9d946e; }
 .brand-mark svg { width: 100%; fill: none; stroke: currentColor; stroke-width: .8; }
+.brand-mark svg { transition: filter var(--motion-hover) ease; }
+.brand-mark:is(:hover, :focus-visible) svg {
+  filter: drop-shadow(calc(-1 * var(--effect-rgb-split-rest)) 0 0 var(--color-light-red))
+    drop-shadow(var(--effect-rgb-split-rest) 0 0 var(--color-light-blue));
+}
 header { min-height: min(780px, 87svh); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-block: 6rem 7rem; }
 h1, h2 { font-family: var(--font-heading); font-weight: 400; }
 h1 { max-width: 740px; font-size: clamp(3rem, 6.8vw, 5.6rem); line-height: 1.13; letter-spacing: -.045em; text-wrap: balance; }
@@ -57,5 +62,8 @@ footer { padding-block: 2rem; border-color: #deddd1; font-size: .7rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  a.primary { transition: none; }
+  a.primary, .brand-mark svg { transition: none; }
+}
+@media (forced-colors: active) {
+  .brand-mark svg { filter: none; }
 }
