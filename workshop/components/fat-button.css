@@ -26,7 +26,7 @@ button.fat-button {
   border-radius: 0;
   background: var(--fat-button-face);
   color: var(--fat-button-ink);
-  box-shadow: -1px 0 0 color-mix(in srgb, var(--fat-button-red) 70%, transparent), 1px 0 0 color-mix(in srgb, var(--fat-button-blue) 70%, transparent);
+  box-shadow: calc(-1px * var(--workshop-split, 1)) 0 0 color-mix(in srgb, var(--fat-button-red) 70%, transparent), calc(1px * var(--workshop-split, 1)) 0 0 color-mix(in srgb, var(--fat-button-blue) 70%, transparent);
   font-family: var(--font-body);
   font-size: .8rem;
   font-weight: 600;
@@ -46,7 +46,7 @@ button.fat-button {
 .fat-button::after {
   content: ''; position: absolute; inset: -1px; pointer-events: none;
   border: 1px solid var(--fat-button-glow); opacity: 0;
-  box-shadow: -5px 0 var(--effect-glow-radius-aura) 3px color-mix(in srgb, var(--fat-button-red) 45%, transparent), 5px 0 var(--effect-glow-radius-aura) 3px color-mix(in srgb, var(--fat-button-blue) 55%, transparent), 0 6px 24px color-mix(in srgb, var(--fat-button-green) 35%, transparent);
+  box-shadow: -5px 0 var(--effect-glow-radius-aura) 3px color-mix(in srgb, var(--fat-button-red) 45%, transparent), 5px 0 var(--effect-glow-radius-aura) 3px color-mix(in srgb, var(--fat-button-blue) 55%, transparent), 0 calc(6px * var(--workshop-glow, 1)) calc(24px * var(--workshop-glow, 1)) color-mix(in srgb, var(--fat-button-green) 35%, transparent);
   transition: opacity var(--motion-hover) ease;
 }
 .fat-button__label { position: relative; max-width: 100%; overflow-wrap: anywhere; }
@@ -85,8 +85,8 @@ button.fat-button {
 .fat-button__channel { stroke-width: 1; opacity: var(--fat-button-fringe-opacity); filter: drop-shadow(0 0 var(--effect-glow-radius-rest) currentColor); transition: transform var(--motion-hover) ease, opacity var(--motion-hover) ease, filter var(--motion-hover) ease; }
 .fat-button__channel--red { color: var(--fat-button-red); transform: translate(calc(-1 * var(--fat-button-split)), .5px); }
 .fat-button__channel--blue { color: var(--fat-button-blue); transform: translate(var(--fat-button-split), -.5px); }
-.fat-button[data-awakening] .fat-button__channel--red { animation: fat-button-split-red calc(var(--motion-awaken) - 200ms) ease-out; }
-.fat-button[data-awakening] .fat-button__channel--blue { animation: fat-button-split-blue calc(var(--motion-awaken) - 200ms) ease-out; }
+.fat-button[data-awakening] .fat-button__channel--red { animation: fat-button-split-red calc(var(--motion-awaken) - 200ms * var(--workshop-timing, 1)) ease-out; }
+.fat-button[data-awakening] .fat-button__channel--blue { animation: fat-button-split-blue calc(var(--motion-awaken) - 200ms * var(--workshop-timing, 1)) ease-out; }
 @keyframes fat-button-split-red {
   0%, 100% { transform: translate(calc(-1 * var(--fat-button-split)), .5px); opacity: var(--fat-button-fringe-opacity); }
   25% { transform: translate(calc(-1 * var(--effect-rgb-split-peak)), 1px); opacity: var(--effect-rgb-opacity-interactive); }
@@ -100,10 +100,10 @@ button.fat-button {
 .fat-button__streak::before {
   content: ''; position: absolute; left: -40%; top: 50%; width: 180%; height: 1px;
   background: linear-gradient(90deg, transparent 10%, var(--fat-button-red) 30%, var(--fat-button-energy) 50%, var(--fat-button-green) 65%, var(--fat-button-blue) 75%, transparent 90%);
-  box-shadow: 0 0 8px var(--fat-button-blue), 0 0 18px var(--fat-button-green);
+  box-shadow: 0 0 calc(8px * var(--workshop-glow, 1)) var(--fat-button-blue), 0 0 calc(18px * var(--workshop-glow, 1)) var(--fat-button-green);
   transform: translateY(-180px) rotate(-24deg); opacity: 0;
 }
-.fat-button[data-awakening] .fat-button__streak::before { animation: fat-button-streak var(--motion-reveal) ease-in-out 250ms both; }
+.fat-button[data-awakening] .fat-button__streak::before { animation: fat-button-streak var(--motion-reveal) ease-in-out calc(250ms * var(--workshop-timing, 1)) both; }
 @keyframes fat-button-streak {
   0% { transform: translateY(-180px) rotate(-24deg); opacity: 0; }
   20%, 75% { opacity: .65; }
@@ -117,14 +117,14 @@ button.fat-button {
   transition: transform var(--motion-hover) ease;
 }
 
-.fat-button__energy { color: var(--fat-button-energy); stroke-width: 1.7; stroke-linecap: round; filter: drop-shadow(0 0 var(--effect-glow-radius-rest) var(--fat-button-glow)) drop-shadow(0 0 7px var(--fat-button-glow)); }
+.fat-button__energy { color: var(--fat-button-energy); stroke-width: 1.7; stroke-linecap: round; filter: drop-shadow(0 0 var(--effect-glow-radius-rest) var(--fat-button-glow)) drop-shadow(0 0 calc(7px * var(--workshop-glow, 1)) var(--fat-button-glow)); }
 .fat-button__energy > g { opacity: 0; }
 .fat-button__energy > g:nth-child(3n + 1) { color: var(--fat-button-red); }
 .fat-button__energy > g:nth-child(3n + 2) { color: var(--fat-button-blue); }
 .fat-button__energy > g:nth-child(3n) { color: var(--fat-button-green); }
 .fat-button[data-awakening] .fat-button__energy > g {
   stroke-dasharray: 1; stroke-dashoffset: 1;
-  animation: fat-button-trace var(--motion-trace) ease-in-out var(--trace-delay) both;
+  animation: fat-button-trace var(--motion-trace) ease-in-out calc(var(--trace-delay) * var(--workshop-timing, 1)) both;
 }
 @keyframes fat-button-trace {
   0% { opacity: 0; stroke-dashoffset: 1; }

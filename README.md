@@ -126,6 +126,48 @@ refreshes as source changes, and uses the public shared design tokens. It does
 not build the site or read content records. Workshop files are outside the public
 build's inputs and are never copied to `dist/seraphic-systems`.
 
+The workshop opens to a study gallery, with a persistent study browser. Open a
+study to work on a focused canvas. **Compare side by side** opens a second,
+independent canvas, initially showing the same study; use **Study B** to choose
+another. Each canvas has its own light/dark surface, maximum width (fluid, 360px,
+or 720px, limited by available space), and component settings. Comparisons stack
+vertically on narrow screens. Reduced motion and pause apply to both canvases;
+system reduced motion always takes precedence. Study links support direct URLs
+and browser Back/Forward.
+
+**A place to begin** is a composition study combining the existing textbox, pill
+button, and fat button with sample writing-room copy. It is a visual experiment:
+button actions count presses without saving or submitting text. Settings and
+writing are kept separately for each study in each canvas in tab memory while
+switching studies or leaving comparison, and reset on reload. Unsaved visual
+settings also reset on reload; explicitly saved visual presets persist locally.
+Writing and study state are never stored in browser storage or sent to an API.
+Palette and effect overrides stay inside the workshop; changing a preview does
+not modify shared tokens or the site.
+
+Open **Visual controls & presets** on either canvas to adjust rose/blue edges,
+mint accents, cyan outlines, component faces on light/dark surfaces, glow,
+RGB separation, and timing. Multipliers start at 1×; glow and split can be reduced
+to zero. Higher timing values make durations longer, including button pulses,
+CSS transitions, trace delays, and loading/morph cycles. The study’s tempo setting
+and the visual timing multiplier combine. System reduced motion still takes
+precedence. Controls affect decoration and component surfaces; text stays crisp.
+
+Give a treatment a name and use **Save new preset**. Both canvases share the same
+preset library; select one and **Load preset** to apply it to that canvas.
+**Replace selected** explicitly updates the selected preset’s visual settings;
+**Delete selected** removes it while leaving the current canvas unchanged.
+**Reset visuals** restores the original palette/effect/timing settings without
+changing writing, study controls, or saved presets. Visual settings follow their
+canvas across studies, rather than belonging to one component.
+
+Presets use a versioned localStorage entry at the workshop’s origin (normally
+`http://127.0.0.1:5175`), with up to 50 named presets. They survive reloads in that
+browser/profile, but do not sync between browsers or machines. Clearing browser
+site data removes them. Only colors and visual multipliers are saved, never
+writing, records, or demo state. Storage errors leave the live controls usable and
+show a status message; malformed saved data is not overwritten. No API is used.
+
 The button and textbox opt into the shared light tokens in `shared/tokens.css`:
 `--color-light-*` defines the RGB/cyan/white palette, `--color-night*` and
 `--color-on-night*` define dark surfaces and readable text, `--effect-rgb-*` and
@@ -138,7 +180,7 @@ colors. These tokens are opt-in and do not restyle the public site automatically
 The first studies are loading indicators: ring, dots, and orbit. Preview controls
 change surface, size, tempo, pause state, and reduced motion. System reduced-motion
 preferences always disable animation. Each indicator includes a readable status
-label; animation is decorative. The context panel uses the same implementation.
+label; animation is decorative. Each focused canvas mounts the same reusable implementation.
 
 The angel procession study morphs from a point through seraph, cherub, and throne
 geometry while traveling back and forth. It shares the fat button’s dark face,
@@ -160,8 +202,11 @@ It moves forward, holds at convergence, and fades into a new loading cycle.
 Both studies share `morph-progress.ts` and `morph-progress.css`, with the same
 size, tempo, pause, reduced-motion, completion, restart, and disposal controls.
 
-Reusable examples live in `workshop/components/`; `workshop.ts` mounts them and
-wires the preview controls, while `workshop.css` styles the surrounding workshop.
+Reusable examples live in `workshop/components/`; `studies.ts` lists studies and
+mounts their specimens and controls. `workshop.ts` coordinates navigation, the two
+canvases, session settings, and animation disposal, while `workshop.css` styles
+the surrounding workshop. `visual-controls.ts` supplies the per-canvas editor;
+`visual-settings.ts` defines its visual values and validates saved presets.
 Add future studies here and move components into application source when they
 are ready for integration. No component is added to the public UI automatically.
 
@@ -170,7 +215,7 @@ native vertical resizing, and word/character counts (words are separated by
 whitespace). Switch between editable, error, read-only, and disabled states without
 replacing the text, or insert sample copy. Text is held in the page only, with no
 storage or submission. `createTextbox()` exposes the textarea, value updates, and
-state changes. The surface selector previews both component families in light/dark.
+state changes. Each canvas’s surface selector previews its components in light/dark.
 An optional seraph seal sits in the lower corner. The textbox shares the button's
 dark surface, cyan/rose split edges, mint accents, and luminous hover/focus frame.
 Focusing opens the paired wings and divided halo with a brief RGB glow, then settles
@@ -195,7 +240,7 @@ a brief diagonal light streak, and increased chromatic separation. Reduced motio
 suppresses the animations while retaining the static contour treatment. The top engraving reads **Ne timeas** (Latin: “Fear not”). Hover and
 keyboard focus gently spread the six wings and strengthen the RGB split and halo.
 The wings stay still with reduced motion, while loading, and while disabled. Clicking (or pressing Space or
-Enter) adds a brief artwork-only light pulse; both text lines remain unfiltered. Use **Button state** to preview ready, loading, and disabled states;
+Enter) adds a brief artwork-only light pulse; both text lines remain unfiltered. Use **Button state** (or **Actions** in the composition) to preview ready, loading, and disabled states;
 ready presses only update a local counter. Loading sends a slow light arc around
 the outer ring while the seal and text stay still; reduced motion keeps the arc static.
 Loading keeps keyboard focus and ignores
@@ -204,7 +249,7 @@ button and `setState()`. Surface and reduced-motion controls also apply here.
 
 The pill button study is a compact companion to the fat button: a rounded dark
 face, crisp label, mint signal mark, and cyan/rose edges. Hover and keyboard focus
-light the contour; pressing changes the face without moving it. **Pill state**
+light the contour; pressing changes the face without moving it. **Button state**
 previews ready, loading, and native disabled states. Loading retains focus and
 ignores activation, replacing the star with a rotating ring. Reduced motion keeps
 the ring static, and Pause animation pauses it. Ready presses update a local counter

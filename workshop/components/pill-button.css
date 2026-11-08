@@ -14,7 +14,7 @@ button.pill-button {
   border-radius: 999px;
   background: var(--pill-face);
   color: var(--color-on-night);
-  box-shadow: -1px 0 0 var(--color-light-red), 1px 0 0 var(--color-light-blue);
+  box-shadow: calc(-1px * var(--workshop-split, 1)) 0 0 var(--color-light-red), calc(1px * var(--workshop-split, 1)) 0 0 var(--color-light-blue);
   font-family: var(--font-body);
   font-size: .85rem;
   font-weight: 600;
@@ -31,7 +31,7 @@ button.pill-button {
   inset: -2px;
   z-index: -1;
   border-radius: inherit;
-  box-shadow: -4px 0 18px color-mix(in srgb, var(--color-light-red) 35%, transparent), 4px 0 18px color-mix(in srgb, var(--color-light-blue) 45%, transparent);
+  box-shadow: calc(-4px * var(--workshop-split, 1)) 0 calc(18px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-red) 35%, transparent), calc(4px * var(--workshop-split, 1)) 0 calc(18px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-blue) 45%, transparent);
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--motion-hover) ease;
