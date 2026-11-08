@@ -169,15 +169,19 @@ field. The decorative SVG adapts the site's seraph geometry and ignores pointer
 input. Sealing is visual: it does not save text, prevent editing, or imply successful
 validation.
 
-The fat button study explores a square digital seal with fine celestial linework,
-a flat dark surface, RGB contour separation, and luminous activation light,
-inspired by the memory-scene house style. Vector outlines supply the edge treatment;
+The fat button study explores a square digital seal with a six-winged seraph,
+a manuscript-inspired border of curling vines, leaves, and small stars, and
+a flat dark surface with RGB contour separation and luminous activation light.
+The border remains visible at rest and lights on hover and keyboard focus;
+its tighter color separation and glow keep the fine ornament clear.
+Vector outlines supply the edge treatment;
 no image post-processing is needed. Hover and press change color
 without moving the button or simulating physical depth. Changing Disabled to Ready sends a brief light trace
-through the frame, orbital rings, rays, star, and central eye, with an RGB edge glow,
+through the frame, orbital rings, halo, six seraph wings, and central eye, with an RGB edge glow,
 a brief diagonal light streak, and increased chromatic separation. Reduced motion
-suppresses the animations while retaining the static contour treatment. Hover and
-keyboard focus strengthen the RGB split and halo. Clicking (or pressing Space or
+suppresses the animations while retaining the static contour treatment. The top engraving reads **Ne timeas** (Latin: “Fear not”). Hover and
+keyboard focus gently spread the six wings and strengthen the RGB split and halo.
+The wings stay still with reduced motion, while loading, and while disabled. Clicking (or pressing Space or
 Enter) adds a brief artwork-only light pulse; both text lines remain unfiltered. Use **Button state** to preview ready, loading, and disabled states;
 ready presses only update a local counter. Loading sends a slow light arc around
 the outer ring while the seal and text stay still; reduced motion keeps the arc static.
