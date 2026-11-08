@@ -8,7 +8,7 @@
   border: 1px solid color-mix(in srgb, var(--color-light-blue) 60%, transparent);
   background: var(--morph-face);
   color: var(--color-light-cyan);
-  box-shadow: -1px 0 0 color-mix(in srgb, var(--color-light-red) 70%, transparent), 1px 0 0 color-mix(in srgb, var(--color-light-blue) 70%, transparent);
+  box-shadow: calc(-1px * var(--workshop-split, 1)) 0 0 color-mix(in srgb, var(--color-light-red) 70%, transparent), calc(1px * var(--workshop-split, 1)) 0 0 color-mix(in srgb, var(--color-light-blue) 70%, transparent);
   font-family: var(--font-body);
 }
 .morph-progress::before {

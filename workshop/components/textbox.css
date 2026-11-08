@@ -15,7 +15,7 @@ body[data-surface="dark"] .textbox { --textbox-face: var(--color-night-deep); }
   display: none; position: absolute; right: 22px; bottom: 20px;
   width: clamp(88px, 22%, 132px); aspect-ratio: 1;
   color: var(--color-light-cyan); opacity: .2; pointer-events: none;
-  filter: drop-shadow(calc(-1 * var(--effect-rgb-split-rest) + .7px) 0 0 var(--textbox-red)) drop-shadow(calc(var(--effect-rgb-split-rest) - .7px) 0 0 var(--textbox-blue)) drop-shadow(0 0 calc(var(--effect-glow-radius-rest) + 1px) color-mix(in srgb, var(--color-light-blue) 40%, transparent));
+  filter: drop-shadow(calc(-1 * var(--effect-rgb-split-rest) + .7px * var(--workshop-split, 1)) 0 0 var(--textbox-red)) drop-shadow(calc(var(--effect-rgb-split-rest) - .7px * var(--workshop-split, 1)) 0 0 var(--textbox-blue)) drop-shadow(0 0 calc(var(--effect-glow-radius-rest) + 1px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-blue) 40%, transparent));
   transition: opacity var(--motion-hover) ease, filter var(--motion-hover) ease;
 }
 .textbox[data-watermark] .textbox__seal { display: block; }
@@ -31,7 +31,7 @@ body[data-surface="dark"] .textbox { --textbox-face: var(--color-night-deep); }
 .textbox__field:focus-within .textbox__halo--right { transform: translateX(8px); opacity: .6; }
 .textbox__field:focus-within .textbox__seal {
   opacity: .14; animation: textbox-awaken var(--motion-reveal) ease-out;
-  filter: drop-shadow(calc(-1 * var(--effect-rgb-split-interactive) + .8px) 0 0 var(--textbox-red)) drop-shadow(calc(var(--effect-rgb-split-interactive) - .8px) 0 0 var(--textbox-blue)) drop-shadow(0 0 calc(var(--effect-glow-radius-interactive) + 1px) color-mix(in srgb, var(--color-light-blue) 60%, transparent));
+  filter: drop-shadow(calc(-1 * var(--effect-rgb-split-interactive) + .8px * var(--workshop-split, 1)) 0 0 var(--textbox-red)) drop-shadow(calc(var(--effect-rgb-split-interactive) - .8px * var(--workshop-split, 1)) 0 0 var(--textbox-blue)) drop-shadow(0 0 calc(var(--effect-glow-radius-interactive) + 1px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-blue) 60%, transparent));
 }
 .textbox[data-sealing] .textbox__seal { animation: textbox-seal var(--motion-settle) ease-out; }
 .textbox[data-state="disabled"] .textbox__seal { display: none; }
@@ -44,20 +44,20 @@ body[data-surface="dark"] .textbox { --textbox-face: var(--color-night-deep); }
   caret-color: var(--textbox-green); scrollbar-gutter: stable;
   /* Color belongs to the boundary; never filter, duplicate, or blur the writing. */
   text-shadow: none; filter: none;
-  box-shadow: -1px 0 0 color-mix(in srgb, var(--color-light-red) 65%, transparent), 1px 0 0 color-mix(in srgb, var(--color-light-blue) 65%, transparent);
+  box-shadow: calc(-1px * var(--workshop-split, 1)) 0 0 color-mix(in srgb, var(--color-light-red) 65%, transparent), calc(1px * var(--workshop-split, 1)) 0 0 color-mix(in srgb, var(--color-light-blue) 65%, transparent);
   transition: border-color var(--motion-hover) ease, box-shadow var(--motion-hover) ease;
 }
 .textbox__input::placeholder { color: var(--textbox-muted); opacity: 1; }
 @media (hover: hover) {
   .textbox__input:hover:not(:focus):not(:disabled):not([aria-invalid="true"]) {
     border-color: var(--textbox-blue);
-    box-shadow: -2px 0 5px color-mix(in srgb, var(--color-light-red) 45%, transparent), 2px 0 5px color-mix(in srgb, var(--color-light-blue) 50%, transparent), 0 3px 12px color-mix(in srgb, var(--color-light-green) 12%, transparent);
+    box-shadow: calc(-2px * var(--workshop-split, 1)) 0 calc(5px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-red) 45%, transparent), calc(2px * var(--workshop-split, 1)) 0 calc(5px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-blue) 50%, transparent), 0 calc(3px * var(--workshop-glow, 1)) calc(12px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-green) 12%, transparent);
   }
   .textbox__field:hover:not(:focus-within) .textbox__seal { opacity: .28; }
 }
 .textbox__input:focus {
   border-color: var(--textbox-blue); outline: 1px solid var(--textbox-blue); outline-offset: 2px;
-  box-shadow: -3px 0 12px color-mix(in srgb, var(--color-light-red) 45%, transparent), 3px 0 12px color-mix(in srgb, var(--color-light-blue) 55%, transparent), 0 5px 20px color-mix(in srgb, var(--color-light-green) 18%, transparent);
+  box-shadow: calc(-3px * var(--workshop-split, 1)) 0 calc(12px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-red) 45%, transparent), calc(3px * var(--workshop-split, 1)) 0 calc(12px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-blue) 55%, transparent), 0 calc(5px * var(--workshop-glow, 1)) calc(20px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-green) 18%, transparent);
 }
 @keyframes textbox-awaken {
   0% { opacity: .2; }

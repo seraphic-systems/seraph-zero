@@ -3,61 +3,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Component workshop · Seraphic Systems</title>
+  <title>Workshop · Seraphic Systems</title>
   <link rel="stylesheet" href="./components/loading.css">
   <link rel="stylesheet" href="./components/angel-progress.css">
   <link rel="stylesheet" href="./components/christogenesis-progress.css">
   <link rel="stylesheet" href="./components/textbox.css">
-  <link rel="stylesheet" href="./workshop.css">
   <link rel="stylesheet" href="./components/fat-button.css">
   <link rel="stylesheet" href="./components/pill-button.css">
+  <link rel="stylesheet" href="./workshop.css">
 </head>
 <body>
-  <header class="masthead"><a href="/" aria-label="Component workshop home">Seraphic Systems <span>/ Workshop</span></a><span class="local-badge">Local preview</span></header>
-  <main>
-    <div class="intro"><p class="eyebrow">Seraphic Systems / UI studies</p><h1>Component workshop</h1><p class="lede">Small pieces, room to experiment.<br>Explore how things feel before they find their place.</p><nav class="workshop-nav" aria-label="Component studies"><a href="#pill-study">Pill button</a><a href="#button-study">Fat button</a><a href="#textbox-study">Writing area</a><a href="#loading-controls">Loading indicators</a><a href="#christogenesis-study">Christogenesis</a></nav></div>
-    <section class="button-study" id="pill-study" aria-labelledby="pill-title">
-      <div class="button-study__header"><div><p class="eyebrow">07 / Pill button</p><h2 id="pill-title">A small invitation</h2></div><label>Pill state<select id="pill-state"><option value="ready">Ready</option><option value="loading">Loading</option><option value="disabled">Disabled</option></select></label></div>
-      <div class="pill-study__stage"><div id="pill-button-example"></div><p>A quiet signal, a luminous edge.<br>Hover, press, or follow the ring while it waits.</p></div>
-      <p id="pill-feedback" class="button-study__note" role="status">Try a click, or Tab to the pill and press Space or Enter. This demo only counts presses.</p>
-    </section>
-    <section class="button-study" id="button-study" aria-labelledby="button-title">
-      <div class="button-study__header"><div><p class="eyebrow">06 / Fat button</p><h2 id="button-title">A signal, held sacred</h2></div><label>Button state<select id="button-state"><option value="ready">Ready</option><option value="loading">Loading</option><option value="disabled">Disabled</option></select></label></div>
-      <div class="button-study__stage"><div id="fat-button-example"></div><p>A luminous digital seal.<br>RGB edges, a moment of ceremony.<br>Switch Disabled → Ready to send light through the seal.</p></div>
-      <p id="button-feedback" class="button-study__note" role="status">Try a click, or focus the button and press Space or Enter. This demo only counts presses.</p>
-    </section>
-    <section class="textbox-study" id="textbox-study" aria-labelledby="textbox-title">
-      <div class="textbox-study__header"><div><p class="eyebrow">05 / Textbox</p><h2 id="textbox-title">A place to put a thought</h2></div><div class="textbox-study__controls"><label>Field state<select id="textbox-state"><option value="editable">Editable</option><option value="error">Error</option><option value="readonly">Read only</option><option value="disabled">Disabled</option></select></label><label class="textbox-study__watermark"><input id="textbox-watermark" type="checkbox" checked> Angel watermark</label><button id="textbox-sample" type="button">Insert sample</button></div></div>
-      <div id="textbox-example"></div>
-      <p class="textbox-study__note">Hover lights the RGB frame; focus opens the angel. The writing stays crisp. This is a visual study, with no storage; text resets on reload.</p>
-    </section>
-    <section class="controls" id="loading-controls" aria-label="Preview controls">
-      <label>Surface<select id="surface"><option value="light">Light</option><option value="dark">Dark</option></select></label>
-      <label>Size<select id="size"><option value="24">Small · 24</option><option value="36" selected>Medium · 36</option><option value="56">Large · 56</option></select></label>
-      <label>Tempo<select id="tempo"><option value="2.4">Slow</option><option value="1.4" selected>Steady</option><option value="0.8">Quick</option></select></label>
-      <label class="motion-control"><input id="reduced" type="checkbox"> Reduced motion</label>
-      <button id="pause" type="button" aria-pressed="false">Pause animation</button>
-    </section>
-    <p id="motion-note" class="motion-note">System reduced-motion preferences are always respected.</p>
-    <section class="angel-study" aria-labelledby="angel-title">
-      <div class="angel-study__heading"><div><p class="eyebrow">04 / Angel procession</p><h2 id="angel-title">From a point, into wings</h2></div><button id="finish-loading" type="button">Finish loading</button></div>
-      <div id="angel-progress"></div>
-      <p class="angel-study__note">Point → Seraph → Cherub → Throne, then back again. A repeating journey while we wait; the position does not represent a percentage.</p>
-    </section>
-    <section class="angel-study" id="christogenesis-study" aria-labelledby="christogenesis-title">
-      <div class="angel-study__heading"><div><p class="eyebrow">08 / Christogenesis</p><h2 id="christogenesis-title">All things, converging</h2></div><button id="finish-christogenesis" type="button">Finish loading</button></div>
-      <div id="christogenesis-progress"></div>
-      <p class="angel-study__note">Matter gathers into a living sprout; branching thought becomes a connected web; light gathers around Christ Omega. An artistic reading of Pierre Teilhard de Chardin’s Christogenesis. Each loading cycle moves forward, rests, and begins anew; position does not measure completion.</p>
-      <p class="angel-study__note"><a href="https://jesuitonlinebibliography.bc.edu/catalog/13310">About Teilhard’s Christogenesis ↗</a></p>
-    </section>
-    <section class="gallery" aria-label="Loading indicator examples">
-      <article class="study"><div class="study-heading"><h2>Ring</h2><span>01</span></div><div class="stage" data-kind="ring"></div><p>A familiar, continuous turn.</p><code>createLoadingIndicator('ring')</code></article>
-      <article class="study"><div class="study-heading"><h2>Dots</h2><span>02</span></div><div class="stage" data-kind="dots"></div><p>Three points, gently breathing.</p><code>createLoadingIndicator('dots')</code></article>
-      <article class="study"><div class="study-heading"><h2>Orbit</h2><span>03</span></div><div class="stage" data-kind="orbit"></div><p>Six wings unfold around a golden spiral.</p><code>createLoadingIndicator('orbit')</code></article>
-    </section>
-    <section class="context" aria-labelledby="context-title"><div><p class="eyebrow">In context</p><h2 id="context-title">A moment of anticipation</h2><p>The same component, inside a content panel.</p></div><div class="context-panel"><span class="context-caption">HORIZONS</span><div id="context-loading"></div></div></section>
-    <footer><span>Experiments in plain HTML, CSS & TypeScript.</span><span>Workshop examples stay out of public builds.</span></footer>
-  </main>
+  <a class="skip-link" href="#workspace">Skip to workspace</a>
+  <header class="masthead"><a href="#gallery">Seraphic Systems <span>/ Workshop</span></a><span class="local-badge">Local playground</span></header>
+  <div class="workshop-layout">
+    <aside class="study-browser" aria-label="Study browser">
+      <a class="gallery-link" href="#gallery">All studies <span aria-hidden="true">↗</span></a>
+      <p class="eyebrow">Choose a study</p>
+      <nav id="study-links" aria-label="Studies"></nav>
+      <p class="browser-note">Small pieces, room to experiment.<br>Nothing here publishes to the site.</p>
+    </aside>
+    <main id="workspace" tabindex="-1">
+      <section id="gallery" aria-labelledby="gallery-title">
+        <div class="intro"><p class="eyebrow">The design workshop</p><h1 id="gallery-title">Find the feeling.</h1><p class="lede">Explore a small piece. Put two ideas beside each other.<br>See how they feel together.</p></div>
+        <div id="study-gallery" class="study-gallery"></div>
+      </section>
+      <section id="workbench" aria-labelledby="workbench-title" hidden>
+        <div class="workbench-heading"><div><p class="eyebrow">On the workbench</p><h1 id="workbench-title" tabindex="-1">Pill button</h1></div><button id="compare" type="button" aria-pressed="false">Compare side by side</button></div>
+        <p id="study-question" class="lede"></p>
+        <div class="motion-bar" aria-label="Shared motion controls"><label><input id="reduced" type="checkbox"> Reduced motion</label><button id="pause" type="button" aria-pressed="false">Pause animation</button><span id="motion-note">System motion preferences are respected.</span></div>
+        <div id="canvases" class="canvases"></div>
+        <p class="session-note">Unsaved settings and writing reset on reload. Named visual presets stay in this browser. Demo actions do not save or submit writing.</p>
+      </section>
+      <footer><span>Plain HTML, CSS & TypeScript.</span><span>Explore here. Integrate deliberately.</span></footer>
+    </main>
+  </div>
   <script type="module" src="./workshop.ts"></script>
 </body>
 </html>

@@ -91,10 +91,11 @@ export function createFatButton({ label = 'Begin', loadingLabel = 'Beginning…'
     const style = getComputedStyle(element);
     const light = style.getPropertyValue('--color-light-blue').trim();
     const duration = Number.parseFloat(style.getPropertyValue('--motion-pulse'));
+    const glow = Number.parseFloat(style.getPropertyValue('--workshop-glow') || '1');
     // Animate only the artwork: both text lines stay outside the light effects.
     pulse = seal.animate([
       { filter: 'brightness(1)' },
-      { filter: `brightness(1.65) drop-shadow(0 0 6px ${light})`, offset: 0.3 },
+      { filter: `brightness(1.65) drop-shadow(0 0 ${6 * glow}px ${light})`, offset: 0.3 },
       { filter: 'brightness(1)' },
     ], { duration, easing: 'ease-out' });
   });
