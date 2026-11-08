@@ -50,12 +50,38 @@ button.fat-button {
   transition: opacity var(--motion-hover) ease;
 }
 .fat-button__label { position: relative; max-width: 100%; overflow-wrap: anywhere; }
+.fat-button__border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  color: var(--fat-button-gold);
+  stroke: currentColor;
+  stroke-width: .7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: var(--fat-button-border-opacity, .5);
+  transition: opacity var(--motion-hover) ease;
+}
+.fat-button__border .fat-button__engraving {
+  opacity: .85;
+  filter: drop-shadow(0 0 calc(var(--effect-glow-radius-rest) * .5) color-mix(in srgb, var(--fat-button-blue) 35%, transparent));
+}
+/* Keep the fine border ornament sharper than the central seal. */
+.fat-button__border .fat-button__channel {
+  stroke-width: .8;
+  filter: drop-shadow(0 0 calc(var(--effect-glow-radius-rest) * .5) currentColor);
+}
+.fat-button__border .fat-button__channel--red { transform: translate(calc(var(--fat-button-split) * -.5), .25px); }
+.fat-button__border .fat-button__channel--blue { transform: translate(calc(var(--fat-button-split) * .5), -.25px); }
+.fat-button[data-awakening] .fat-button__border { opacity: 1; }
 .fat-button__mark { display: block; width: 148px; max-width: 100%; color: var(--fat-button-gold); position: relative; }
 .fat-button__mark svg { display: block; width: 100%; stroke: currentColor; stroke-width: 1; }
 .fat-button__inscription { display: block; margin-bottom: 4px; font-size: .48rem; font-weight: 650; letter-spacing: .16em; text-transform: uppercase; }
 .fat-button__engraving { filter: drop-shadow(0 0 var(--effect-glow-radius-rest) color-mix(in srgb, var(--color-light-blue) 45%, transparent)); }
-.fat-button__engraving--0, .fat-button__engraving--3 { color: var(--fat-button-ink); }
-.fat-button__engraving--2, .fat-button__satellites { color: var(--fat-button-green); }
+.fat-button__engraving--2 { color: var(--fat-button-ink); }
+.fat-button__engraving--1 { color: var(--fat-button-green); }
 .fat-button__channel { stroke-width: 1; opacity: var(--fat-button-fringe-opacity); filter: drop-shadow(0 0 var(--effect-glow-radius-rest) currentColor); transition: transform var(--motion-hover) ease, opacity var(--motion-hover) ease, filter var(--motion-hover) ease; }
 .fat-button__channel--red { color: var(--fat-button-red); transform: translate(calc(-1 * var(--fat-button-split)), .5px); }
 .fat-button__channel--blue { color: var(--fat-button-blue); transform: translate(var(--fat-button-split), -.5px); }
@@ -83,7 +109,14 @@ button.fat-button {
   20%, 75% { opacity: .65; }
   100% { transform: translateY(180px) rotate(-24deg); opacity: 0; }
 }
-.fat-button__engraving--3 { stroke-width: 1.5; }
+.fat-button__engraving--2 { stroke-width: 1.5; }
+/* Open each wing around the eye, including its RGB and tracing copies. */
+.fat-button__wing {
+  transform-origin: 80px 82.5px;
+  transform: translateX(calc(var(--wing-shift) * var(--fat-button-open, 0))) rotate(calc(var(--wing-turn) * var(--fat-button-open, 0)));
+  transition: transform var(--motion-hover) ease;
+}
+
 .fat-button__energy { color: var(--fat-button-energy); stroke-width: 1.7; stroke-linecap: round; filter: drop-shadow(0 0 var(--effect-glow-radius-rest) var(--fat-button-glow)) drop-shadow(0 0 7px var(--fat-button-glow)); }
 .fat-button__energy > g { opacity: 0; }
 .fat-button__energy > g:nth-child(3n + 1) { color: var(--fat-button-red); }
@@ -111,11 +144,14 @@ body[data-surface="dark"] .fat-button {
   100% { opacity: 0; }
 }
 @media (hover: hover) {
-  .fat-button[data-state="ready"]:hover { --fat-button-split: var(--effect-rgb-split-interactive); --fat-button-fringe-opacity: var(--effect-rgb-opacity-interactive); background: color-mix(in srgb, var(--fat-button-face) 94%, var(--fat-button-ink)); border-color: var(--fat-button-ink); }
+  .fat-button[data-state="ready"]:hover { --fat-button-border-opacity: 1; }
+  .fat-button[data-state="ready"]:hover { --fat-button-open: 1; --fat-button-split: var(--effect-rgb-split-interactive); --fat-button-fringe-opacity: var(--effect-rgb-opacity-interactive); background: color-mix(in srgb, var(--fat-button-face) 94%, var(--fat-button-ink)); border-color: var(--fat-button-ink); }
   .fat-button[data-state="ready"]:hover::after { opacity: var(--effect-glow-opacity-interactive); }
   .fat-button[data-state="ready"]:hover .fat-button__channel { filter: drop-shadow(0 0 var(--effect-glow-radius-interactive) currentColor); }
+  .fat-button[data-state="ready"]:hover .fat-button__border .fat-button__channel { filter: drop-shadow(0 0 calc(var(--effect-glow-radius-interactive) * .5) currentColor); }
 }
-.fat-button[data-state="ready"]:focus-visible { --fat-button-split: var(--effect-rgb-split-interactive); --fat-button-fringe-opacity: var(--effect-rgb-opacity-interactive); }
+.fat-button[data-state="ready"]:focus-visible { --fat-button-border-opacity: 1; }
+.fat-button[data-state="ready"]:focus-visible { --fat-button-open: 1; --fat-button-split: var(--effect-rgb-split-interactive); --fat-button-fringe-opacity: var(--effect-rgb-opacity-interactive); }
 .fat-button[data-state="ready"]:focus-visible::after { opacity: var(--effect-glow-opacity-interactive); }
 .fat-button[data-state="ready"]:active { background: color-mix(in srgb, var(--fat-button-face) 84%, var(--fat-button-glow)); border-color: var(--fat-button-glow); }
 .fat-button:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 6px; }
@@ -144,21 +180,26 @@ body[data-surface="dark"] .fat-button {
 .fat-button:disabled .fat-button__mark { color: var(--color-text-muted); opacity: .5; }
 .fat-button:disabled .fat-button__engraving { color: var(--color-text-muted); }
 .fat-button:disabled .fat-button__engraving > g { color: inherit; }
+.fat-button:disabled .fat-button__border { color: var(--color-text-muted); opacity: .5; }
 .fat-button:disabled::before { border-color: var(--color-border); }
 [data-reduced-motion] .fat-button { transition: none; }
+[data-reduced-motion] .fat-button .fat-button__border { transition: none; }
+[data-reduced-motion] .fat-button .fat-button__wing { transform: none; transition: none; }
 [data-reduced-motion] .fat-button .fat-button__loading-orbit { animation: none; transform: rotate(-90deg); }
 [data-reduced-motion] .fat-button .fat-button__channel { animation: none; transition: none; }
 [data-reduced-motion] .fat-button .fat-button__streak::before { animation: none; opacity: 0; }
 [data-reduced-motion] .fat-button::after, [data-reduced-motion] .fat-button .fat-button__energy > g { animation: none; transition: none; opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   button.fat-button { transition: none; }
+  .fat-button .fat-button__border { transition: none; }
+  .fat-button .fat-button__wing { transform: none; transition: none; }
   .fat-button .fat-button__loading-orbit { animation: none; transform: rotate(-90deg); }
   .fat-button .fat-button__channel { animation: none; transition: none; }
   .fat-button::after, .fat-button .fat-button__energy > g, .fat-button .fat-button__streak::before { animation: none; transition: none; opacity: 0; }
 }
 @media (forced-colors: active) {
   button.fat-button { border: 2px solid ButtonText; box-shadow: none; }
-  .fat-button::before, .fat-button::after, .fat-button__mark, .fat-button__streak { display: none; }
+  .fat-button::before, .fat-button::after, .fat-button__mark, .fat-button__streak, .fat-button__border { display: none; }
   .fat-button:focus-visible { outline-color: Highlight; }
   .fat-button:disabled { color: GrayText; border-color: GrayText; }
 }
