@@ -1,0 +1,35 @@
+/* Convergence light stays within the artwork; the status and legend stay crisp. */
+.christogenesis-progress { --christogenesis-light: 0; }
+.christogenesis-progress .morph-progress__traveler { isolation: isolate; }
+.christogenesis-progress .morph-progress__traveler::before {
+  content: '';
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-light-white) 40%, transparent), color-mix(in srgb, var(--color-light-cyan) 25%, transparent) 28%, color-mix(in srgb, var(--color-light-blue) 15%, transparent) 48%, transparent 70%);
+  opacity: var(--christogenesis-light);
+}
+.christogenesis-progress .morph-progress__forms {
+  color: color-mix(in srgb, var(--color-light-cyan), var(--color-light-white) calc(var(--christogenesis-light) * 100%));
+  stroke-width: calc(.7 + var(--christogenesis-light) * .55);
+  filter: drop-shadow(0 0 var(--effect-glow-radius-rest) var(--color-light-blue)) drop-shadow(0 0 calc(var(--christogenesis-light) * var(--effect-glow-radius-interactive)) var(--color-light-cyan));
+}
+.christogenesis-progress .morph-progress__eye {
+  stroke: var(--color-light-white);
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 var(--effect-glow-radius-interactive) var(--color-light-green));
+}
+.christogenesis-progress__radiance {
+  opacity: var(--christogenesis-light);
+  color: var(--color-light-cyan);
+  stroke-width: .6;
+  filter: drop-shadow(0 0 var(--effect-glow-radius-rest) var(--color-light-blue));
+}
+.christogenesis-progress__radiance circle { opacity: .45; }
+@media (forced-colors: active) {
+  .christogenesis-progress .morph-progress__traveler::before, .christogenesis-progress__radiance { display: none; }
+  .christogenesis-progress .morph-progress__forms { color: CanvasText; filter: none; }
+  .christogenesis-progress .morph-progress__eye { stroke: CanvasText; filter: none; }
+}

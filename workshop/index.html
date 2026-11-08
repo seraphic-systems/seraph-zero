@@ -6,6 +6,7 @@
   <title>Component workshop · Seraphic Systems</title>
   <link rel="stylesheet" href="./components/loading.css">
   <link rel="stylesheet" href="./components/angel-progress.css">
+  <link rel="stylesheet" href="./components/christogenesis-progress.css">
   <link rel="stylesheet" href="./components/textbox.css">
   <link rel="stylesheet" href="./workshop.css">
   <link rel="stylesheet" href="./components/fat-button.css">
@@ -14,7 +15,7 @@
 <body>
   <header class="masthead"><a href="/" aria-label="Component workshop home">Seraphic Systems <span>/ Workshop</span></a><span class="local-badge">Local preview</span></header>
   <main>
-    <div class="intro"><p class="eyebrow">Seraphic Systems / UI studies</p><h1>Component workshop</h1><p class="lede">Small pieces, room to experiment.<br>Explore how things feel before they find their place.</p><nav class="workshop-nav" aria-label="Component studies"><a href="#pill-study">Pill button</a><a href="#button-study">Fat button</a><a href="#textbox-study">Writing area</a><a href="#loading-controls">Loading indicators</a></nav></div>
+    <div class="intro"><p class="eyebrow">Seraphic Systems / UI studies</p><h1>Component workshop</h1><p class="lede">Small pieces, room to experiment.<br>Explore how things feel before they find their place.</p><nav class="workshop-nav" aria-label="Component studies"><a href="#pill-study">Pill button</a><a href="#button-study">Fat button</a><a href="#textbox-study">Writing area</a><a href="#loading-controls">Loading indicators</a><a href="#christogenesis-study">Christogenesis</a></nav></div>
     <section class="button-study" id="pill-study" aria-labelledby="pill-title">
       <div class="button-study__header"><div><p class="eyebrow">07 / Pill button</p><h2 id="pill-title">A small invitation</h2></div><label>Pill state<select id="pill-state"><option value="ready">Ready</option><option value="loading">Loading</option><option value="disabled">Disabled</option></select></label></div>
       <div class="pill-study__stage"><div id="pill-button-example"></div><p>A quiet signal, a luminous edge.<br>Hover, press, or follow the ring while it waits.</p></div>
@@ -42,6 +43,12 @@
       <div class="angel-study__heading"><div><p class="eyebrow">04 / Angel procession</p><h2 id="angel-title">From a point, into wings</h2></div><button id="finish-loading" type="button">Finish loading</button></div>
       <div id="angel-progress"></div>
       <p class="angel-study__note">Point → Seraph → Cherub → Throne, then back again. A repeating journey while we wait; the position does not represent a percentage.</p>
+    </section>
+    <section class="angel-study" id="christogenesis-study" aria-labelledby="christogenesis-title">
+      <div class="angel-study__heading"><div><p class="eyebrow">08 / Christogenesis</p><h2 id="christogenesis-title">All things, converging</h2></div><button id="finish-christogenesis" type="button">Finish loading</button></div>
+      <div id="christogenesis-progress"></div>
+      <p class="angel-study__note">Matter gathers into a living sprout; branching thought becomes a connected web; light gathers around Christ Omega. An artistic reading of Pierre Teilhard de Chardin’s Christogenesis. Each loading cycle moves forward, rests, and begins anew; position does not measure completion.</p>
+      <p class="angel-study__note"><a href="https://jesuitonlinebibliography.bc.edu/catalog/13310">About Teilhard’s Christogenesis ↗</a></p>
     </section>
     <section class="gallery" aria-label="Loading indicator examples">
       <article class="study"><div class="study-heading"><h2>Ring</h2><span>01</span></div><div class="stage" data-kind="ring"></div><p>A familiar, continuous turn.</p><code>createLoadingIndicator('ring')</code></article>
