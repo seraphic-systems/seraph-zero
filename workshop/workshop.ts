@@ -1,4 +1,5 @@
 import { createLoadingIndicator, type LoadingKind } from './components/loading.ts';
+import { createChristogenesisProgress } from './components/christogenesis-progress.ts';
 import { createAngelProgress } from './components/angel-progress.ts';
 import { createTextbox } from './components/textbox.ts';
 import { createFatButton } from './components/fat-button.ts';
@@ -58,6 +59,17 @@ document.querySelector('#textbox-sample')!.addEventListener('click', () => {
   textbox.setValue('Make room for the thought before deciding what it needs to become.\n\nA small space to notice, gather, and begin again.');
 });
 
+const christogenesis = createChristogenesisProgress();
+document.querySelector('#christogenesis-progress')!.append(christogenesis.element);
+const finishGenesis = document.querySelector<HTMLButtonElement>('#finish-christogenesis')!;
+let genesisFinished = false;
+finishGenesis.addEventListener('click', () => {
+  genesisFinished = !genesisFinished;
+  if (genesisFinished) christogenesis.finish(); else christogenesis.restart();
+  finishGenesis.textContent = genesisFinished ? 'Restart loading' : 'Finish loading';
+});
+window.addEventListener('pagehide', () => christogenesis.dispose(), { once: true });
+
 const angel = createAngelProgress();
 document.querySelector('#angel-progress')!.append(angel.element);
 const finish = document.querySelector<HTMLButtonElement>('#finish-loading')!;
@@ -81,8 +93,10 @@ const reduced = document.querySelector<HTMLInputElement>('#reduced')!;
 const pause = document.querySelector<HTMLButtonElement>('#pause')!;
 surface.addEventListener('change', () => { document.body.dataset.surface = surface.value; });
 function updateIndicators() {
-  angel.setSize(Number(size.value));
-  angel.setTempo(Number(tempo.value));
+  for (const progress of [angel, christogenesis]) {
+    progress.setSize(Number(size.value));
+    progress.setTempo(Number(tempo.value));
+  }
   for (const indicator of document.querySelectorAll<HTMLElement>('.loading')) {
     indicator.style.setProperty('--loading-size', `${size.value}px`);
     indicator.style.setProperty('--loading-duration', `${tempo.value}s`);
@@ -92,11 +106,11 @@ size.addEventListener('change', updateIndicators);
 tempo.addEventListener('change', updateIndicators);
 reduced.addEventListener('change', () => {
   document.body.toggleAttribute('data-reduced-motion', reduced.checked);
-  angel.setReducedMotion(reduced.checked);
+  for (const progress of [angel, christogenesis]) progress.setReducedMotion(reduced.checked);
 });
 pause.addEventListener('click', () => {
   const paused = document.body.toggleAttribute('data-paused');
-  angel.setPaused(paused);
+  for (const progress of [angel, christogenesis]) progress.setPaused(paused);
   pause.setAttribute('aria-pressed', String(paused));
   pause.textContent = paused ? 'Resume animation' : 'Pause animation';
 });

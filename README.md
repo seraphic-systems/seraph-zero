@@ -141,11 +141,24 @@ preferences always disable animation. Each indicator includes a readable status
 label; animation is decorative. The context panel uses the same implementation.
 
 The angel procession study morphs from a point through seraph, cherub, and throne
-geometry while traveling back and forth. Its position is indeterminate, not a
-completion percentage. Use **Finish loading** to settle at the end, then
+geometry while traveling back and forth. It shares the fat button’s dark face,
+cyan outlines, mint accents, and rose/blue split edges through the shared light
+and effect tokens. Text stays crisp, and forced colors use system colors. Its
+position is indeterminate, not a completion percentage. Use **Finish loading** to settle at the end, then
 **Restart loading** to replay. It respects the same preview controls; reduced
 motion shows a stationary form. `createAngelProgress()` exposes completion,
 restart, preview settings, and disposal for its animation loop.
+
+The Christogenesis companion (`createChristogenesisProgress()`) interprets Teilhard
+de Chardin’s movement from matter through life and consciousness toward Christ
+Omega as particles, a rooted sprout, a branching neural web, and an Omega
+surrounding a cross. Each stage rests briefly so its silhouette can be read.
+Convergence brightens the contours into white with a cyan halo and radiant ring;
+the light is confined to the artwork and remains static with reduced motion.
+This is an artistic sequence, not a scientific timeline or a completion measure.
+It moves forward, holds at convergence, and fades into a new loading cycle.
+Both studies share `morph-progress.ts` and `morph-progress.css`, with the same
+size, tempo, pause, reduced-motion, completion, restart, and disposal controls.
 
 Reusable examples live in `workshop/components/`; `workshop.ts` mounts them and
 wires the preview controls, while `workshop.css` styles the surrounding workshop.
