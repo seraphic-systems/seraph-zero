@@ -4,12 +4,15 @@ import { createAngelProgress } from './components/angel-progress.ts';
 import { createTextbox } from './components/textbox.ts';
 import { createFatButton } from './components/fat-button.ts';
 import { createPillButton } from './components/pill-button.ts';
+import { createJsonViewer } from './components/json-viewer.ts';
+import type { JsonValue } from './components/json-viewer.ts';
 
 export const studies = [
   { id: 'composition', title: 'A place to begin', category: 'Composition', mark: '✳', description: 'Writing area, a quiet action, and a ceremonial seal.', question: 'How much ceremony does a place for a thought need?' },
   { id: 'pill', title: 'Pill button', category: 'Component', mark: '↗', description: 'A small invitation with a luminous edge.', question: 'Can a small action feel inviting without asking for too much attention?' },
   { id: 'seal', title: 'Fat button', category: 'Component', mark: '✧', description: 'Six wings, fine ornament, a moment of ceremony.', question: 'What makes an action feel like a deliberate beginning?' },
   { id: 'textbox', title: 'Writing area', category: 'Component', mark: '¶', description: 'Crisp writing within an illuminated frame.', question: 'Can the frame feel alive while leaving the writing quiet?' },
+  { id: 'json', title: 'JSON viewer', category: 'Component', mark: '{ }', description: 'Structured data inside an illuminated frame.', question: 'Can structure feel clear without losing a little ceremony?' },
   { id: 'angel', title: 'Angel procession', category: 'Motion', mark: '⋈', description: 'From a point into wings, outward and back.', question: 'How does a repeating journey change the experience of waiting?' },
   { id: 'christogenesis', title: 'Christogenesis', category: 'Motion', mark: 'Ω', description: 'Matter, life, thought, and convergence.', question: 'Can each silhouette rest long enough to be understood?' },
   { id: 'ring', title: 'Ring', category: 'Loading', mark: '◌', description: 'A familiar, continuous turn.', question: 'How quiet can a waiting signal become and still be legible?' },
@@ -56,6 +59,20 @@ export function mountStudy(id: StudyId, values: StudyValues) {
     update(value);
   };
   const buttons = [] as ReturnType<typeof createPillButton>[];
+  if (id === 'json') {
+    const samples: Record<string, JsonValue> = {
+      object: { title: 'A place to begin', visibility: 'private', ready: true, count: 3, created_at: null, palette: ['cyan', 'mint', 'rose'], details: { note: 'Make room for what comes next.', saved: false } },
+      array: [{ id: 'notice', label: 'Notice what is here' }, { id: 'gather', label: 'Gather a few thoughts' }, { id: 'begin', label: 'Begin again' }],
+      strings: { message: 'A quote: "Fear not". A path: C:\\workshop', markup: '<strong>This stays text.</strong>', lines: 'First line\nSecond line', long: 'A longer thought, held in one continuous line so the document can be explored with horizontal scrolling on a narrow canvas.' },
+      empty: {},
+      scalar: null,
+    };
+    const viewer = createJsonViewer({ label: 'Specimen data', value: samples.object });
+    choice('sample', 'Sample data', [['object', 'Nested object'], ['array', 'Array'], ['strings', 'Strings & escapes'], ['empty', 'Empty object'], ['scalar', 'Null value']], 'object', value => viewer.setValue(samples[value] ?? null));
+    choice('format', 'Formatting', [['pretty', 'Indented'], ['compact', 'Compact']], 'pretty', value => viewer.setCompact(value === 'compact'));
+    element.append(viewer.element);
+    feedback.textContent = 'Read only. Tab into the document and use the arrow keys to scroll. Select text to copy; sample data stays in this preview.';
+  }
   if (id === 'pill' || id === 'seal' || id === 'composition') {
     const button = id === 'seal' ? createFatButton() : createPillButton({ label: id === 'composition' ? 'Try a quiet action' : 'Keep exploring' });
     buttons.push(button);
