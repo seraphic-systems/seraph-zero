@@ -256,6 +256,16 @@ the ring static, and Pause animation pauses it. Ready presses update a local cou
 only. `createPillButton()` accepts `label` and `loadingLabel`, and returns the native
 button as `element` plus `setState()`. Shared surface and motion controls apply.
 
+The **JSON viewer** study is a read-only, syntax-colored document with the same
+dark face, cyan frame, mint accents, and rose/blue edges as the buttons. Text stays
+crisp and selectable. Tab into the document to scroll with the keyboard. Sample
+controls cover nested objects, arrays, escaped strings, an empty object, and null,
+with indented or compact formatting. Each canvas keeps its own choices in memory.
+`createJsonViewer({ label, value, compact? })` accepts JSON data and returns
+`element`, `setValue()`, and `setCompact()`; load `json-viewer.css` alongside it.
+Values are rendered as text, including HTML-like strings. The component does not
+fetch, edit, or store data, and stays outside the public site build.
+
 ### Preview with fixture records
 
 Run `npm run dev:fixtures` to preview Orb with the Markdown records in

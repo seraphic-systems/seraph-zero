@@ -77,7 +77,7 @@ h2 { font-weight: 500; font-size: 1.1rem; margin: 6px 0; }
 .specimen { min-width: 0; width: 100%; }
 .specimen-actions { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: center; }
 .specimen--ring, .specimen--dots, .specimen--orbit { text-align: center; }
-.specimen--textbox, .specimen--composition { max-width: 740px; margin: auto; }
+.specimen--textbox, .specimen--composition, .specimen--json { max-width: 740px; margin: auto; }
 .composition-heading { margin-bottom: 30px; }
 .composition-heading h2 { font-weight: 450; font-size: clamp(1.4rem, 3cqi, 2rem); letter-spacing: -.03em; line-height: 1.2; margin: 10px 0; }
 .composition-heading > p:last-child { font-size: .82rem; color: var(--color-text-muted); max-width: 400px; }

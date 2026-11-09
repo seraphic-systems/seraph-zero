@@ -1,0 +1,50 @@
+.json-viewer {
+  --json-face: var(--color-night);
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--color-light-cyan);
+  background: var(--json-face);
+  color: var(--color-on-night);
+  box-shadow: calc(-1px * var(--workshop-split, 1)) 0 0 var(--color-light-red), calc(1px * var(--workshop-split, 1)) 0 0 var(--color-light-blue);
+  transition: box-shadow var(--motion-hover) ease;
+}
+[data-surface="dark"] .json-viewer { --json-face: var(--color-night-deep); }
+.json-viewer:focus-within {
+  box-shadow: calc(-2px * var(--workshop-split, 1)) 0 calc(12px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-red) 40%, transparent), calc(2px * var(--workshop-split, 1)) 0 calc(12px * var(--workshop-glow, 1)) color-mix(in srgb, var(--color-light-blue) 50%, transparent);
+}
+.json-viewer__caption {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-light-cyan) 25%, transparent);
+  font-size: .8rem;
+  overflow-wrap: anywhere;
+}
+.json-viewer__mark { color: var(--color-light-green); letter-spacing: .1em; }
+.json-viewer__badge { margin-left: auto; color: var(--color-on-night-muted); font-size: .6rem; letter-spacing: .08em; text-transform: uppercase; }
+.json-viewer__document {
+  color-scheme: dark;
+  margin: 0; padding: 24px 20px;
+  max-height: 440px; overflow: auto; tab-size: 2;
+  font: .82rem/1.9 ui-monospace, SFMono-Regular, Consolas, monospace;
+  text-shadow: none; filter: none;
+}
+.json-viewer__document:focus-visible { outline: 2px solid var(--color-light-cyan); outline-offset: -5px; }
+.json-viewer__key { color: var(--color-light-cyan); }
+.json-viewer__string { color: var(--color-light-green); }
+.json-viewer__number { color: var(--color-on-night); }
+.json-viewer__boolean { color: color-mix(in srgb, var(--color-light-red) 45%, var(--color-light-white)); }
+.json-viewer__null { color: var(--color-on-night-muted); }
+.json-viewer__footer {
+  padding: 12px 20px;
+  border-top: 1px solid color-mix(in srgb, var(--color-light-cyan) 25%, transparent);
+  color: var(--color-on-night-muted); font-size: .65rem; letter-spacing: .035em;
+}
+[data-reduced-motion] .json-viewer { transition: none; }
+@media (prefers-reduced-motion: reduce) { .json-viewer { transition: none; } }
+@media (forced-colors: active) {
+  .json-viewer { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; }
+  .json-viewer:focus-within { box-shadow: none; }
+  .json-viewer span { color: CanvasText; }
+  .json-viewer__caption, .json-viewer__footer { border-color: CanvasText; color: CanvasText; }
+  .json-viewer__document:focus-visible { outline-color: Highlight; }
+}
